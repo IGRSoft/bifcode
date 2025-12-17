@@ -24,7 +24,7 @@ public final class CodePanel: Identifiable {
     /// Editor state for cursor position, scroll, etc.
     public var editorState: SourceEditorState
 
-    public init(type: PanelType, title: String, language: CodeLanguage = .swift) {
+    public init(type: PanelType, title: String = "", language: CodeLanguage = .swift) {
         self.type = type
         self.title = title
         self.language = language

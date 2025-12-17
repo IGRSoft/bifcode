@@ -6,3 +6,5 @@
 
 // No additional debug-specific overrides needed
 // All debug settings use Xcode project defaults
+
+ONLY_ACTIVE_ARCH = YES

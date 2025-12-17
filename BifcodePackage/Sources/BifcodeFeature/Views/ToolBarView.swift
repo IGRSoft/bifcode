@@ -13,6 +13,8 @@ public struct ToolBarView: View {
     @AppStorage("fontSize") private var fontSize: Double = 14
     @AppStorage("selectedTheme") private var selectedThemeRaw: String = EditorThemeOption.atomOneDark.rawValue
 
+    @Binding private var doTitleSetting: String
+    @Binding private var dontTitleSetting: String
     // MARK: - Bindings
 
     @Binding var selectedLanguage: CodeLanguage
@@ -20,8 +22,13 @@ public struct ToolBarView: View {
 
     // MARK: - Initialization
 
-    public init(selectedLanguage: Binding<CodeLanguage>, onExport: @escaping () -> Void) {
+    public init(selectedLanguage: Binding<CodeLanguage>,
+                doTitleSetting: Binding<String>,
+                dontTitleSetting: Binding<String>,
+                onExport: @escaping () -> Void) {
         _selectedLanguage = selectedLanguage
+        _doTitleSetting = doTitleSetting
+        _dontTitleSetting = dontTitleSetting
         self.onExport = onExport
     }
 
@@ -205,6 +212,8 @@ public struct ToolBarView: View {
 #Preview("ToolBarView") {
     ToolBarView(
         selectedLanguage: .constant(.swift),
+        doTitleSetting: .constant("1"),
+        dontTitleSetting: .constant("2"),
         onExport: {}
     )
 }

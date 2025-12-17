@@ -16,16 +16,10 @@ public final class AppViewModel {
     @ObservationIgnored
     @AppStorage("saveLocation") private var saveLocationPath: String = ""
 
-    @ObservationIgnored
-    @AppStorage("doTitle") private var doTitleSetting: String = "Do's"
-
-    @ObservationIgnored
-    @AppStorage("dontTitle") private var dontTitleSetting: String = "Don'ts"
-
     /// Computed URL for save location, defaults to Desktop
     public var saveLocation: URL {
         if saveLocationPath.isEmpty {
-            return FileManager.default.urls(for: .desktopDirectory, in: .userDomainMask).first!
+            return FileManager.default.urls(for: .picturesDirectory, in: .userDomainMask).first!
         }
         return URL(fileURLWithPath: saveLocationPath)
     }
@@ -34,12 +28,8 @@ public final class AppViewModel {
 
     public init() {
         // Read titles from UserDefaults directly for initialization
-        let defaults = UserDefaults.standard
-        let doTitle = defaults.string(forKey: "doTitle") ?? "Do's"
-        let dontTitle = defaults.string(forKey: "dontTitle") ?? "Don'ts"
-
-        doPanel = CodePanel(type: .doPanel, title: doTitle)
-        dontPanel = CodePanel(type: .dontPanel, title: dontTitle)
+        doPanel = CodePanel(type: .doPanel)
+        dontPanel = CodePanel(type: .dontPanel)
     }
 
     // MARK: - Language Management
@@ -49,13 +39,14 @@ public final class AppViewModel {
         doPanel.language = language
         dontPanel.language = language
     }
+    
+    /// Updates the language for both panels
+    public func update(doTitle: String, dontTitle: String) {
+        doPanel.title = doTitle
+        dontPanel.title = dontTitle
+    }
 
     // MARK: - Export
-
-    public func exportImage() async -> NSImage? {
-        // TODO: Implement image export
-        nil
-    }
 
     public func saveImage(_ image: NSImage) async throws {
         let filename = "bifcode-\(Date().timeIntervalSince1970).png"
