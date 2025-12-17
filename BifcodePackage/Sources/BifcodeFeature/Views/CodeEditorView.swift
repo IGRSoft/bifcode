@@ -77,10 +77,10 @@ public struct CodeEditorView: View {
             // Traffic light placeholder
             Circle()
                 .fill(Color.editorCloseButton)
-                .frame(width: 12, height: 12)
+                .frame(width: 14, height: 14)
 
             // Title
-            Text(panel.title)
+            Label(panel.title, systemImage: "text.document.fill")
                 .font(.system(size: 13, weight: .medium))
                 .foregroundStyle(Color.titleText)
 
