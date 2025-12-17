@@ -29,7 +29,7 @@ Extends global configuration from `~/.claude/CLAUDE.md`.
 
 **NEVER** use hardcoded colors like `.gray`, `.red`, `.green`, etc.
 
-**ALWAYS** use semantic colors from `Sources/Extensions/Color+Semantic.swift`:
+**ALWAYS** use semantic colors from `BifcodePackage/Sources/BifcodeFeature/Extensions/Color+Semantic.swift`:
 
 ```swift
 // WRONG
@@ -73,8 +73,8 @@ Rectangle().fill(.indicatorDont)
 ### Development
 
 ```bash
-# Build
-xcodebuild -project Bifcode.xcodeproj -scheme Bifcode -configuration Debug build
+# Build (workspace)
+xcodebuild -workspace Bifcode.xcworkspace -scheme Bifcode -configuration Debug build
 
 # Run
 open -a Bifcode
@@ -83,66 +83,72 @@ open -a Bifcode
 swiftformat .
 
 # Run tests
-xcodebuild test -project Bifcode.xcodeproj -scheme Bifcode -destination 'platform=macOS'
+xcodebuild test -workspace Bifcode.xcworkspace -scheme Bifcode -destination 'platform=macOS'
+
+# Build SPM package only
+cd BifcodePackage && swift build
 ```
 
 ### Quality Gates (run before PR)
 
 ```bash
-swiftformat . && xcodebuild test -project Bifcode.xcodeproj -scheme Bifcode -destination 'platform=macOS'
+swiftformat . && xcodebuild test -workspace Bifcode.xcworkspace -scheme Bifcode -destination 'platform=macOS'
 ```
 
 ---
 
 ## Project Structure
 
-### Application
+### Workspace + SPM Architecture
 
 ```
-Sources/
-├── App/
-│   └── BifcodeApp.swift          # @main entry point
-├── Views/
-│   ├── ContentView.swift         # Main container
-│   ├── CodeEditorView.swift      # Code editor with line numbers
-│   ├── IndicatorBadgeView.swift  # Do/Don't indicator
-│   ├── SettingsView.swift        # Preferences panel
-│   └── ExportPreviewView.swift   # Export preview
-├── ViewModels/
-│   ├── EditorViewModel.swift     # Code editor state
-│   └── SettingsViewModel.swift   # App settings state
+Bifcode/
+├── Bifcode.xcworkspace/          # Open this in Xcode
+├── Bifcode.xcodeproj/            # App shell project
+├── Bifcode/                      # App target (minimal)
+│   ├── Assets.xcassets/          # App icons, colors
+│   ├── BifcodeApp.swift          # @main entry point
+│   └── Bifcode.entitlements      # Sandbox settings
+├── BifcodePackage/               # Primary development area
+│   ├── Package.swift             # SPM configuration
+│   ├── Sources/BifcodeFeature/   # Feature code
+│   └── Tests/                    # Unit tests
+├── BifcodeUITests/               # UI automation tests
+└── Config/                       # XCConfig build settings
+```
+
+### Feature Package Structure
+
+```
+BifcodePackage/Sources/BifcodeFeature/
+├── ContentView.swift             # Main app view
 ├── Models/
-│   ├── CodePanel.swift           # Do/Don't panel model
-│   ├── IndicatorStyle.swift      # Indicator styling
-│   └── ExportSettings.swift      # Export configuration
-├── Services/
-│   ├── ExportService.swift       # PNG generation
-│   ├── LanguageDetector.swift    # Syntax language detection
-│   └── SettingsService.swift     # Preferences persistence
+│   ├── AppSettings.swift         # Settings with persistence
+│   └── CodePanel.swift           # Code panel model
+├── Views/
+│   ├── CodeEditorView.swift      # Code editor with line numbers
+│   ├── CodePanelView.swift       # Complete panel with indicator
+│   ├── IndicatorBadgeView.swift  # Do/Don't badge
+│   └── SettingsView.swift        # Preferences panel
+├── ViewModels/
+│   └── AppViewModel.swift        # Main view model
 └── Extensions/
-    ├── Color+Semantic.swift      # Semantic colors
-    ├── Font+Code.swift           # Code fonts
-    └── View+Export.swift         # View to image conversion
+    └── Color+Semantic.swift      # Semantic colors
 ```
 
 ### Resources
 
 ```
-Resources/
-├── Assets.xcassets/
-│   ├── Colors/                   # Semantic color sets
-│   ├── Icons/                    # App and indicator icons
-│   └── AppIcon.iconset/          # App icon
-└── Localizable.strings           # Localization (future)
+Bifcode/Assets.xcassets/
+├── AccentColor.colorset/         # App accent color
+└── AppIcon.appiconset/           # App icon
 ```
 
 ### Testing
 
 ```
-Tests/
-├── ViewModelTests/               # ViewModel unit tests
-├── ServiceTests/                 # Service unit tests
-└── IntegrationTests/             # Export integration tests
+BifcodePackage/Tests/BifcodeFeatureTests/   # Unit tests
+BifcodeUITests/                              # UI tests
 ```
 
 ---
@@ -210,30 +216,30 @@ Use `@AppStorage` for all user preferences:
 
 ```bash
 # Find SwiftUI views
-rg -n "struct.*View.*:" Sources/Views
+rg -n "struct.*View.*:" BifcodePackage/Sources
 
 # Find ViewModels
-rg -n "@Observable.*class" Sources/ViewModels
+rg -n "@Observable.*class" BifcodePackage/Sources
 
-# Find services
-rg -n "class.*Service" Sources/Services
+# Find models
+rg -n "struct.*:" BifcodePackage/Sources/BifcodeFeature/Models
 
 # Find color usage
-rg -n "Color\." Sources/
+rg -n "Color\." BifcodePackage/Sources
 ```
 
 ### Architecture Search
 
 ```bash
 # Find all @AppStorage usage
-rg -n "@AppStorage" Sources/
+rg -n "@AppStorage" BifcodePackage/Sources
 
 # Find HighlightSwift usage
-rg -n "import HighlightSwift" Sources/
-rg -n "CodeText" Sources/
+rg -n "import HighlightSwift" BifcodePackage/Sources
+rg -n "CodeText" BifcodePackage/Sources
 
 # Find export logic
-rg -n "ImageRenderer\|NSImage" Sources/
+rg -n "ImageRenderer\|NSImage" BifcodePackage/Sources
 ```
 
 ---
