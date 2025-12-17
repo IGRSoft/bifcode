@@ -101,8 +101,10 @@ public struct ContentView: View {
                     panels
                 }
             } else {
-                VStack(spacing: 16) {
-                    panels
+                ScrollView {
+                    VStack(spacing: 16) {
+                        panels
+                    }
                 }
             }
         }

@@ -1,3 +1,4 @@
+import AppKit
 import HighlightSwift
 import SwiftUI
 
@@ -25,12 +26,27 @@ public struct CodePanelView: View {
 
             editorArea
         }
+        .frame(minHeight: minPanelHeight)
         .background(Color.windowBackground)
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .overlay(
             RoundedRectangle(cornerRadius: 12)
                 .stroke(Color.windowBorder, lineWidth: 1)
         )
+    }
+
+    /// Line height matching TextEditor's default line spacing
+    private var lineHeight: CGFloat {
+        // Use the same NSFont for consistent line height calculation
+        nsCodeFont.ascender - nsCodeFont.descender + nsCodeFont.leading
+    }
+
+    /// Minimum panel height based on content lines
+    private var minPanelHeight: CGFloat {
+        let lineCount = max(panel.code.components(separatedBy: "\n").count, 1)
+        let editorPadding: CGFloat = 10 // top + bottom padding
+        let titleBarHeight: CGFloat = settings.showTitle ? 38 : 0
+        return titleBarHeight + (CGFloat(lineCount) * lineHeight) + editorPadding
     }
 
     // MARK: - Title Bar
@@ -76,6 +92,16 @@ public struct CodePanelView: View {
         }
     }
 
+    /// NSFont for consistent rendering between Text and TextEditor
+    private var nsCodeFont: NSFont {
+        NSFont.monospacedSystemFont(ofSize: settings.fontSize, weight: .regular)
+    }
+
+    /// Monospaced code font used for both line numbers and text editor
+    private var codeFont: Font {
+        Font(nsCodeFont)
+    }
+
     private var codeInput: some View {
         HStack(alignment: .top, spacing: 0) {
             // Line numbers
@@ -83,31 +109,30 @@ public struct CodePanelView: View {
 
             // Text editor
             TextEditor(text: $panel.code)
-                .font(.system(size: settings.fontSize, design: .monospaced))
+                .font(codeFont)
                 .scrollContentBackground(.hidden)
                 .foregroundStyle(Color.editorText)
-                .padding(8)
                 .onChange(of: panel.code) { _, _ in
                     onCodeChange()
                 }
+                .padding(.top, 4)
         }
         .background(Color.editorBackground)
     }
 
     private var lineNumbersView: some View {
-        let lines = max(panel.code.components(separatedBy: "\n").count, 10)
+        let lines = max(panel.code.components(separatedBy: "\n").count, 1)
 
         return VStack(alignment: .trailing, spacing: 0) {
             ForEach(1 ... lines, id: \.self) { number in
                 Text("\(number)")
-                    .font(.system(size: settings.fontSize, design: .monospaced))
+                    .font(codeFont)
                     .foregroundStyle(Color.editorLineNumber)
-                    .frame(height: settings.fontSize * 1.5)
+                    .frame(height: lineHeight)
             }
-            Spacer()
         }
         .padding(.horizontal, 8)
-        .padding(.top, 8)
+        .padding(.top, 4) // Match TextEditor's internal top inset
         .background(Color.editorGutter)
     }
 
