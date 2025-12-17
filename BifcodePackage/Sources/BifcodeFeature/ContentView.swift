@@ -4,12 +4,25 @@ import SwiftUI
 /// Main content view with Do/Don't code panels
 public struct ContentView: View {
     @State private var viewModel = AppViewModel()
+    @State private var selectedLanguage: HighlightLanguage?
+    @AppStorage("windowLayout") private var windowLayout: String = WindowLayout.horizontal.rawValue
+
+    private var layout: WindowLayout {
+        WindowLayout(rawValue: windowLayout) ?? .horizontal
+    }
 
     public init() {}
 
     public var body: some View {
         VStack(spacing: 0) {
-            toolbar
+            ToolBarView(
+                selectedLanguage: $selectedLanguage,
+                onExport: {
+                    Task {
+                        await exportImage()
+                    }
+                }
+            )
 
             panelsView
                 .padding()
@@ -20,83 +33,17 @@ public struct ContentView: View {
         }
         .background(Color(white: 0.1))
         .frame(minWidth: 800, minHeight: 500)
-    }
-
-    // MARK: - Toolbar
-
-    private var toolbar: some View {
-        HStack {
-            // Language picker for Do panel
-            languagePicker(for: viewModel.doPanel, label: "Do's Language")
-
-            Spacer()
-
-            // Layout toggle
-            Picker("", selection: Binding(
-                get: { viewModel.settings.windowLayout },
-                set: { viewModel.settings.windowLayout = $0 }
-            )) {
-                Image(systemName: "rectangle.split.2x1").tag(WindowLayout.horizontal)
-                Image(systemName: "rectangle.split.1x2").tag(WindowLayout.vertical)
-            }
-            .pickerStyle(.segmented)
-            .frame(width: 80)
-
-            Spacer()
-
-            // Language picker for Don't panel
-            languagePicker(for: viewModel.dontPanel, label: "Don'ts Language")
-
-            Spacer()
-
-            // Export button
-            Button {
-                Task {
-                    await exportImage()
-                }
-            } label: {
-                Label("Export", systemImage: "square.and.arrow.up")
-            }
-            .buttonStyle(.borderedProminent)
+        .onChange(of: selectedLanguage) { _, newValue in
+            viewModel.doPanel.selectedLanguage = newValue
+            viewModel.dontPanel.selectedLanguage = newValue
         }
-        .padding()
-        .background(Color(white: 0.15))
-    }
-
-    private func languagePicker(for panel: CodePanel, label: String) -> some View {
-        HStack(spacing: 8) {
-            Text(label)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-
-            Picker("", selection: Binding(
-                get: { panel.selectedLanguage ?? panel.detectedLanguage },
-                set: { panel.selectedLanguage = $0 }
-            )) {
-                Text("Auto").tag(nil as HighlightLanguage?)
-                Divider()
-                ForEach(commonLanguages, id: \.self) { lang in
-                    Text(lang.rawValue.capitalized).tag(lang as HighlightLanguage?)
-                }
-            }
-            .frame(width: 120)
-        }
-    }
-
-    private var commonLanguages: [HighlightLanguage] {
-        [
-            .swift, .python, .javaScript, .typeScript,
-            .java, .kotlin, .go, .rust, .ruby,
-            .c, .cPlusPlus, .cSharp, .php, .sql,
-            .html, .css, .json, .yaml, .bash,
-        ]
     }
 
     // MARK: - Panels
 
     private var panelsView: some View {
         Group {
-            if viewModel.settings.windowLayout == .horizontal {
+            if layout == .horizontal {
                 HStack(spacing: 16) {
                     panels
                 }
