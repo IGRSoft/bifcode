@@ -28,7 +28,7 @@ public struct ContentView: View {
             )
 
             panelsView
-                .padding()
+                .padding(16)
         }
         .background(Color.contentBackground)
         .frame(minHeight: 400)
@@ -42,14 +42,16 @@ public struct ContentView: View {
     private var panelsView: some View {
         Group {
             if layout == .horizontal {
-                HStack(spacing: 16) {
+                HStack(spacing: 24) {
                     panels
                 }
+                .padding(24)
             } else {
                 ScrollView {
-                    VStack(spacing: 16) {
+                    VStack(spacing: 24) {
                         panels
                     }
+                    .padding(24)
                 }
             }
         }
@@ -58,8 +60,10 @@ public struct ContentView: View {
     @ViewBuilder
     private var panels: some View {
         CodeEditorView(panel: viewModel.dontPanel)
+            .shadow(color: .black.opacity(0.3), radius: 12, x: 0, y: 4)
 
         CodeEditorView(panel: viewModel.doPanel)
+            .shadow(color: .black.opacity(0.3), radius: 12, x: 0, y: 4)
     }
 
     // MARK: - Export
