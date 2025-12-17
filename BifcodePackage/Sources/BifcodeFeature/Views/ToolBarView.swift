@@ -1,4 +1,5 @@
-import HighlightSwift
+import CodeEditLanguages
+import CodeEditSourceEditor
 import SwiftUI
 
 /// Toolbar view with all settings inline
@@ -10,15 +11,16 @@ public struct ToolBarView: View {
     @AppStorage("indicatorPosition") private var indicatorPosition: String = IndicatorPosition.topRight.rawValue
     @AppStorage("indicatorSize") private var indicatorSize: Double = 48
     @AppStorage("fontSize") private var fontSize: Double = 14
+    @AppStorage("selectedTheme") private var selectedThemeRaw: String = EditorThemeOption.atomOneDark.rawValue
 
     // MARK: - Bindings
 
-    @Binding var selectedLanguage: HighlightLanguage?
+    @Binding var selectedLanguage: CodeLanguage
     var onExport: () -> Void
 
     // MARK: - Initialization
 
-    public init(selectedLanguage: Binding<HighlightLanguage?>, onExport: @escaping () -> Void) {
+    public init(selectedLanguage: Binding<CodeLanguage>, onExport: @escaping () -> Void) {
         _selectedLanguage = selectedLanguage
         self.onExport = onExport
     }
@@ -35,6 +37,12 @@ public struct ToolBarView: View {
                 HStack(spacing: 8) {
                     // Language
                     languagePicker
+
+                    Divider().frame(width: 1, height: 20)
+                        .padding(.leading, 8)
+
+                    // Theme
+                    themePicker
 
                     Divider().frame(width: 1, height: 20)
                         .padding(.leading, 8)
@@ -85,23 +93,32 @@ public struct ToolBarView: View {
     private var languagePicker: some View {
         HStack(spacing: 4) {
             Picker("", selection: $selectedLanguage) {
-                Text("None").tag(nil as HighlightLanguage?)
-                Divider()
-                ForEach(commonLanguages, id: \.self) { lang in
-                    Text(lang.rawValue.capitalized).tag(lang as HighlightLanguage?)
+                ForEach(commonLanguages, id: \.id) { lang in
+                    Text(lang.id.rawValue.capitalized).tag(lang)
                 }
             }
             .frame(width: 100)
         }
     }
 
-    private var commonLanguages: [HighlightLanguage] {
+    private var commonLanguages: [CodeLanguage] {
         [
-            .swift, .python, .javaScript, .typeScript,
+            .swift, .python, .javascript, .typescript,
             .java, .kotlin, .go, .rust, .ruby,
-            .c, .cPlusPlus, .cSharp, .php, .sql,
+            .c, .cpp, .cSharp, .php, .sql,
             .html, .css, .json, .yaml, .bash,
         ]
+    }
+
+    // MARK: - Theme Picker
+
+    private var themePicker: some View {
+        Picker("", selection: $selectedThemeRaw) {
+            ForEach(EditorThemeOption.allCases, id: \.rawValue) { theme in
+                Text(theme.label).tag(theme.rawValue)
+            }
+        }
+        .frame(width: 140)
     }
 
     // MARK: - Layout Toggle
@@ -187,7 +204,7 @@ public struct ToolBarView: View {
 
 #Preview("ToolBarView") {
     ToolBarView(
-        selectedLanguage: .constant(nil),
+        selectedLanguage: .constant(.swift),
         onExport: {}
     )
 }

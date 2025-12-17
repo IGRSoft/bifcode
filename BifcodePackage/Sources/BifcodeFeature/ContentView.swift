@@ -1,10 +1,10 @@
-import HighlightSwift
+import CodeEditLanguages
 import SwiftUI
 
 /// Main content view with Do/Don't code panels
 public struct ContentView: View {
     @State private var viewModel = AppViewModel()
-    @State private var selectedLanguage: HighlightLanguage?
+    @State private var selectedLanguage: CodeLanguage = .swift
 
     // MARK: - Settings (via @AppStorage)
 
@@ -31,9 +31,9 @@ public struct ContentView: View {
                 .padding()
         }
         .background(Color(white: 0.1))
+        .frame(minHeight: 400)
         .onChange(of: selectedLanguage) { _, newValue in
-            viewModel.doPanel.language = newValue
-            viewModel.dontPanel.language = newValue
+            viewModel.setLanguage(newValue)
         }
     }
 
@@ -57,17 +57,9 @@ public struct ContentView: View {
 
     @ViewBuilder
     private var panels: some View {
-        CodePanelView(panel: viewModel.dontPanel) {
-            Task {
-                await viewModel.detectLanguage(for: viewModel.dontPanel)
-            }
-        }
+        CodeEditorView(panel: viewModel.dontPanel)
 
-        CodePanelView(panel: viewModel.doPanel) {
-            Task {
-                await viewModel.detectLanguage(for: viewModel.doPanel)
-            }
-        }
+        CodeEditorView(panel: viewModel.doPanel)
     }
 
     // MARK: - Export
