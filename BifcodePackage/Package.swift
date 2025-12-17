@@ -19,6 +19,9 @@ let package = Package(
             name: "BifcodeFeature",
             dependencies: [
                 .product(name: "CodeEditSourceEditor", package: "CodeEditSourceEditor"),
+            ],
+            resources: [
+                .process("Resources"),
             ]
         ),
         .testTarget(

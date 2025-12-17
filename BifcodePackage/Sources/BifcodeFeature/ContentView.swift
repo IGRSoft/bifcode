@@ -30,7 +30,7 @@ public struct ContentView: View {
             panelsView
                 .padding()
         }
-        .background(Color(white: 0.1))
+        .background(Color.contentBackground)
         .frame(minHeight: 400)
         .onChange(of: selectedLanguage) { _, newValue in
             viewModel.setLanguage(newValue)

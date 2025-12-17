@@ -32,7 +32,7 @@ public struct ToolBarView: View {
             VStack(spacing: 16) {
                 Text("Code Style")
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.secondaryText)
 
                 HStack(spacing: 8) {
                     // Language
@@ -62,7 +62,7 @@ public struct ToolBarView: View {
             VStack(spacing: 16) {
                 Text("Indicator Style")
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.secondaryText)
 
                 HStack(spacing: 8) {
                     // Indicator Style
@@ -85,7 +85,7 @@ public struct ToolBarView: View {
         }
         .padding(.horizontal)
         .padding(.vertical, 8)
-        .background(Color(white: 0.15))
+        .background(Color.toolbarBackground)
     }
 
     // MARK: - Language Picker

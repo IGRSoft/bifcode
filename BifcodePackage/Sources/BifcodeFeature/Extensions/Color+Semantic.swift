@@ -4,39 +4,78 @@ public extension Color {
     // MARK: - Indicator Colors
 
     /// Green checkmark indicator for "Do's"
-    static let indicatorDo = Color(red: 0.2, green: 0.8, blue: 0.4)
+    /// Light: Slightly darker green for better contrast
+    /// Dark: Bright green
+    static let indicatorDo = Color("IndicatorDo", bundle: .module)
 
     /// Red X indicator for "Don'ts"
-    static let indicatorDont = Color(red: 0.9, green: 0.3, blue: 0.3)
+    /// Light: Slightly darker red for better contrast
+    /// Dark: Bright red
+    static let indicatorDont = Color("IndicatorDont", bundle: .module)
 
     // MARK: - Editor Colors
 
-    /// Code editor background
-    static let editorCloseButton = Color(red: 0.9, green: 0.3, blue: 0.3)
+    /// Close button color (traffic light placeholder)
+    /// Light: Slightly darker red
+    /// Dark: Bright red
+    static let editorCloseButton = Color("EditorCloseButton", bundle: .module)
 
     /// Code editor background
-    static let editorBackground = Color(red: 0.12, green: 0.12, blue: 0.14)
+    /// Light: Off-white
+    /// Dark: Dark gray
+    static let editorBackground = Color("EditorBackground", bundle: .module)
 
     /// Line number text color
-    static let editorLineNumber = Color(white: 0.4)
+    /// Light: Medium gray
+    /// Dark: Light gray
+    static let editorLineNumber = Color("EditorLineNumber", bundle: .module)
 
-    /// Default code text color
-    static let editorText = Color(white: 0.9)
+    /// Default code text color (overridden by syntax theme)
+    /// Light: Dark gray
+    /// Dark: Off-white
+    static let editorText = Color("EditorText", bundle: .module)
 
     /// Editor gutter background
-    static let editorGutter = Color(red: 0.1, green: 0.1, blue: 0.12)
+    /// Light: Slightly darker than editor background
+    /// Dark: Slightly darker than editor background
+    static let editorGutter = Color("EditorGutter", bundle: .module)
 
     // MARK: - Window Colors
 
     /// Window background
-    static let windowBackground = Color(red: 0.15, green: 0.15, blue: 0.17)
+    /// Light: Light gray
+    /// Dark: Dark gray
+    static let windowBackground = Color("WindowBackground", bundle: .module)
 
     /// Title bar background
-    static let titleBarBackground = Color(red: 0.18, green: 0.18, blue: 0.2)
+    /// Light: Slightly darker than window
+    /// Dark: Slightly lighter than window
+    static let titleBarBackground = Color("TitleBarBackground", bundle: .module)
 
     /// Title text color
-    static let titleText = Color(white: 0.85)
+    /// Light: Dark gray
+    /// Dark: Off-white
+    static let titleText = Color("TitleText", bundle: .module)
 
     /// Window border color
-    static let windowBorder = Color(white: 0.25)
+    /// Light: Light gray
+    /// Dark: Medium gray
+    static let windowBorder = Color("WindowBorder", bundle: .module)
+
+    // MARK: - UI Colors
+
+    /// Toolbar background
+    /// Light: Light gray
+    /// Dark: Dark gray
+    static let toolbarBackground = Color("ToolbarBackground", bundle: .module)
+
+    /// Main content area background
+    /// Light: Off-white
+    /// Dark: Near black
+    static let contentBackground = Color("ContentBackground", bundle: .module)
+
+    /// Secondary text color
+    /// Light: Semi-transparent black
+    /// Dark: Semi-transparent white
+    static let secondaryText = Color("SecondaryText", bundle: .module)
 }
