@@ -9,9 +9,5 @@ struct BifcodeApp: App {
         }
         .windowStyle(.hiddenTitleBar)
         .defaultSize(width: 1200, height: 700)
-
-        Settings {
-            SettingsView(settings: AppSettings())
-        }
     }
 }
