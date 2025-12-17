@@ -54,3 +54,37 @@ public struct IndicatorBadgeView: View {
             .foregroundStyle(color)
     }
 }
+
+// MARK: - Previews
+
+#Preview("Indicator Styles") {
+    VStack(spacing: 24) {
+        // Do Panel variants
+        HStack(spacing: 32) {
+            IndicatorBadgeView(type: .doPanel, style: .iconOnly, size: 48)
+            IndicatorBadgeView(type: .doPanel, style: .textOnly, size: 48)
+            IndicatorBadgeView(type: .doPanel, style: .iconAndText, size: 48)
+        }
+
+        // Don't Panel variants
+        HStack(spacing: 32) {
+            IndicatorBadgeView(type: .dontPanel, style: .iconOnly, size: 48)
+            IndicatorBadgeView(type: .dontPanel, style: .textOnly, size: 48)
+            IndicatorBadgeView(type: .dontPanel, style: .iconAndText, size: 48)
+        }
+    }
+    .padding(32)
+    .background(Color.editorBackground)
+}
+
+#Preview("Do Indicator - Large") {
+    IndicatorBadgeView(type: .doPanel, style: .iconAndText, size: 80)
+        .padding(32)
+        .background(Color.editorBackground)
+}
+
+#Preview("Don't Indicator - Large") {
+    IndicatorBadgeView(type: .dontPanel, style: .iconAndText, size: 80)
+        .padding(32)
+        .background(Color.editorBackground)
+}

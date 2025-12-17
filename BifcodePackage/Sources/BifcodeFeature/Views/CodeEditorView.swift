@@ -42,23 +42,17 @@ public struct CodeEditorView: View {
     // MARK: - Line Numbers
 
     private var lineNumbersView: some View {
-        VStack(alignment: .trailing, spacing: 0) {
-            ForEach(1 ... max(lineCount, 1), id: \.self) { number in
-                Text("\(number)")
-                    .font(.system(size: fontSize, design: .monospaced))
-                    .foregroundStyle(Color.editorLineNumber)
-                    .frame(height: fontSize * 1.4)
-            }
-        }
-        .padding(.horizontal, 8)
-        .padding(.vertical, 8)
-        .background(Color.editorGutter)
+        CodeText((1...max(lineCount, 1)).map(String.init).joined(separator: "\n"))
+            .codeTextColors(.theme(.atomOne))
+            .font(.system(size: fontSize, design: .monospaced))
+            .padding(8)
+            .background(Color.editorGutter)
     }
 
     // MARK: - Code Area
 
     private var codeAreaView: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
+        Group {
             if let language {
                 CodeText(code)
                     .highlightLanguage(language)
@@ -80,4 +74,44 @@ public struct CodeEditorView: View {
     private func updateLineCount(_ text: String) {
         lineCount = max(text.components(separatedBy: "\n").count, 1)
     }
+}
+
+// MARK: - Preview
+
+#Preview("Code Editor with lines numbers") {
+    @Previewable @State var code = """
+    func greet(name: String) -> String {
+        return "Hello, \\(name)!"
+    }
+
+    let message = greet(name: "World")
+    print(message)
+    """
+
+    CodeEditorView(
+        code: $code,
+        language: .swift,
+        fontSize: 14,
+        showLineNumbers: true
+    )
+    .frame(width: 400, height: 200)
+}
+
+#Preview("Code Editor without lines numbers") {
+    @Previewable @State var code = """
+    func greet(name: String) -> String {
+        return "Hello, \\(name)!"
+    }
+
+    let message = greet(name: "World")
+    print(message)
+    """
+
+    CodeEditorView(
+        code: $code,
+        language: .swift,
+        fontSize: 14,
+        showLineNumbers: false
+    )
+    .frame(width: 400, height: 200)
 }
