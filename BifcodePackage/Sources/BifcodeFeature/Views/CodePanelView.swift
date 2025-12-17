@@ -140,3 +140,57 @@ public struct CodePanelView: View {
         settings.indicatorPosition == .topRight ? .topTrailing : .bottomLeading
     }
 }
+
+// MARK: - Previews
+
+#Preview("Do Panel") {
+    let settings = AppSettings()
+    let panel = CodePanel(type: .doPanel, title: "Do's")
+    panel.code = """
+    // Use descriptive variable names
+    let userName = "Alice"
+    let isLoggedIn = true
+
+    // Handle errors gracefully
+    do {
+        try processData()
+    } catch {
+        logger.error(error)
+    }
+    """
+
+    return CodePanelView(panel: panel, settings: settings)
+        .frame(width: 400, height: 300)
+        .padding()
+        .background(Color(white: 0.1))
+}
+
+#Preview("Don't Panel") {
+    let settings = AppSettings()
+    let panel = CodePanel(type: .dontPanel, title: "Don'ts")
+    panel.code = """
+    // Avoid single-letter variables
+    let x = "Bob"
+    let y = false
+
+    // Don't ignore errors
+    try? processData()
+    """
+
+    return CodePanelView(panel: panel, settings: settings)
+        .frame(width: 400, height: 300)
+        .padding()
+        .background(Color(white: 0.1))
+}
+
+#Preview("Panel - No Title Bar") {
+    let settings = AppSettings()
+    settings.showTitle = false
+    let panel = CodePanel(type: .doPanel, title: "Do's")
+    panel.code = "let greeting = \"Hello, World!\""
+
+    return CodePanelView(panel: panel, settings: settings)
+        .frame(width: 400, height: 150)
+        .padding()
+        .background(Color(white: 0.1))
+}

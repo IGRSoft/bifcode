@@ -115,3 +115,9 @@ public struct SettingsView: View {
         }
     }
 }
+
+// MARK: - Preview
+
+#Preview("Settings") {
+    SettingsView(settings: AppSettings())
+}
