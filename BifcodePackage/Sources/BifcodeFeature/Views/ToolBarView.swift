@@ -29,36 +29,54 @@ public struct ToolBarView: View {
 
     public var body: some View {
         HStack(spacing: 16) {
-            // Language
-            languagePicker
+            VStack(spacing: 16) {
+                Text("Code Style")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                
+                HStack(spacing: 8) {
+                    // Language
+                    languagePicker
+
+                    Divider().frame(width: 1, height: 20)
+                        .padding(.leading, 8)
+
+                    // Layout
+                    layoutToggle
+                }
+                .layoutPriority(3)
+                
+                // Font Size
+                fontSizeControl
+                    .layoutPriority(2)
+            }
+
+            Divider().frame(height: 48)
+
+            VStack(spacing: 16) {
+                
+                Text("Indicator Style")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                
+                HStack(spacing: 8) {
+                    // Indicator Style
+                    indicatorStylePicker
+
+                    // Indicator Position
+                    indicatorPositionPicker
+                }
+
+                // Indicator Size
+                indicatorSizeControl
+            }
 
             Divider().frame(height: 20)
 
-            // Layout
-            layoutToggle
-
-            Divider().frame(height: 20)
-
-            // Indicator Style
-            indicatorStylePicker
-
-            // Indicator Position
-            indicatorPositionPicker
-
-            // Indicator Size
-            indicatorSizeControl
-
-            Divider().frame(height: 20)
-
-            // Font Size
-            fontSizeControl
-
-            Divider().frame(height: 20)
-
+            Spacer(minLength: 0)
+            
             // Watermark
             watermarkToggle
-
-            Spacer()
 
             // Export
             exportButton
@@ -72,10 +90,6 @@ public struct ToolBarView: View {
 
     private var languagePicker: some View {
         HStack(spacing: 4) {
-            Text("Lang")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-
             Picker("", selection: $selectedLanguage) {
                 Text("None").tag(nil as HighlightLanguage?)
                 Divider()
@@ -104,64 +118,47 @@ public struct ToolBarView: View {
             Image(systemName: "rectangle.split.1x2").tag(WindowLayout.vertical.rawValue)
         }
         .pickerStyle(.segmented)
-        .frame(width: 60)
     }
 
     // MARK: - Indicator Style
 
     private var indicatorStylePicker: some View {
-        HStack(spacing: 4) {
-            Text("Style")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-
-            Picker("", selection: Binding(
-                get: { IndicatorStyle(rawValue: indicatorStyle) ?? .iconAndText },
-                set: { indicatorStyle = $0.rawValue }
-            )) {
-                ForEach(IndicatorStyle.allCases, id: \.self) { style in
-                    Text(style.label).tag(style)
-                }
+        Picker("", selection: Binding(
+            get: { IndicatorStyle(rawValue: indicatorStyle) ?? .iconAndText },
+            set: { indicatorStyle = $0.rawValue }
+        )) {
+            ForEach(IndicatorStyle.allCases, id: \.self) { style in
+                Text(style.label).tag(style)
             }
-            .frame(width: 100)
         }
+        .frame(width: 120)
     }
 
     // MARK: - Indicator Position
 
     private var indicatorPositionPicker: some View {
-        HStack(spacing: 4) {
-            Text("Pos")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-
-            Picker("", selection: Binding(
-                get: { IndicatorPosition(rawValue: indicatorPosition) ?? .topRight },
-                set: { indicatorPosition = $0.rawValue }
-            )) {
-                ForEach(IndicatorPosition.allCases, id: \.self) { position in
-                    Text(position.label).tag(position)
-                }
+        Picker("", selection: Binding(
+            get: { IndicatorPosition(rawValue: indicatorPosition) ?? .topRight },
+            set: { indicatorPosition = $0.rawValue }
+        )) {
+            ForEach(IndicatorPosition.allCases, id: \.self) { position in
+                Text(position.label).tag(position)
             }
-            .frame(width: 100)
         }
+        .frame(width: 120)
     }
 
     // MARK: - Indicator Size
 
     private var indicatorSizeControl: some View {
         HStack(spacing: 4) {
-            Text("Size")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-
             Slider(value: $indicatorSize, in: 32 ... 80, step: 4)
-                .frame(width: 60)
+                .frame(width: 160)
 
             Text("\(Int(indicatorSize))")
-                .font(.caption)
+                .font(.body)
                 .monospacedDigit()
-                .frame(width: 24)
+                .frame(width: 20, alignment: .trailing)
         }
     }
 
@@ -169,30 +166,29 @@ public struct ToolBarView: View {
 
     private var fontSizeControl: some View {
         HStack(spacing: 4) {
-            Text("Font")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-
             Slider(value: $fontSize, in: 10 ... 24, step: 1)
-                .frame(width: 60)
+                .frame(width: 130)
 
             Text("\(Int(fontSize))")
-                .font(.caption)
+                .font(.body)
                 .monospacedDigit()
-                .frame(width: 24)
+                .frame(width: 24, alignment: .trailing)
         }
     }
 
     // MARK: - Watermark Toggle
 
     private var watermarkToggle: some View {
-        HStack(spacing: 4) {
-            Toggle("", isOn: $showWatermark)
-                .toggleStyle(.checkbox)
-
+        VStack(spacing: 16) {
             Text("Watermark")
                 .font(.caption)
                 .foregroundStyle(.secondary)
+                .frame(width: 100)
+            Toggle("", isOn: $showWatermark)
+                .toggleStyle(.checkbox)
+                .frame(width: 20)
+            TextField("Watermark Text", text: $watermarkText)
+                .frame(width: 100).disabled(!showWatermark)
         }
     }
 
@@ -203,6 +199,7 @@ public struct ToolBarView: View {
             onExport()
         } label: {
             Label("Export", systemImage: "square.and.arrow.up")
+                .fixedSize()
         }
         .buttonStyle(.borderedProminent)
     }
