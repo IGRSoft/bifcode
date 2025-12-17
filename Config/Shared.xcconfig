@@ -9,8 +9,11 @@
 PRODUCT_NAME = Bifcode
 PRODUCT_DISPLAY_NAME = Bifcode
 PRODUCT_BUNDLE_IDENTIFIER = com.igrsoft.bifcode
-MARKETING_VERSION = 1.0
-CURRENT_PROJECT_VERSION = 1
+MARKETING_VERSION = 1.0.0
+CURRENT_PROJECT_VERSION = 1000
+INFOPLIST_KEY_CFBundleDisplayName = $(PRODUCT_DISPLAY_NAME)
+INFOPLIST_KEY_LSApplicationCategoryType = public.app-category.developer-tools
+
 
 // ==========================================
 // Platform Configuration
@@ -22,8 +25,17 @@ MACOSX_DEPLOYMENT_TARGET = 15.0
 // ==========================================
 GENERATE_INFOPLIST_FILE = YES
 
-// ==========================================
-// Entitlements
-// ==========================================
-// AI agents can modify Config/Bifcode.entitlements to add capabilities
-CODE_SIGN_ENTITLEMENTS = Config/Bifcode.entitlements
+CODE_SIGN_IDENTITY = Apple Development
+CODE_SIGN_STYLE = Automatic
+DEVELOPMENT_TEAM = DMP42GVPJ3
+PROVISIONING_PROFILE_SPECIFIER =
+
+ENABLE_APP_SANDBOX = YES
+ENABLE_FILE_ACCESS_PICTURE_FOLDER = readwrite
+ENABLE_USER_SELECTED_FILES = readwrite
+
+ASSETCATALOG_COMPILER_APPICON_NAME = icon
+ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES
+
+SWIFT_VERSION = 6.2
+

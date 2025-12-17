@@ -13,6 +13,9 @@ public struct ToolBarView: View {
     @AppStorage("fontSize") private var fontSize: Double = 14
     @AppStorage("selectedTheme") private var selectedThemeRaw: String = EditorThemeOption.atomOneDark.rawValue
 
+    @Binding private var doTitleSetting: String
+    @Binding private var dontTitleSetting: String
+
     // MARK: - Bindings
 
     @Binding var selectedLanguage: CodeLanguage
@@ -20,15 +23,21 @@ public struct ToolBarView: View {
 
     // MARK: - Initialization
 
-    public init(selectedLanguage: Binding<CodeLanguage>, onExport: @escaping () -> Void) {
+    public init(selectedLanguage: Binding<CodeLanguage>,
+                doTitleSetting: Binding<String>,
+                dontTitleSetting: Binding<String>,
+                onExport: @escaping () -> Void)
+    {
         _selectedLanguage = selectedLanguage
+        _doTitleSetting = doTitleSetting
+        _dontTitleSetting = dontTitleSetting
         self.onExport = onExport
     }
 
     // MARK: - Body
 
     public var body: some View {
-        HStack(spacing: 16) {
+        HStack(alignment: .top, spacing: 16) {
             VStack(spacing: 16) {
                 Text("Code Style")
                     .font(.caption)
@@ -50,12 +59,25 @@ public struct ToolBarView: View {
                     // Layout
                     layoutToggle
                 }
-                .layoutPriority(3)
+                .fixedSize()
 
                 // Font Size
                 fontSizeControl
-                    .layoutPriority(2)
+                
+                VStack(spacing: 16) {
+                    Text("Panel Titles")
+                        .font(.caption)
+                        .foregroundStyle(Color.secondaryText)
+
+                    HStack(spacing: 8) {
+                        doTitleField
+                        dontTitleField
+                    }
+                }
+                .frame(maxWidth: .infinity)
             }
+            .fixedSize()
+            .layoutPriority(1)
 
             Divider().frame(height: 48)
 
@@ -76,7 +98,7 @@ public struct ToolBarView: View {
                 indicatorSizeControl
             }
 
-            Divider().frame(height: 20)
+            Divider().frame(height: 48)
 
             Spacer(minLength: 0)
 
@@ -177,14 +199,28 @@ public struct ToolBarView: View {
 
     private var fontSizeControl: some View {
         HStack(spacing: 4) {
-            Slider(value: $fontSize, in: 10 ... 24, step: 1)
-                .frame(width: 130)
+            Slider(value: $fontSize, in: 10 ... 34, step: 1)
+                .frame(maxWidth: .infinity)
 
             Text("\(Int(fontSize))")
                 .font(.body)
                 .monospacedDigit()
-                .frame(width: 24, alignment: .trailing)
+                .padding(.leading, 8)
+                .fixedSize()
         }
+        .padding(.horizontal, 24)
+    }
+
+    // MARK: - Title Fields
+
+    private var doTitleField: some View {
+        TextField("Do Title", text: $doTitleSetting)
+            .textFieldStyle(.roundedBorder)
+    }
+
+    private var dontTitleField: some View {
+        TextField("Don't Title", text: $dontTitleSetting)
+            .textFieldStyle(.roundedBorder)
     }
 
     // MARK: - Export Button
@@ -205,6 +241,8 @@ public struct ToolBarView: View {
 #Preview("ToolBarView") {
     ToolBarView(
         selectedLanguage: .constant(.swift),
+        doTitleSetting: .constant("1"),
+        dontTitleSetting: .constant("2"),
         onExport: {}
     )
 }
