@@ -5,22 +5,35 @@ import SwiftUI
 /// A complete code panel with title bar, editor, and indicator
 public struct CodePanelView: View {
     @Bindable var panel: CodePanel
-    let settings: AppSettings
     let onCodeChange: () -> Void
+
+    // MARK: - Settings (via @AppStorage)
+
+    @AppStorage("indicatorPosition") private var indicatorPositionRaw: String = IndicatorPosition.topRight.rawValue
+    @AppStorage("indicatorStyle") private var indicatorStyleRaw: String = IndicatorStyle.iconAndText.rawValue
+    @AppStorage("indicatorSize") private var indicatorSize: Double = 48
+    @AppStorage("showTitle") private var showTitle: Bool = true
+    @AppStorage("fontSize") private var fontSize: Double = 14
+
+    private var indicatorPosition: IndicatorPosition {
+        IndicatorPosition(rawValue: indicatorPositionRaw) ?? .topRight
+    }
+
+    private var indicatorStyle: IndicatorStyle {
+        IndicatorStyle(rawValue: indicatorStyleRaw) ?? .iconAndText
+    }
 
     public init(
         panel: CodePanel,
-        settings: AppSettings,
         onCodeChange: @escaping () -> Void = {}
     ) {
         self.panel = panel
-        self.settings = settings
         self.onCodeChange = onCodeChange
     }
 
     public var body: some View {
         VStack(spacing: 0) {
-            if settings.showTitle {
+            if showTitle {
                 titleBar
             }
 
@@ -45,23 +58,18 @@ public struct CodePanelView: View {
     private var minPanelHeight: CGFloat {
         let lineCount = max(panel.code.components(separatedBy: "\n").count, 1)
         let editorPadding: CGFloat = 10 // top + bottom padding
-        let titleBarHeight: CGFloat = settings.showTitle ? 38 : 0
+        let titleBarHeight: CGFloat = showTitle ? 38 : 0
         return titleBarHeight + (CGFloat(lineCount) * lineHeight) + editorPadding
     }
 
     // MARK: - Title Bar
 
     private var titleBar: some View {
-        HStack {
+        HStack(spacing: 14) {
             // Traffic light placeholder
             Circle()
-                .fill(panel.type == .doPanel ? Color.indicatorDo : Color.indicatorDont)
+                .fill(Color.editorCloseButton)
                 .frame(width: 12, height: 12)
-
-            // File icon
-            Image(systemName: "swift")
-                .font(.system(size: 14))
-                .foregroundStyle(Color.titleText.opacity(0.7))
 
             // Title
             Text(panel.title)
@@ -85,8 +93,8 @@ public struct CodePanelView: View {
             // Indicator badge
             IndicatorBadgeView(
                 type: panel.type,
-                style: settings.indicatorStyle,
-                size: settings.indicatorSize
+                style: indicatorStyle,
+                size: indicatorSize
             )
             .padding(12)
         }
@@ -94,7 +102,7 @@ public struct CodePanelView: View {
 
     /// NSFont for consistent rendering between Text and TextEditor
     private var nsCodeFont: NSFont {
-        NSFont.monospacedSystemFont(ofSize: settings.fontSize, weight: .regular)
+        NSFont.monospacedSystemFont(ofSize: fontSize, weight: .regular)
     }
 
     /// Monospaced code font used for both line numbers and text editor
@@ -137,14 +145,13 @@ public struct CodePanelView: View {
     }
 
     private var indicatorAlignment: Alignment {
-        settings.indicatorPosition == .topRight ? .topTrailing : .bottomLeading
+        indicatorPosition == .topRight ? .topTrailing : .bottomTrailing
     }
 }
 
 // MARK: - Previews
 
 #Preview("Do Panel") {
-    let settings = AppSettings()
     let panel = CodePanel(type: .doPanel, title: "Do's")
     panel.code = """
     // Use descriptive variable names
@@ -159,14 +166,13 @@ public struct CodePanelView: View {
     }
     """
 
-    return CodePanelView(panel: panel, settings: settings)
+    return CodePanelView(panel: panel)
         .frame(width: 400, height: 300)
         .padding()
         .background(Color(white: 0.1))
 }
 
 #Preview("Don't Panel") {
-    let settings = AppSettings()
     let panel = CodePanel(type: .dontPanel, title: "Don'ts")
     panel.code = """
     // Avoid single-letter variables
@@ -177,19 +183,18 @@ public struct CodePanelView: View {
     try? processData()
     """
 
-    return CodePanelView(panel: panel, settings: settings)
+    return CodePanelView(panel: panel)
         .frame(width: 400, height: 300)
         .padding()
         .background(Color(white: 0.1))
 }
 
 #Preview("Panel - No Title Bar") {
-    let settings = AppSettings()
-    settings.showTitle = false
+    // Note: To preview without title bar, set UserDefaults["showTitle"] = false
     let panel = CodePanel(type: .doPanel, title: "Do's")
     panel.code = "let greeting = \"Hello, World!\""
 
-    return CodePanelView(panel: panel, settings: settings)
+    return CodePanelView(panel: panel)
         .frame(width: 400, height: 150)
         .padding()
         .background(Color(white: 0.1))

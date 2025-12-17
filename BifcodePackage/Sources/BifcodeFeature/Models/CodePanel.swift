@@ -16,13 +16,9 @@ public final class CodePanel: Identifiable {
 
     public var code: String = ""
     public var title: String
-    public var detectedLanguage: HighlightLanguage?
-    public var selectedLanguage: HighlightLanguage?
 
     /// The language to use for highlighting (selected overrides detected)
-    public var language: HighlightLanguage? {
-        selectedLanguage ?? detectedLanguage
-    }
+    public var language: HighlightLanguage?
 
     public init(type: PanelType, title: String) {
         self.type = type

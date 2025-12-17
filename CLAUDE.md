@@ -123,7 +123,7 @@ Bifcode/
 BifcodePackage/Sources/BifcodeFeature/
 ├── ContentView.swift             # Main app view
 ├── Models/
-│   ├── AppSettings.swift         # Settings with persistence
+│   ├── SettingsTypes.swift       # Enums: IndicatorPosition, IndicatorStyle, WindowLayout
 │   └── CodePanel.swift           # Code panel model
 ├── Views/
 │   ├── CodeEditorView.swift      # Code editor with line numbers

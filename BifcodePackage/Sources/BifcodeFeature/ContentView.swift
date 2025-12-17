@@ -5,10 +5,13 @@ import SwiftUI
 public struct ContentView: View {
     @State private var viewModel = AppViewModel()
     @State private var selectedLanguage: HighlightLanguage?
-    @AppStorage("windowLayout") private var windowLayout: String = WindowLayout.horizontal.rawValue
+
+    // MARK: - Settings (via @AppStorage)
+
+    @AppStorage("windowLayout") private var windowLayoutRaw: String = WindowLayout.horizontal.rawValue
 
     private var layout: WindowLayout {
-        WindowLayout(rawValue: windowLayout) ?? .horizontal
+        WindowLayout(rawValue: windowLayoutRaw) ?? .horizontal
     }
 
     public init() {}
@@ -26,16 +29,11 @@ public struct ContentView: View {
 
             panelsView
                 .padding()
-
-            if viewModel.settings.showWatermark {
-                watermark
-            }
         }
         .background(Color(white: 0.1))
-        .frame(minWidth: 800, minHeight: 500)
         .onChange(of: selectedLanguage) { _, newValue in
-            viewModel.doPanel.selectedLanguage = newValue
-            viewModel.dontPanel.selectedLanguage = newValue
+            viewModel.doPanel.language = newValue
+            viewModel.dontPanel.language = newValue
         }
     }
 
@@ -59,32 +57,17 @@ public struct ContentView: View {
 
     @ViewBuilder
     private var panels: some View {
-        CodePanelView(
-            panel: viewModel.dontPanel,
-            settings: viewModel.settings
-        ) {
+        CodePanelView(panel: viewModel.dontPanel) {
             Task {
                 await viewModel.detectLanguage(for: viewModel.dontPanel)
             }
         }
 
-        CodePanelView(
-            panel: viewModel.doPanel,
-            settings: viewModel.settings
-        ) {
+        CodePanelView(panel: viewModel.doPanel) {
             Task {
                 await viewModel.detectLanguage(for: viewModel.doPanel)
             }
         }
-    }
-
-    // MARK: - Watermark
-
-    private var watermark: some View {
-        Text(viewModel.settings.watermarkText)
-            .font(.system(size: 12, weight: .medium))
-            .foregroundStyle(Color.watermark)
-            .padding(.bottom, 8)
     }
 
     // MARK: - Export
