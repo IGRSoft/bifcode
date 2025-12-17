@@ -55,6 +55,9 @@ public struct ContentView: View {
         .onChange(of: selectedLanguage) { _, newValue in
             viewModel.setLanguage(newValue)
         }
+        .onAppear() {
+            viewModel.update(doTitle: doTitleSetting, dontTitle: dontTitleSetting)
+        }
         .onChange(of: doTitleSetting) { _, newValue in
             viewModel.update(doTitle: newValue, dontTitle: dontTitleSetting)
         }
