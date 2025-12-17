@@ -13,7 +13,7 @@ public extension Color {
 
     /// Code editor background
     static let editorCloseButton = Color(red: 0.9, green: 0.3, blue: 0.3)
-    
+
     /// Code editor background
     static let editorBackground = Color(red: 0.12, green: 0.12, blue: 0.14)
 

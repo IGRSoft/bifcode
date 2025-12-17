@@ -12,13 +12,13 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/appstefan/HighlightSwift", from: "1.0.0"),
+        .package(url: "https://github.com/CodeEditApp/CodeEditSourceEditor", from: "0.12.0"),
     ],
     targets: [
         .target(
             name: "BifcodeFeature",
             dependencies: [
-                .product(name: "HighlightSwift", package: "HighlightSwift"),
+                .product(name: "CodeEditSourceEditor", package: "CodeEditSourceEditor"),
             ]
         ),
         .testTarget(

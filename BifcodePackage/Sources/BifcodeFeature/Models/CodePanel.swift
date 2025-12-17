@@ -1,5 +1,6 @@
+import CodeEditLanguages
+import CodeEditSourceEditor
 import Foundation
-import HighlightSwift
 
 /// Represents a code panel (Do or Don't)
 public enum PanelType: String, Sendable {
@@ -17,11 +18,16 @@ public final class CodePanel: Identifiable {
     public var code: String = ""
     public var title: String
 
-    /// The language to use for highlighting (selected overrides detected)
-    public var language: HighlightLanguage?
+    /// The language to use for highlighting
+    public var language: CodeLanguage
 
-    public init(type: PanelType, title: String) {
+    /// Editor state for cursor position, scroll, etc.
+    public var editorState: SourceEditorState
+
+    public init(type: PanelType, title: String, language: CodeLanguage = .swift) {
         self.type = type
         self.title = title
+        self.language = language
+        editorState = SourceEditorState()
     }
 }

@@ -1,117 +1,187 @@
-import HighlightSwift
+import AppKit
+import CodeEditLanguages
+import CodeEditSourceEditor
 import SwiftUI
 
-/// Code editor with line numbers and syntax highlighting
+/// A complete code editor panel with title bar, syntax highlighting editor, and Do/Don't indicator
 public struct CodeEditorView: View {
-    @Binding var code: String
-    let language: HighlightLanguage?
-    let fontSize: CGFloat
-    let showLineNumbers: Bool
+    @Bindable var panel: CodePanel
+    let onCodeChange: () -> Void
 
-    @State private var lineCount: Int = 1
+    // MARK: - Settings (via @AppStorage)
+
+    @AppStorage("indicatorPosition") private var indicatorPositionRaw: String = IndicatorPosition.topRight.rawValue
+    @AppStorage("indicatorStyle") private var indicatorStyleRaw: String = IndicatorStyle.iconAndText.rawValue
+    @AppStorage("indicatorSize") private var indicatorSize: Double = 48
+    @AppStorage("showTitle") private var showTitle: Bool = true
+    @AppStorage("fontSize") private var fontSize: Double = 14
+    @AppStorage("selectedTheme") private var selectedThemeRaw: String = EditorThemeOption.atomOneDark.rawValue
+
+    private var indicatorPosition: IndicatorPosition {
+        IndicatorPosition(rawValue: indicatorPositionRaw) ?? .topRight
+    }
+
+    private var indicatorStyle: IndicatorStyle {
+        IndicatorStyle(rawValue: indicatorStyleRaw) ?? .iconAndText
+    }
+
+    private var selectedTheme: EditorThemeOption {
+        EditorThemeOption(rawValue: selectedThemeRaw) ?? .atomOneDark
+    }
 
     public init(
-        code: Binding<String>,
-        language: HighlightLanguage? = nil,
-        fontSize: CGFloat = 14,
-        showLineNumbers: Bool = true
+        panel: CodePanel,
+        onCodeChange: @escaping () -> Void = {}
     ) {
-        _code = code
-        self.language = language
-        self.fontSize = fontSize
-        self.showLineNumbers = showLineNumbers
+        self.panel = panel
+        self.onCodeChange = onCodeChange
     }
 
     public var body: some View {
-        HStack(alignment: .top, spacing: 0) {
-            if showLineNumbers {
-                lineNumbersView
+        VStack(spacing: 0) {
+            if showTitle {
+                titleBar
+                    .zIndex(2)
             }
 
-            codeAreaView
+            editorArea
+                .zIndex(1)
         }
-        .background(Color.editorBackground)
-        .onChange(of: code) { _, newValue in
-            updateLineCount(newValue)
+        .frame(minHeight: minPanelHeight)
+        .background(Color(nsColor: selectedTheme.editorTheme.background))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Color.windowBorder, lineWidth: 1)
+        )
+    }
+
+    /// Line height matching the editor's font
+    private var lineHeight: CGFloat {
+        let font = NSFont.monospacedSystemFont(ofSize: fontSize, weight: .regular)
+        return font.ascender - font.descender + font.leading
+    }
+
+    /// Minimum panel height based on content lines
+    private var minPanelHeight: CGFloat {
+        let lineCount = max(panel.code.components(separatedBy: "\n").count, 1)
+        let editorPadding: CGFloat = 10
+        let titleBarHeight: CGFloat = showTitle ? 38 : 0
+        return titleBarHeight + (CGFloat(lineCount) * lineHeight) + editorPadding
+    }
+
+    // MARK: - Title Bar
+
+    private var titleBar: some View {
+        HStack(spacing: 14) {
+            // Traffic light placeholder
+            Circle()
+                .fill(Color.editorCloseButton)
+                .frame(width: 12, height: 12)
+
+            // Title
+            Text(panel.title)
+                .font(.system(size: 13, weight: .medium))
+                .foregroundStyle(Color.titleText)
+
+            Spacer()
         }
-        .onAppear {
-            updateLineCount(code)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .background(Color.titleBarBackground)
+    }
+
+    // MARK: - Editor Area
+
+    private var editorArea: some View {
+        ZStack(alignment: indicatorAlignment) {
+            // Code editor using CodeEditSourceEditor
+            sourceEditor
+
+            // Indicator badge
+            IndicatorBadgeView(
+                type: panel.type,
+                style: indicatorStyle,
+                size: indicatorSize
+            )
+            .padding(12)
         }
     }
 
-    // MARK: - Line Numbers
-
-    private var lineNumbersView: some View {
-        CodeText((1 ... max(lineCount, 1)).map(String.init).joined(separator: "\n"))
-            .codeTextColors(.theme(.atomOne))
-            .font(.system(size: fontSize, design: .monospaced))
-            .padding(8)
-            .background(Color.editorGutter)
-    }
-
-    // MARK: - Code Area
-
-    private var codeAreaView: some View {
-        Group {
-            if let language {
-                CodeText(code)
-                    .highlightLanguage(language)
-                    .codeTextColors(.theme(.atomOne))
-                    .font(.system(size: fontSize, design: .monospaced))
-                    .padding(8)
-            } else {
-                CodeText(code)
-                    .codeTextColors(.theme(.atomOne))
-                    .font(.system(size: fontSize, design: .monospaced))
-                    .padding(8)
-            }
+    private var sourceEditor: some View {
+        SourceEditor(
+            $panel.code,
+            language: panel.language,
+            configuration: editorConfiguration,
+            state: $panel.editorState
+        )
+        .onChange(of: panel.code) { _, _ in
+            onCodeChange()
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    // MARK: - Helpers
+    private var editorConfiguration: SourceEditorConfiguration {
+        SourceEditorConfiguration(
+            appearance: .init(
+                theme: selectedTheme.editorTheme,
+                font: NSFont.monospacedSystemFont(ofSize: fontSize, weight: .regular),
+                wrapLines: false
+            ),
+            peripherals: .init(showMinimap: false, showFoldingRibbon: false)
+        )
+    }
 
-    private func updateLineCount(_ text: String) {
-        lineCount = max(text.components(separatedBy: "\n").count, 1)
+    private var indicatorAlignment: Alignment {
+        indicatorPosition == .topRight ? .topTrailing : .bottomTrailing
     }
 }
 
-// MARK: - Preview
+// MARK: - Previews
 
-#Preview("Code Editor with lines numbers") {
-    @Previewable @State var code = """
-    func greet(name: String) -> String {
-        return "Hello, \\(name)!"
+#Preview("Do Panel") {
+    let panel = CodePanel(type: .doPanel, title: "Do's")
+    panel.code = """
+    // Use descriptive variable names
+    let userName = "Alice"
+    let isLoggedIn = true
+
+    // Handle errors gracefully
+    do {
+        try processData()
+    } catch {
+        logger.error(error)
     }
-
-    let message = greet(name: "World")
-    print(message)
     """
 
-    CodeEditorView(
-        code: $code,
-        language: .swift,
-        fontSize: 14,
-        showLineNumbers: true
-    )
-    .frame(width: 400, height: 200)
+    return CodeEditorView(panel: panel)
+        .frame(width: 400, height: 300)
+        .padding()
+        .background(Color(white: 0.1))
 }
 
-#Preview("Code Editor without lines numbers") {
-    @Previewable @State var code = """
-    func greet(name: String) -> String {
-        return "Hello, \\(name)!"
-    }
+#Preview("Don't Panel") {
+    let panel = CodePanel(type: .dontPanel, title: "Don'ts")
+    panel.code = """
+    // Avoid single-letter variables
+    let x = "Bob"
+    let y = false
 
-    let message = greet(name: "World")
-    print(message)
+    // Don't ignore errors
+    try? processData()
     """
 
-    CodeEditorView(
-        code: $code,
-        language: .swift,
-        fontSize: 14,
-        showLineNumbers: false
-    )
-    .frame(width: 400, height: 200)
+    return CodeEditorView(panel: panel)
+        .frame(width: 400, height: 300)
+        .padding()
+        .background(Color(white: 0.1))
+}
+
+#Preview("Panel - No Title Bar") {
+    let panel = CodePanel(type: .doPanel, title: "Do's")
+    panel.code = "let greeting = \"Hello, World!\""
+
+    return CodeEditorView(panel: panel)
+        .frame(width: 400, height: 150)
+        .padding()
+        .background(Color(white: 0.1))
 }

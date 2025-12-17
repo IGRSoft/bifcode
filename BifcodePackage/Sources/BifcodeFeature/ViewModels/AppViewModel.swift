@@ -1,5 +1,5 @@
+import CodeEditLanguages
 import Foundation
-import HighlightSwift
 import SwiftUI
 
 /// Main application view model
@@ -10,8 +10,6 @@ public final class AppViewModel {
 
     public let doPanel: CodePanel
     public let dontPanel: CodePanel
-
-    private let highlighter = Highlight()
 
     // MARK: - Settings (via @AppStorage)
 
@@ -44,21 +42,12 @@ public final class AppViewModel {
         dontPanel = CodePanel(type: .dontPanel, title: dontTitle)
     }
 
-    // MARK: - Language Detection
+    // MARK: - Language Management
 
-    public func detectLanguage(for panel: CodePanel) async {
-        guard !panel.code.isEmpty else {
-            panel.language = nil
-            return
-        }
-
-        do {
-            let result = try await highlighter.request(panel.code)
-            // Convert language string to HighlightLanguage enum
-            panel.language = HighlightLanguage(rawValue: result.language)
-        } catch {
-            panel.language = nil
-        }
+    /// Updates the language for both panels
+    public func setLanguage(_ language: CodeLanguage) {
+        doPanel.language = language
+        dontPanel.language = language
     }
 
     // MARK: - Export
