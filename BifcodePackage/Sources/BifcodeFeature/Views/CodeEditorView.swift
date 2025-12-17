@@ -156,7 +156,7 @@ public struct CodeEditorView: View {
     return CodeEditorView(panel: panel)
         .frame(width: 400, height: 300)
         .padding()
-        .background(Color(white: 0.1))
+        .background(Color.contentBackground)
 }
 
 #Preview("Don't Panel") {
@@ -173,7 +173,7 @@ public struct CodeEditorView: View {
     return CodeEditorView(panel: panel)
         .frame(width: 400, height: 300)
         .padding()
-        .background(Color(white: 0.1))
+        .background(Color.contentBackground)
 }
 
 #Preview("Panel - No Title Bar") {
@@ -183,5 +183,5 @@ public struct CodeEditorView: View {
     return CodeEditorView(panel: panel)
         .frame(width: 400, height: 150)
         .padding()
-        .background(Color(white: 0.1))
+        .background(Color.contentBackground)
 }
