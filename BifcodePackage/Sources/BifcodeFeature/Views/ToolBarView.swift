@@ -1,7 +1,7 @@
 import HighlightSwift
 import SwiftUI
 
-/// Toolbar view with language picker, layout toggle, settings, and export button
+/// Toolbar view with all settings inline
 public struct ToolBarView: View {
     // MARK: - App Storage
 
@@ -12,10 +12,6 @@ public struct ToolBarView: View {
     @AppStorage("fontSize") private var fontSize: Double = 14
     @AppStorage("showWatermark") private var showWatermark: Bool = true
     @AppStorage("watermarkText") private var watermarkText: String = "bifcode"
-
-    // MARK: - State
-
-    @State private var showingSettings = false
 
     // MARK: - Bindings
 
@@ -32,31 +28,51 @@ public struct ToolBarView: View {
     // MARK: - Body
 
     public var body: some View {
-        HStack {
+        HStack(spacing: 16) {
+            // Language
             languagePicker
 
-            Spacer()
+            Divider().frame(height: 20)
 
+            // Layout
             layoutToggle
 
+            Divider().frame(height: 20)
+
+            // Indicator Style
+            indicatorStylePicker
+
+            // Indicator Position
+            indicatorPositionPicker
+
+            // Indicator Size
+            indicatorSizeControl
+
+            Divider().frame(height: 20)
+
+            // Font Size
+            fontSizeControl
+
+            Divider().frame(height: 20)
+
+            // Watermark
+            watermarkToggle
+
             Spacer()
 
-            settingsButton
-
+            // Export
             exportButton
         }
-        .padding()
+        .padding(.horizontal)
+        .padding(.vertical, 8)
         .background(Color(white: 0.15))
-        .popover(isPresented: $showingSettings, arrowEdge: .bottom) {
-            settingsPanel
-        }
     }
 
     // MARK: - Language Picker
 
     private var languagePicker: some View {
-        HStack(spacing: 8) {
-            Text("Language")
+        HStack(spacing: 4) {
+            Text("Lang")
                 .font(.caption)
                 .foregroundStyle(.secondary)
 
@@ -67,7 +83,7 @@ public struct ToolBarView: View {
                     Text(lang.rawValue.capitalized).tag(lang as HighlightLanguage?)
                 }
             }
-            .frame(width: 120)
+            .frame(width: 100)
         }
     }
 
@@ -88,73 +104,96 @@ public struct ToolBarView: View {
             Image(systemName: "rectangle.split.1x2").tag(WindowLayout.vertical.rawValue)
         }
         .pickerStyle(.segmented)
-        .frame(width: 80)
+        .frame(width: 60)
     }
 
-    // MARK: - Settings Button
+    // MARK: - Indicator Style
 
-    private var settingsButton: some View {
-        Button {
-            showingSettings.toggle()
-        } label: {
-            Image(systemName: "gearshape")
+    private var indicatorStylePicker: some View {
+        HStack(spacing: 4) {
+            Text("Style")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+
+            Picker("", selection: Binding(
+                get: { IndicatorStyle(rawValue: indicatorStyle) ?? .iconAndText },
+                set: { indicatorStyle = $0.rawValue }
+            )) {
+                ForEach(IndicatorStyle.allCases, id: \.self) { style in
+                    Text(style.label).tag(style)
+                }
+            }
+            .frame(width: 100)
         }
-        .buttonStyle(.borderless)
-        .padding(.trailing, 8)
     }
 
-    // MARK: - Settings Panel
+    // MARK: - Indicator Position
 
-    private var settingsPanel: some View {
-        Form {
-            Section("Indicator") {
-                Picker("Style", selection: Binding(
-                    get: { IndicatorStyle(rawValue: indicatorStyle) ?? .iconAndText },
-                    set: { indicatorStyle = $0.rawValue }
-                )) {
-                    ForEach(IndicatorStyle.allCases, id: \.self) { style in
-                        Text(style.label).tag(style)
-                    }
-                }
+    private var indicatorPositionPicker: some View {
+        HStack(spacing: 4) {
+            Text("Pos")
+                .font(.caption)
+                .foregroundStyle(.secondary)
 
-                Picker("Position", selection: Binding(
-                    get: { IndicatorPosition(rawValue: indicatorPosition) ?? .topRight },
-                    set: { indicatorPosition = $0.rawValue }
-                )) {
-                    ForEach(IndicatorPosition.allCases, id: \.self) { position in
-                        Text(position.label).tag(position)
-                    }
-                }
-
-                HStack {
-                    Text("Size")
-                    Slider(value: $indicatorSize, in: 32 ... 80, step: 4)
-                    Text("\(Int(indicatorSize))px")
-                        .monospacedDigit()
-                        .frame(width: 40)
+            Picker("", selection: Binding(
+                get: { IndicatorPosition(rawValue: indicatorPosition) ?? .topRight },
+                set: { indicatorPosition = $0.rawValue }
+            )) {
+                ForEach(IndicatorPosition.allCases, id: \.self) { position in
+                    Text(position.label).tag(position)
                 }
             }
-
-            Section("Editor") {
-                HStack {
-                    Text("Font Size")
-                    Slider(value: $fontSize, in: 10 ... 24, step: 1)
-                    Text("\(Int(fontSize))pt")
-                        .monospacedDigit()
-                        .frame(width: 40)
-                }
-            }
-
-            Section("Export") {
-                Toggle("Show Watermark", isOn: $showWatermark)
-
-                if showWatermark {
-                    TextField("Watermark Text", text: $watermarkText)
-                }
-            }
+            .frame(width: 100)
         }
-        .formStyle(.grouped)
-        .frame(width: 320, height: 340)
+    }
+
+    // MARK: - Indicator Size
+
+    private var indicatorSizeControl: some View {
+        HStack(spacing: 4) {
+            Text("Size")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+
+            Slider(value: $indicatorSize, in: 32 ... 80, step: 4)
+                .frame(width: 60)
+
+            Text("\(Int(indicatorSize))")
+                .font(.caption)
+                .monospacedDigit()
+                .frame(width: 24)
+        }
+    }
+
+    // MARK: - Font Size
+
+    private var fontSizeControl: some View {
+        HStack(spacing: 4) {
+            Text("Font")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+
+            Slider(value: $fontSize, in: 10 ... 24, step: 1)
+                .frame(width: 60)
+
+            Text("\(Int(fontSize))")
+                .font(.caption)
+                .monospacedDigit()
+                .frame(width: 24)
+        }
+    }
+
+    // MARK: - Watermark Toggle
+
+    private var watermarkToggle: some View {
+        HStack(spacing: 4) {
+            Toggle("", isOn: $showWatermark)
+                .toggleStyle(.checkbox)
+
+            Text("Watermark")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
     }
 
     // MARK: - Export Button
