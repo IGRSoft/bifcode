@@ -1,0 +1,6 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+
+  <!-- Divider line - almost white, longer -->
+  <line x1="512" y1="80" x2="512" y2="944" stroke="#e8e8f0" stroke-width="8.8" stroke-dasharray="30.8,22"/>
+  
+</svg>

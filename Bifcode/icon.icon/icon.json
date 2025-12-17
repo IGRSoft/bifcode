@@ -1,0 +1,32 @@
+{
+  "fill" : {
+    "automatic-gradient" : "display-p3:0.00000,0.00000,0.00000,1.00000"
+  },
+  "groups" : [
+    {
+      "layers" : [
+        {
+          "image-name" : "brackets.svg",
+          "name" : "brackets"
+        },
+        {
+          "image-name" : "divider.svg",
+          "name" : "divider"
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "squares" : [
+      "macOS"
+    ]
+  }
+}
