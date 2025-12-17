@@ -8,6 +8,6 @@ struct BifcodeApp: App {
             ContentView()
         }
         .windowStyle(.hiddenTitleBar)
-        .defaultSize(width: 1200, height: 700)
+        .defaultSize(width: 800, height: 600)
     }
 }

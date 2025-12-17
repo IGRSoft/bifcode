@@ -12,6 +12,9 @@ public extension Color {
     // MARK: - Editor Colors
 
     /// Code editor background
+    static let editorCloseButton = Color(red: 0.9, green: 0.3, blue: 0.3)
+    
+    /// Code editor background
     static let editorBackground = Color(red: 0.12, green: 0.12, blue: 0.14)
 
     /// Line number text color
@@ -36,9 +39,4 @@ public extension Color {
 
     /// Window border color
     static let windowBorder = Color(white: 0.25)
-
-    // MARK: - Watermark
-
-    /// Watermark text color
-    static let watermark = Color(white: 0.5)
 }

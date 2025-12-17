@@ -8,34 +8,56 @@ import SwiftUI
 public final class AppViewModel {
     // MARK: - Properties
 
-    public let settings: AppSettings
     public let doPanel: CodePanel
     public let dontPanel: CodePanel
 
     private let highlighter = Highlight()
 
+    // MARK: - Settings (via @AppStorage)
+
+    @ObservationIgnored
+    @AppStorage("saveLocation") private var saveLocationPath: String = ""
+
+    @ObservationIgnored
+    @AppStorage("doTitle") private var doTitleSetting: String = "Do's"
+
+    @ObservationIgnored
+    @AppStorage("dontTitle") private var dontTitleSetting: String = "Don'ts"
+
+    /// Computed URL for save location, defaults to Desktop
+    public var saveLocation: URL {
+        if saveLocationPath.isEmpty {
+            return FileManager.default.urls(for: .desktopDirectory, in: .userDomainMask).first!
+        }
+        return URL(fileURLWithPath: saveLocationPath)
+    }
+
     // MARK: - Initialization
 
     public init() {
-        settings = AppSettings()
-        doPanel = CodePanel(type: .doPanel, title: settings.doTitle)
-        dontPanel = CodePanel(type: .dontPanel, title: settings.dontTitle)
+        // Read titles from UserDefaults directly for initialization
+        let defaults = UserDefaults.standard
+        let doTitle = defaults.string(forKey: "doTitle") ?? "Do's"
+        let dontTitle = defaults.string(forKey: "dontTitle") ?? "Don'ts"
+
+        doPanel = CodePanel(type: .doPanel, title: doTitle)
+        dontPanel = CodePanel(type: .dontPanel, title: dontTitle)
     }
 
     // MARK: - Language Detection
 
     public func detectLanguage(for panel: CodePanel) async {
         guard !panel.code.isEmpty else {
-            panel.detectedLanguage = nil
+            panel.language = nil
             return
         }
 
         do {
             let result = try await highlighter.request(panel.code)
             // Convert language string to HighlightLanguage enum
-            panel.detectedLanguage = HighlightLanguage(rawValue: result.language)
+            panel.language = HighlightLanguage(rawValue: result.language)
         } catch {
-            panel.detectedLanguage = nil
+            panel.language = nil
         }
     }
 
@@ -48,7 +70,7 @@ public final class AppViewModel {
 
     public func saveImage(_ image: NSImage) async throws {
         let filename = "bifcode-\(Date().timeIntervalSince1970).png"
-        let url = settings.saveLocation.appendingPathComponent(filename)
+        let url = saveLocation.appendingPathComponent(filename)
 
         guard let tiffData = image.tiffRepresentation,
               let bitmap = NSBitmapImageRep(data: tiffData),

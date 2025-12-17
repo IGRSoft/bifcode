@@ -42,7 +42,7 @@ public struct CodeEditorView: View {
     // MARK: - Line Numbers
 
     private var lineNumbersView: some View {
-        CodeText((1...max(lineCount, 1)).map(String.init).joined(separator: "\n"))
+        CodeText((1 ... max(lineCount, 1)).map(String.init).joined(separator: "\n"))
             .codeTextColors(.theme(.atomOne))
             .font(.system(size: fontSize, design: .monospaced))
             .padding(8)

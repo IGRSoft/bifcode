@@ -10,8 +10,6 @@ public struct ToolBarView: View {
     @AppStorage("indicatorPosition") private var indicatorPosition: String = IndicatorPosition.topRight.rawValue
     @AppStorage("indicatorSize") private var indicatorSize: Double = 48
     @AppStorage("fontSize") private var fontSize: Double = 14
-    @AppStorage("showWatermark") private var showWatermark: Bool = true
-    @AppStorage("watermarkText") private var watermarkText: String = "bifcode"
 
     // MARK: - Bindings
 
@@ -33,7 +31,7 @@ public struct ToolBarView: View {
                 Text("Code Style")
                     .font(.caption)
                     .foregroundStyle(.secondary)
-                
+
                 HStack(spacing: 8) {
                     // Language
                     languagePicker
@@ -45,7 +43,7 @@ public struct ToolBarView: View {
                     layoutToggle
                 }
                 .layoutPriority(3)
-                
+
                 // Font Size
                 fontSizeControl
                     .layoutPriority(2)
@@ -54,11 +52,10 @@ public struct ToolBarView: View {
             Divider().frame(height: 48)
 
             VStack(spacing: 16) {
-                
                 Text("Indicator Style")
                     .font(.caption)
                     .foregroundStyle(.secondary)
-                
+
                 HStack(spacing: 8) {
                     // Indicator Style
                     indicatorStylePicker
@@ -74,9 +71,6 @@ public struct ToolBarView: View {
             Divider().frame(height: 20)
 
             Spacer(minLength: 0)
-            
-            // Watermark
-            watermarkToggle
 
             // Export
             exportButton
@@ -173,22 +167,6 @@ public struct ToolBarView: View {
                 .font(.body)
                 .monospacedDigit()
                 .frame(width: 24, alignment: .trailing)
-        }
-    }
-
-    // MARK: - Watermark Toggle
-
-    private var watermarkToggle: some View {
-        VStack(spacing: 16) {
-            Text("Watermark")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .frame(width: 100)
-            Toggle("", isOn: $showWatermark)
-                .toggleStyle(.checkbox)
-                .frame(width: 20)
-            TextField("Watermark Text", text: $watermarkText)
-                .frame(width: 100).disabled(!showWatermark)
         }
     }
 
