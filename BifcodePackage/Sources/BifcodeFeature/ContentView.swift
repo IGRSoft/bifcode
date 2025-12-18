@@ -13,7 +13,13 @@ import SwiftUI
 /// Main content view with Do/Don't code panels
 public struct ContentView: View {
     @State private var viewModel = AppViewModel()
-    @State private var selectedLanguage: CodeLanguage = .swift
+
+    // Language is stored via @AppStorage in ToolBarView, we read it here to initialize panels
+    @AppStorage("selectedLanguage") private var selectedLanguageRaw: String = "swift"
+
+    private var selectedLanguage: CodeLanguage {
+        CodeLanguage.allLanguages.first { $0.id.rawValue == selectedLanguageRaw } ?? .swift
+    }
 
     // MARK: - Settings (via @AppStorage)
 
@@ -53,10 +59,10 @@ public struct ContentView: View {
     public var body: some View {
         VStack(spacing: 0) {
             ToolBarView(
-                selectedLanguage: $selectedLanguage,
                 doTitleSetting: $doTitleSetting,
                 dontTitleSetting: $dontTitleSetting,
-                onExport: { Task(operation: exportImage) }
+                onExport: { Task(operation: exportImage) },
+                onLanguageChange: { viewModel.setLanguage($0) }
             )
 
             panelsView
@@ -64,11 +70,14 @@ public struct ContentView: View {
         }
         .background(Color.contentBackground)
         .frame(minHeight: 400)
-        .onChange(of: selectedLanguage) { _, newValue in
-            viewModel.setLanguage(newValue)
-        }
         .onAppear {
+            // Initialize with stored language and titles on appear
+            viewModel.setLanguage(selectedLanguage)
             viewModel.update(doTitle: doTitleSetting, dontTitle: dontTitleSetting)
+        }
+        .onChange(of: selectedLanguageRaw) { _, _ in
+            // Update panels when language changes via AppStorage
+            viewModel.setLanguage(selectedLanguage)
         }
         .onChange(of: doTitleSetting) { _, newValue in
             viewModel.update(doTitle: newValue, dontTitle: dontTitleSetting)

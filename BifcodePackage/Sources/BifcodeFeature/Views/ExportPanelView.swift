@@ -10,10 +10,10 @@ import CodeEditLanguages
 import CodeEditSourceEditor
 import SwiftUI
 
-/// Static code panel view optimized for ImageRenderer export
-/// Uses Text instead of SourceEditor for pure SwiftUI rendering
+/// Static code panel view for ImageRenderer export
+/// Uses SourceEditor with same settings as CodeEditorView for consistent rendering
 struct ExportPanelView: View {
-    let panel: CodePanel
+    @Bindable var panel: CodePanel
     let indicatorPosition: IndicatorPosition
     let indicatorStyle: IndicatorStyle
     let indicatorSize: CGFloat
@@ -22,6 +22,9 @@ struct ExportPanelView: View {
     let showTitle: Bool
     let fontSize: CGFloat
     let theme: EditorTheme
+
+    /// Editor state for the source editor
+    @State private var editorState = SourceEditorState()
 
     // MARK: - Body
 
@@ -66,9 +69,8 @@ struct ExportPanelView: View {
 
     private var editorArea: some View {
         ZStack(alignment: indicatorAlignment) {
-            // Static code display
-            codeContent
-                .padding(10)
+            // Code editor using CodeEditSourceEditor with same settings
+            sourceEditor
 
             // Indicator badge
             IndicatorBadgeView(
@@ -82,34 +84,31 @@ struct ExportPanelView: View {
         }
     }
 
-    private var codeContent: some View {
-        HStack(alignment: .top, spacing: 0) {
-            // Line numbers
-            lineNumbers
-                .padding(.trailing, 8)
-
-            // Code text with syntax highlighting colors from theme
-            Text(panel.code)
-                .font(.system(size: fontSize, design: .monospaced))
-                .foregroundStyle(Color(nsColor: theme.text.color))
-                .textSelection(.enabled)
-                .fixedSize(horizontal: false, vertical: true)
-
-            Spacer(minLength: 0)
-        }
+    /// Unique identifier for forcing editor recreation when language or theme changes
+    private var editorIdentifier: String {
+        "\(panel.id)-\(panel.language.id)-export"
     }
 
-    private var lineNumbers: some View {
-        let lines = panel.code.components(separatedBy: "\n")
-        let maxDigits = String(lines.count).count
+    private var sourceEditor: some View {
+        SourceEditor(
+            $panel.code,
+            language: panel.language,
+            configuration: editorConfiguration,
+            state: $editorState
+        )
+        .id(editorIdentifier)
+        .disabled(true) // Make non-interactive for export
+    }
 
-        return VStack(alignment: .trailing, spacing: 0) {
-            ForEach(1 ... max(lines.count, 1), id: \.self) { number in
-                Text(String(format: "%\(maxDigits)d", number))
-                    .font(.system(size: fontSize, design: .monospaced))
-                    .foregroundStyle(Color(nsColor: theme.invisibles.color))
-            }
-        }
+    private var editorConfiguration: SourceEditorConfiguration {
+        SourceEditorConfiguration(
+            appearance: .init(
+                theme: theme,
+                font: NSFont.monospacedSystemFont(ofSize: fontSize, weight: .regular),
+                wrapLines: false
+            ),
+            peripherals: .init(showMinimap: false, showFoldingRibbon: false)
+        )
     }
 
     private var indicatorAlignment: Alignment {
@@ -138,7 +137,7 @@ struct ExportPanelView: View {
         fontSize: 14,
         theme: .atomOneDark
     )
-    .frame(width: 400)
+    .frame(width: 400, height: 200)
     .padding()
     .background(Color.contentBackground)
 }
@@ -162,7 +161,7 @@ struct ExportPanelView: View {
         fontSize: 14,
         theme: .atomOneDark
     )
-    .frame(width: 400)
+    .frame(width: 400, height: 200)
     .padding()
     .background(Color.contentBackground)
 }

@@ -25,31 +25,38 @@ public struct ToolBarView: View {
     @AppStorage("selectedTheme") private var selectedThemeRaw: String = EditorThemeOption.atomOneDark.rawValue
 
     @AppStorage("saveLocation") private var saveLocationPath: String = ""
+    @AppStorage("selectedLanguage") private var selectedLanguageRaw: String = "swift"
 
     /// Current indicator style for disable logic
     private var currentIndicatorStyle: IndicatorStyle {
         IndicatorStyle(rawValue: indicatorStyle) ?? .iconAndText
     }
-    
+
+    /// Selected language derived from stored raw value
+    private var selectedLanguage: CodeLanguage {
+        CodeLanguage.allLanguages.first { $0.id.rawValue == selectedLanguageRaw } ?? .swift
+    }
+
     @Binding private var doTitleSetting: String
     @Binding private var dontTitleSetting: String
 
-    // MARK: - Bindings
+    // MARK: - Callbacks
 
-    @Binding var selectedLanguage: CodeLanguage
     var onExport: () -> Void
+    var onLanguageChange: (CodeLanguage) -> Void
 
     // MARK: - Initialization
 
-    public init(selectedLanguage: Binding<CodeLanguage>,
-                doTitleSetting: Binding<String>,
-                dontTitleSetting: Binding<String>,
-                onExport: @escaping () -> Void)
-    {
-        _selectedLanguage = selectedLanguage
+    public init(
+        doTitleSetting: Binding<String>,
+        dontTitleSetting: Binding<String>,
+        onExport: @escaping () -> Void,
+        onLanguageChange: @escaping (CodeLanguage) -> Void
+    ) {
         _doTitleSetting = doTitleSetting
         _dontTitleSetting = dontTitleSetting
         self.onExport = onExport
+        self.onLanguageChange = onLanguageChange
     }
 
     // MARK: - Body
@@ -165,13 +172,16 @@ public struct ToolBarView: View {
 
     private var languagePicker: some View {
         HStack(spacing: 4) {
-            Picker("", selection: $selectedLanguage) {
+            Picker("", selection: $selectedLanguageRaw) {
                 ForEach(commonLanguages, id: \.id) { lang in
-                    Text(lang.id.rawValue.capitalized).tag(lang)
+                    Text(lang.id.rawValue.capitalized).tag(lang.id.rawValue)
                 }
             }
             .pickerStyle(.menu)
             .fixedSize()
+            .onChange(of: selectedLanguageRaw) { _, _ in
+                onLanguageChange(selectedLanguage)
+            }
         }
     }
 
@@ -377,9 +387,9 @@ public struct ToolBarView: View {
 
 #Preview("ToolBarView") {
     ToolBarView(
-        selectedLanguage: .constant(.swift),
         doTitleSetting: .constant("1"),
         dontTitleSetting: .constant("2"),
-        onExport: {}
+        onExport: {},
+        onLanguageChange: { _ in }
     )
 }
