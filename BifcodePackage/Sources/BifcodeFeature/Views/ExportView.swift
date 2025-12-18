@@ -18,6 +18,10 @@ struct ExportView: View {
     let indicatorPosition: IndicatorPosition
     let indicatorStyle: IndicatorStyle
     let indicatorSize: CGFloat
+    let doIndicatorIcon: String
+    let dontIndicatorIcon: String
+    let doIndicatorLabel: String
+    let dontIndicatorLabel: String
     let showTitle: Bool
     let fontSize: CGFloat
     let theme: EditorTheme
@@ -45,6 +49,8 @@ struct ExportView: View {
             indicatorPosition: indicatorPosition,
             indicatorStyle: indicatorStyle,
             indicatorSize: indicatorSize,
+            indicatorIconName: dontIndicatorIcon,
+            indicatorLabel: dontIndicatorLabel,
             showTitle: showTitle,
             fontSize: fontSize,
             theme: theme
@@ -56,6 +62,8 @@ struct ExportView: View {
             indicatorPosition: indicatorPosition,
             indicatorStyle: indicatorStyle,
             indicatorSize: indicatorSize,
+            indicatorIconName: doIndicatorIcon,
+            indicatorLabel: doIndicatorLabel,
             showTitle: showTitle,
             fontSize: fontSize,
             theme: theme
@@ -86,6 +94,10 @@ struct ExportView: View {
         indicatorPosition: .topRight,
         indicatorStyle: .iconAndText,
         indicatorSize: 48,
+        doIndicatorIcon: "checkmark",
+        dontIndicatorIcon: "xmark",
+        doIndicatorLabel: "Do's",
+        dontIndicatorLabel: "Don'ts",
         showTitle: true,
         fontSize: 14,
         theme: .atomOneDark
@@ -113,6 +125,10 @@ struct ExportView: View {
         indicatorPosition: .topRight,
         indicatorStyle: .iconAndText,
         indicatorSize: 48,
+        doIndicatorIcon: "checkmark",
+        dontIndicatorIcon: "xmark",
+        doIndicatorLabel: "Do's",
+        dontIndicatorLabel: "Don'ts",
         showTitle: true,
         fontSize: 14,
         theme: .atomOneDark
