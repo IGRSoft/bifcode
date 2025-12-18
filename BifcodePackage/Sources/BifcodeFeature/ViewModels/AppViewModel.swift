@@ -1,3 +1,10 @@
+//
+//  AppViewModel.swift
+//
+//  Created on 17.12.2025.
+//  Copyright © 2025 IGR Soft. All rights reserved.
+//
+
 import CodeEditLanguages
 import Foundation
 import SwiftUI
@@ -19,7 +26,7 @@ public final class AppViewModel {
     /// Computed URL for save location, defaults to Desktop
     public var saveLocation: URL {
         if saveLocationPath.isEmpty {
-            return FileManager.default.urls(for: .picturesDirectory, in: .userDomainMask).first!
+            return FileManager.default.urls(for: .desktopDirectory, in: .userDomainMask).first!
         }
         return URL(fileURLWithPath: saveLocationPath)
     }

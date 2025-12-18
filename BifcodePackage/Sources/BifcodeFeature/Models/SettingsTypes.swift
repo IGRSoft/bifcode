@@ -1,3 +1,10 @@
+//
+//  SettingsTypes.swift
+//
+//  Created on 17.12.2025.
+//  Copyright © 2025 IGR Soft. All rights reserved.
+//
+
 import AppKit
 import CodeEditSourceEditor
 import Foundation
@@ -83,9 +90,9 @@ public enum EditorThemeOption: String, CaseIterable, Sendable {
 
 // MARK: - EditorTheme Presets
 
-public extension EditorTheme {
+extension EditorTheme {
     /// Atom One Dark theme
-    nonisolated(unsafe) static let atomOneDark = EditorTheme(
+    public nonisolated(unsafe) static let atomOneDark = EditorTheme(
         text: .init(color: NSColor(red: 0.67, green: 0.69, blue: 0.75, alpha: 1.0)),
         insertionPoint: .white,
         invisibles: .init(color: NSColor(white: 0.3, alpha: 1.0)),
@@ -105,7 +112,7 @@ public extension EditorTheme {
     )
 
     /// Dracula theme
-    nonisolated(unsafe) static let dracula = EditorTheme(
+    public nonisolated(unsafe) static let dracula = EditorTheme(
         text: .init(color: NSColor(red: 0.97, green: 0.97, blue: 0.95, alpha: 1.0)),
         insertionPoint: .white,
         invisibles: .init(color: NSColor(white: 0.3, alpha: 1.0)),
@@ -125,7 +132,7 @@ public extension EditorTheme {
     )
 
     /// GitHub Dark theme
-    nonisolated(unsafe) static let githubDark = EditorTheme(
+    public nonisolated(unsafe) static let githubDark = EditorTheme(
         text: .init(color: NSColor(red: 0.79, green: 0.82, blue: 0.87, alpha: 1.0)),
         insertionPoint: .white,
         invisibles: .init(color: NSColor(white: 0.3, alpha: 1.0)),
@@ -145,7 +152,7 @@ public extension EditorTheme {
     )
 
     /// Monokai theme
-    nonisolated(unsafe) static let monokai = EditorTheme(
+    public nonisolated(unsafe) static let monokai = EditorTheme(
         text: .init(color: NSColor(red: 0.97, green: 0.97, blue: 0.95, alpha: 1.0)),
         insertionPoint: .white,
         invisibles: .init(color: NSColor(white: 0.3, alpha: 1.0)),
@@ -165,7 +172,7 @@ public extension EditorTheme {
     )
 
     /// Nord theme
-    nonisolated(unsafe) static let nord = EditorTheme(
+    public nonisolated(unsafe) static let nord = EditorTheme(
         text: .init(color: NSColor(red: 0.85, green: 0.87, blue: 0.91, alpha: 1.0)),
         insertionPoint: .white,
         invisibles: .init(color: NSColor(white: 0.3, alpha: 1.0)),
@@ -185,7 +192,7 @@ public extension EditorTheme {
     )
 
     /// Solarized Dark theme
-    nonisolated(unsafe) static let solarizedDark = EditorTheme(
+    public nonisolated(unsafe) static let solarizedDark = EditorTheme(
         text: .init(color: NSColor(red: 0.51, green: 0.58, blue: 0.59, alpha: 1.0)),
         insertionPoint: .white,
         invisibles: .init(color: NSColor(white: 0.3, alpha: 1.0)),
@@ -205,7 +212,7 @@ public extension EditorTheme {
     )
 
     /// Xcode Default (Dark) theme
-    nonisolated(unsafe) static let xcodeDefault = EditorTheme(
+    public nonisolated(unsafe) static let xcodeDefault = EditorTheme(
         text: .init(color: NSColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)),
         insertionPoint: .white,
         invisibles: .init(color: NSColor(white: 0.3, alpha: 1.0)),

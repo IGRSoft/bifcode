@@ -1,3 +1,10 @@
+//
+//  ContentView.swift
+//
+//  Created on 17.12.2025.
+//  Copyright © 2025 IGR Soft. All rights reserved.
+//
+
 import AppKit
 import CodeEditLanguages
 import CodeEditSourceEditor
@@ -9,6 +16,7 @@ public struct ContentView: View {
     @State private var selectedLanguage: CodeLanguage = .swift
 
     // MARK: - Settings (via @AppStorage)
+
     @AppStorage("doTitle") private var doTitleSetting: String = "Do's"
     @AppStorage("dontTitle") private var dontTitleSetting: String = "Don'ts"
     
@@ -55,7 +63,7 @@ public struct ContentView: View {
         .onChange(of: selectedLanguage) { _, newValue in
             viewModel.setLanguage(newValue)
         }
-        .onAppear() {
+        .onAppear {
             viewModel.update(doTitle: doTitleSetting, dontTitle: dontTitleSetting)
         }
         .onChange(of: doTitleSetting) { _, newValue in
