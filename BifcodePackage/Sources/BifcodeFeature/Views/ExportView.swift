@@ -44,7 +44,7 @@ struct ExportView: View {
             }
         }
         .padding(24)
-        .background(Color.contentBackground)
+        .background(Color.clear)
     }
 
     @ViewBuilder

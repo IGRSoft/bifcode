@@ -56,11 +56,18 @@ public struct ContentView: View {
 
     public init() {}
 
+    /// Check if both code panels are empty (export should be disabled)
+    private var isCodeEmpty: Bool {
+        viewModel.doPanel.code.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
+            viewModel.dontPanel.code.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
     public var body: some View {
         VStack(spacing: 0) {
             ToolBarView(
                 doTitleSetting: $doTitleSetting,
                 dontTitleSetting: $dontTitleSetting,
+                isExportDisabled: isCodeEmpty,
                 onExport: { Task(operation: exportImage) },
                 onLanguageChange: { viewModel.setLanguage($0) }
             )
@@ -72,7 +79,7 @@ public struct ContentView: View {
         .frame(minHeight: 400)
         .onAppear {
             // Initialize with stored language and titles on appear
-            viewModel.setLanguage(selectedLanguage)
+            //viewModel.setLanguage(selectedLanguage)
             viewModel.update(doTitle: doTitleSetting, dontTitle: dontTitleSetting)
         }
         .onChange(of: selectedLanguageRaw) { _, _ in
@@ -194,12 +201,14 @@ public struct ContentView: View {
         let titleBarHeight: CGFloat = showTitle ? 38 : 0
         let editorPadding: CGFloat = 16
 
-        let doLineCount = doLines.count
-        let dontLineCount = dontLines.count
+        // Minimum 5 lines for proper rendering - prevents broken views with 1-4 lines
+        let minLineCount = 5
+        let doLineCount = max(doLines.count, minLineCount)
+        let dontLineCount = max(dontLines.count, minLineCount)
 
-        let panelWidth = codeWidth + gutterWidth + indicatorWidth + panelPadding
-        let doPanelHeight = titleBarHeight + (CGFloat(max(doLineCount, 1)) * lineHeight) + editorPadding
-        let dontPanelHeight = titleBarHeight + (CGFloat(max(dontLineCount, 1)) * lineHeight) + editorPadding
+        let panelWidth = max(codeWidth + gutterWidth + indicatorWidth + panelPadding, 250)
+        let doPanelHeight = titleBarHeight + (CGFloat(doLineCount) * lineHeight) + editorPadding
+        let dontPanelHeight = titleBarHeight + (CGFloat(dontLineCount) * lineHeight) + editorPadding
 
         let padding: CGFloat = 24
         let spacing: CGFloat = 24
