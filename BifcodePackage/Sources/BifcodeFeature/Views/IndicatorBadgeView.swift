@@ -1,3 +1,10 @@
+//
+//  IndicatorBadgeView.swift
+//
+//  Created on 17.12.2025.
+//  Copyright © 2025 IGR Soft. All rights reserved.
+//
+
 import SwiftUI
 
 /// Do/Don't indicator badge
