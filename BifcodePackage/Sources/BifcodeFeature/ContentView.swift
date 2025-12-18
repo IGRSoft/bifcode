@@ -118,8 +118,12 @@ public struct ContentView: View {
 
     // MARK: - Export View
 
-    /// Creates the export view with current settings
-    private var exportView: ExportView {
+    /// Creates the export view with current settings and dimensions
+    private func makeExportView(
+        panelWidth: CGFloat,
+        doPanelHeight: CGFloat,
+        dontPanelHeight: CGFloat
+    ) -> ExportView {
         ExportView(
             doPanel: viewModel.doPanel,
             dontPanel: viewModel.dontPanel,
@@ -133,7 +137,10 @@ public struct ContentView: View {
             dontIndicatorLabel: dontIndicatorLabel,
             showTitle: showTitle,
             fontSize: fontSize,
-            theme: selectedTheme.editorTheme
+            theme: selectedTheme.editorTheme,
+            panelWidth: panelWidth,
+            doPanelHeight: doPanelHeight,
+            dontPanelHeight: dontPanelHeight
         )
     }
 
@@ -141,12 +148,11 @@ public struct ContentView: View {
 
     @MainActor
     private func exportImage() async {
-        let renderer = ImageRenderer(content: exportView)
-        // Use 2x scale for Retina quality
-        renderer.scale = 2.0
-
-        guard let nsImage = renderer.nsImage else {
+        // Use NSHostingView + snapshot instead of ImageRenderer
+        // because ImageRenderer cannot render NSViewRepresentable views like SourceEditor
+        guard let nsImage = await renderExportViewToImage() else {
             // TODO: Show error alert
+            print("Export failed: Could not render view to image")
             return
         }
 
@@ -156,6 +162,165 @@ public struct ContentView: View {
             // TODO: Show error alert
             print("Export failed: \(error.localizedDescription)")
         }
+    }
+
+    /// Renders the export view to an NSImage using an offscreen window
+    /// This works with NSViewRepresentable views (like SourceEditor) unlike ImageRenderer
+    @MainActor
+    private func renderExportViewToImage() async -> NSImage? {
+        // Calculate size based on layout and content
+        let font = NSFont.monospacedSystemFont(ofSize: fontSize, weight: .regular)
+
+        // Find the longest line in both panels
+        let doLines = viewModel.doPanel.code.components(separatedBy: "\n")
+        let dontLines = viewModel.dontPanel.code.components(separatedBy: "\n")
+        let allLines = doLines + dontLines
+        let maxLineLength = allLines.map(\.count).max() ?? 1
+
+        // Calculate width based on character count using monospace font
+        let fontSymbolRect = font.boundingRect(forGlyph: font.glyph(withName: "W"))
+        let charWidth = fontSymbolRect.width
+        let charHeight = fontSymbolRect.height
+
+        let codeWidth = CGFloat(maxLineLength) * charWidth
+
+        // Add padding for: line numbers gutter (50), indicator badge, panel padding (24)
+        let gutterWidth: CGFloat = 50
+        let indicatorWidth: CGFloat = indicatorSize
+        let panelPadding: CGFloat = 24
+
+        // Calculate individual panel heights based on their line counts
+        let lineHeight: CGFloat = charHeight * 2
+        let titleBarHeight: CGFloat = showTitle ? 38 : 0
+        let editorPadding: CGFloat = 16
+
+        let doLineCount = doLines.count
+        let dontLineCount = dontLines.count
+
+        let panelWidth = codeWidth + gutterWidth + indicatorWidth + panelPadding
+        let doPanelHeight = titleBarHeight + (CGFloat(max(doLineCount, 1)) * lineHeight) + editorPadding
+        let dontPanelHeight = titleBarHeight + (CGFloat(max(dontLineCount, 1)) * lineHeight) + editorPadding
+
+        let padding: CGFloat = 24
+        let spacing: CGFloat = 24
+        // Extra padding for shadows
+        let shadowPadding: CGFloat = 20
+
+        let contentWidth: CGFloat
+        let contentHeight: CGFloat
+
+        if layout == .horizontal {
+            // For horizontal, use the taller panel height for container (panels align at top)
+            let maxPanelHeight = max(doPanelHeight, dontPanelHeight)
+            contentWidth = (panelWidth * 2) + spacing + (padding * 2)
+            contentHeight = maxPanelHeight + (padding * 2)
+        } else {
+            // For vertical, sum both heights
+            contentWidth = panelWidth + (padding * 2)
+            contentHeight = doPanelHeight + dontPanelHeight + spacing + (padding * 2)
+        }
+
+        // Add shadow padding to total size
+        let totalWidth = contentWidth + (shadowPadding * 2)
+        let totalHeight = contentHeight + (shadowPadding * 2)
+        let size = NSSize(width: totalWidth, height: totalHeight)
+
+        // Create export view with explicit frame and dimensions
+        let framedExportView = makeExportView(
+            panelWidth: panelWidth,
+            doPanelHeight: doPanelHeight,
+            dontPanelHeight: dontPanelHeight
+        )
+        .frame(width: contentWidth, height: contentHeight)
+            .padding(shadowPadding) // Add padding for shadow rendering
+
+        let hostingView = NSHostingView(rootView: framedExportView)
+        hostingView.wantsLayer = true
+
+        // Create an offscreen window to host the view
+        // This is required for NSViewRepresentable views to render properly
+        let offscreenWindow = NSWindow(
+            contentRect: NSRect(origin: .zero, size: size),
+            styleMask: [.borderless],
+            backing: .buffered,
+            defer: false
+        )
+        offscreenWindow.contentView = hostingView
+        offscreenWindow.isReleasedWhenClosed = false
+        offscreenWindow.backgroundColor = .clear
+
+        // Move window offscreen and make it visible for rendering
+        offscreenWindow.setFrameOrigin(NSPoint(x: -10_000, y: -10_000))
+        offscreenWindow.orderBack(nil)
+
+        // Force layout
+        hostingView.frame = NSRect(origin: .zero, size: size)
+        hostingView.layoutSubtreeIfNeeded()
+
+        // Wait for SourceEditor to fully render
+        // Use multiple short sleeps to allow RunLoop to process
+        for _ in 0 ..< 10 {
+            try? await Task.sleep(for: .milliseconds(50))
+            await Task.yield()
+        }
+
+        // Use bitmapImageRepForCachingDisplay for proper layer capture
+        guard let bitmapRep = hostingView.bitmapImageRepForCachingDisplay(in: hostingView.bounds) else {
+            offscreenWindow.orderOut(nil)
+            return nil
+        }
+
+        // Cache the display into the bitmap
+        hostingView.cacheDisplay(in: hostingView.bounds, to: bitmapRep)
+
+        // Clean up the offscreen window
+        offscreenWindow.orderOut(nil)
+
+        // Create final image at 2x scale for Retina
+        let scale: CGFloat = 2.0
+        let scaledSize = NSSize(width: size.width * scale, height: size.height * scale)
+
+        guard let scaledBitmapRep = NSBitmapImageRep(
+            bitmapDataPlanes: nil,
+            pixelsWide: Int(scaledSize.width),
+            pixelsHigh: Int(scaledSize.height),
+            bitsPerSample: 8,
+            samplesPerPixel: 4,
+            hasAlpha: true,
+            isPlanar: false,
+            colorSpaceName: .deviceRGB,
+            bytesPerRow: 0,
+            bitsPerPixel: 0
+        ) else {
+            let image = NSImage(size: size)
+            image.addRepresentation(bitmapRep)
+            return image
+        }
+
+        scaledBitmapRep.size = size
+
+        // Draw the captured content at 2x scale
+        NSGraphicsContext.saveGraphicsState()
+        if let context = NSGraphicsContext(bitmapImageRep: scaledBitmapRep) {
+            NSGraphicsContext.current = context
+            context.imageInterpolation = .high
+
+            let sourceImage = NSImage(size: size)
+            sourceImage.addRepresentation(bitmapRep)
+
+            sourceImage.draw(
+                in: NSRect(origin: .zero, size: size),
+                from: .zero,
+                operation: .copy,
+                fraction: 1.0
+            )
+        }
+        NSGraphicsContext.restoreGraphicsState()
+
+        let finalImage = NSImage(size: size)
+        finalImage.addRepresentation(scaledBitmapRep)
+
+        return finalImage
     }
 }
 

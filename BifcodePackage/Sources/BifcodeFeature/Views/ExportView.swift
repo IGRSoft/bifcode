@@ -26,10 +26,15 @@ struct ExportView: View {
     let fontSize: CGFloat
     let theme: EditorTheme
 
+    // Panel dimensions for export
+    let panelWidth: CGFloat
+    let doPanelHeight: CGFloat
+    let dontPanelHeight: CGFloat
+
     var body: some View {
         Group {
             if layout == .horizontal {
-                HStack(spacing: 24) {
+                HStack(alignment: .top, spacing: 24) {
                     panels
                 }
             } else {
@@ -55,6 +60,7 @@ struct ExportView: View {
             fontSize: fontSize,
             theme: theme
         )
+        .frame(width: panelWidth, height: dontPanelHeight)
         .shadow(color: .black.opacity(0.3), radius: 12, x: 0, y: 4)
 
         ExportPanelView(
@@ -68,6 +74,7 @@ struct ExportView: View {
             fontSize: fontSize,
             theme: theme
         )
+        .frame(width: panelWidth, height: doPanelHeight)
         .shadow(color: .black.opacity(0.3), radius: 12, x: 0, y: 4)
     }
 }
@@ -100,7 +107,10 @@ struct ExportView: View {
         dontIndicatorLabel: "Don'ts",
         showTitle: true,
         fontSize: 14,
-        theme: .atomOneDark
+        theme: .atomOneDark,
+        panelWidth: 350,
+        doPanelHeight: 120,
+        dontPanelHeight: 120
     )
     .frame(width: 800, height: 300)
 }
@@ -131,7 +141,10 @@ struct ExportView: View {
         dontIndicatorLabel: "Don'ts",
         showTitle: true,
         fontSize: 14,
-        theme: .atomOneDark
+        theme: .atomOneDark,
+        panelWidth: 400,
+        doPanelHeight: 120,
+        dontPanelHeight: 120
     )
     .frame(width: 500, height: 500)
 }
