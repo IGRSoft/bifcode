@@ -121,6 +121,45 @@ public struct CodeEditorView: View {
         }
     }
 
+    // MARK: - Code Limits
+
+    /// Maximum characters per line
+    private static let maxLineLength = 210
+
+    /// Maximum number of lines
+    private static let maxLineCount = 24
+
+    /// Applies line length and line count limits to the code
+    private func applyCodeLimits() {
+        var lines = panel.code.components(separatedBy: "\n")
+
+        // Limit number of lines
+        if lines.count > Self.maxLineCount {
+            lines = Array(lines.prefix(Self.maxLineCount))
+        }
+
+        // Limit line length
+        lines = lines.map { line in
+            if line.count > Self.maxLineLength {
+                return String(line.prefix(Self.maxLineLength))
+            }
+            return line
+        }
+
+        let limitedCode = lines.joined(separator: "\n")
+        if limitedCode != panel.code {
+            panel.code = limitedCode
+        }
+    }
+
+    /// Unique identifier for forcing editor recreation when language, theme, or font changes
+    private var editorIdentifier: String {
+        "\(panel.id)-\(panel.language.id)-\(selectedThemeRaw)-\(Int(fontSize))"
+    }
+
+    /// Tracks if initial appearance has occurred to force editor recreation
+    @State private var hasAppeared = false
+
     private var sourceEditor: some View {
         SourceEditor(
             $panel.code,
@@ -128,7 +167,17 @@ public struct CodeEditorView: View {
             configuration: editorConfiguration,
             state: $panel.editorState
         )
+        .id(hasAppeared ? editorIdentifier : "initial")
+        .onAppear {
+            // Force recreation after initial appearance to apply stored settings
+            if !hasAppeared {
+                DispatchQueue.main.async {
+                    hasAppeared = true
+                }
+            }
+        }
         .onChange(of: panel.code) { _, _ in
+            applyCodeLimits()
             onCodeChange()
         }
     }
