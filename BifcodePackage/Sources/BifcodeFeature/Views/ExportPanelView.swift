@@ -17,6 +17,8 @@ struct ExportPanelView: View {
     let indicatorPosition: IndicatorPosition
     let indicatorStyle: IndicatorStyle
     let indicatorSize: CGFloat
+    let indicatorIconName: String
+    let indicatorLabel: String
     let showTitle: Bool
     let fontSize: CGFloat
     let theme: EditorTheme
@@ -72,7 +74,9 @@ struct ExportPanelView: View {
             IndicatorBadgeView(
                 type: panel.type,
                 style: indicatorStyle,
-                size: indicatorSize
+                size: indicatorSize,
+                iconName: indicatorIconName,
+                label: indicatorLabel
             )
             .padding(12)
         }
@@ -128,6 +132,8 @@ struct ExportPanelView: View {
         indicatorPosition: .topRight,
         indicatorStyle: .iconAndText,
         indicatorSize: 48,
+        indicatorIconName: "checkmark",
+        indicatorLabel: "Do's",
         showTitle: true,
         fontSize: 14,
         theme: .atomOneDark
@@ -150,6 +156,8 @@ struct ExportPanelView: View {
         indicatorPosition: .topRight,
         indicatorStyle: .iconAndText,
         indicatorSize: 48,
+        indicatorIconName: "xmark",
+        indicatorLabel: "Don'ts",
         showTitle: true,
         fontSize: 14,
         theme: .atomOneDark

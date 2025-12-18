@@ -37,6 +37,35 @@ public enum IndicatorStyle: String, CaseIterable, Sendable {
     }
 }
 
+/// Curated SF Symbol options for indicators
+public enum IndicatorIcon: String, CaseIterable, Sendable {
+    // Positive indicators
+    case checkmark
+    case checkmarkCircle = "checkmark.circle"
+    case checkmarkSquare = "checkmark.square"
+    case thumbsUp = "hand.thumbsup"
+    case star = "star.fill"
+
+    // Negative indicators
+    case xmark
+    case xmarkCircle = "xmark.circle"
+    case xmarkSquare = "xmark.square"
+    case thumbsDown = "hand.thumbsdown"
+    case warning = "exclamationmark.triangle"
+
+    public var systemName: String { rawValue }
+
+    /// Icons suitable for "Do" indicators
+    public static var positiveIcons: [IndicatorIcon] {
+        [.checkmark, .checkmarkCircle, .checkmarkSquare, .thumbsUp, .star]
+    }
+
+    /// Icons suitable for "Don't" indicators
+    public static var negativeIcons: [IndicatorIcon] {
+        [.xmark, .xmarkCircle, .xmarkSquare, .thumbsDown, .warning]
+    }
+}
+
 /// Window layout options
 public enum WindowLayout: String, CaseIterable, Sendable {
     case horizontal

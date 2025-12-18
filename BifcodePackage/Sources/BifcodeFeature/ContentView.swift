@@ -19,7 +19,11 @@ public struct ContentView: View {
 
     @AppStorage("doTitle") private var doTitleSetting: String = "Do's"
     @AppStorage("dontTitle") private var dontTitleSetting: String = "Don'ts"
-    
+    @AppStorage("doIndicatorIcon") private var doIndicatorIcon: String = "checkmark"
+    @AppStorage("dontIndicatorIcon") private var dontIndicatorIcon: String = "xmark"
+    @AppStorage("doIndicatorLabel") private var doIndicatorLabel: String = "Do's"
+    @AppStorage("dontIndicatorLabel") private var dontIndicatorLabel: String = "Don'ts"
+
     @AppStorage("windowLayout") private var windowLayoutRaw: String = WindowLayout.horizontal.rawValue
     @AppStorage("indicatorPosition") private var indicatorPositionRaw: String = IndicatorPosition.topRight.rawValue
     @AppStorage("indicatorStyle") private var indicatorStyleRaw: String = IndicatorStyle.iconAndText.rawValue
@@ -114,6 +118,10 @@ public struct ContentView: View {
             indicatorPosition: indicatorPosition,
             indicatorStyle: indicatorStyle,
             indicatorSize: indicatorSize,
+            doIndicatorIcon: doIndicatorIcon,
+            dontIndicatorIcon: dontIndicatorIcon,
+            doIndicatorLabel: doIndicatorLabel,
+            dontIndicatorLabel: dontIndicatorLabel,
             showTitle: showTitle,
             fontSize: fontSize,
             theme: selectedTheme.editorTheme

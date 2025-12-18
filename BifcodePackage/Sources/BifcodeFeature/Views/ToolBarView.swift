@@ -17,10 +17,19 @@ public struct ToolBarView: View {
     @AppStorage("indicatorStyle") private var indicatorStyle: String = IndicatorStyle.iconAndText.rawValue
     @AppStorage("indicatorPosition") private var indicatorPosition: String = IndicatorPosition.topRight.rawValue
     @AppStorage("indicatorSize") private var indicatorSize: Double = 48
+    @AppStorage("doIndicatorIcon") private var doIndicatorIcon: String = "checkmark"
+    @AppStorage("dontIndicatorIcon") private var dontIndicatorIcon: String = "xmark"
+    @AppStorage("doIndicatorLabel") private var doIndicatorLabel: String = "Do's"
+    @AppStorage("dontIndicatorLabel") private var dontIndicatorLabel: String = "Don'ts"
     @AppStorage("fontSize") private var fontSize: Double = 14
     @AppStorage("selectedTheme") private var selectedThemeRaw: String = EditorThemeOption.atomOneDark.rawValue
 
     @AppStorage("saveLocation") private var saveLocationPath: String = ""
+
+    /// Current indicator style for disable logic
+    private var currentIndicatorStyle: IndicatorStyle {
+        IndicatorStyle(rawValue: indicatorStyle) ?? .iconAndText
+    }
     
     @Binding private var doTitleSetting: String
     @Binding private var dontTitleSetting: String
@@ -97,11 +106,12 @@ public struct ToolBarView: View {
                     .font(.caption)
                     .foregroundStyle(Color.secondaryText)
                 
-                HStack(spacing: 8) {
+                HStack(spacing: 16) {
                     doTitleField
                     dontTitleField
                 }
             }
+            .padding(.top, 11)
             .frame(maxWidth: .infinity)
         }
         .fixedSize()
@@ -114,19 +124,41 @@ public struct ToolBarView: View {
             Text("Indicator Style")
                 .font(.caption)
                 .foregroundStyle(Color.secondaryText)
-            
+
             HStack(spacing: 8) {
                 // Indicator Style
                 indicatorStylePicker
-                
+
                 // Indicator Position
                 indicatorPositionPicker
             }
             .fixedSize()
+            .layoutPriority(1)
             
             // Indicator Size
             indicatorSizeControl
+            
+            // Icon Pickers
+            HStack(spacing: 16) {
+                doIconPicker
+                    .frame(maxWidth: .infinity)
+                Spacer()
+                dontIconPicker
+                    .padding(.leading, 8)
+            }
+            .frame(maxWidth: .infinity)
+
+            // Indicator Labels
+            HStack(spacing: 8) {
+                doIndicatorLabelField
+                    .padding(.horizontal, 8)
+                    .frame(maxWidth: .infinity)
+                dontIndicatorLabelField
+                    .frame(maxWidth: .infinity)
+            }
+            .frame(maxWidth: .infinity)
         }
+        .fixedSize()
     }
     
     // MARK: - Language Picker
@@ -204,6 +236,56 @@ public struct ToolBarView: View {
         .fixedSize()
     }
 
+    // MARK: - Icon Pickers
+
+    private var doIconPicker: some View {
+        Picker("Do", selection: $doIndicatorIcon) {
+            ForEach(IndicatorIcon.positiveIcons, id: \.rawValue) { icon in
+                Image(systemName: icon.systemName)
+                    .tag(icon.systemName)
+            }
+        }
+        .pickerStyle(.menu)
+        .fixedSize()
+        .disabled(currentIndicatorStyle == .textOnly)
+    }
+
+    private var dontIconPicker: some View {
+        Picker("Don't", selection: $dontIndicatorIcon) {
+            ForEach(IndicatorIcon.negativeIcons, id: \.rawValue) { icon in
+                Image(systemName: icon.systemName)
+                    .tag(icon.systemName)
+            }
+        }
+        .pickerStyle(.menu)
+        .fixedSize()
+        .disabled(currentIndicatorStyle == .textOnly)
+    }
+
+    // MARK: - Indicator Label Fields
+
+    private var doIndicatorLabelField: some View {
+        TextField("Do Label", text: $doIndicatorLabel)
+            .textFieldStyle(.roundedBorder)
+            .disabled(currentIndicatorStyle == .iconOnly)
+            .onChange(of: doIndicatorLabel) { _, newValue in
+                if newValue.count > 10 {
+                    doIndicatorLabel = String(newValue.prefix(10))
+                }
+            }
+    }
+
+    private var dontIndicatorLabelField: some View {
+        TextField("Don't Label", text: $dontIndicatorLabel)
+            .textFieldStyle(.roundedBorder)
+            .disabled(currentIndicatorStyle == .iconOnly)
+            .onChange(of: dontIndicatorLabel) { _, newValue in
+                if newValue.count > 10 {
+                    dontIndicatorLabel = String(newValue.prefix(10))
+                }
+            }
+    }
+
     // MARK: - Indicator Size
 
     private var indicatorSizeControl: some View {
@@ -241,11 +323,23 @@ public struct ToolBarView: View {
     private var doTitleField: some View {
         TextField("Do Title", text: $doTitleSetting)
             .textFieldStyle(.roundedBorder)
+            .frame(width: 150)
+            .onChange(of: doTitleSetting) { _, newValue in
+                if newValue.count > 70 {
+                    doTitleSetting = String(newValue.prefix(70))
+                }
+            }
     }
 
     private var dontTitleField: some View {
         TextField("Don't Title", text: $dontTitleSetting)
             .textFieldStyle(.roundedBorder)
+            .frame(width: 150)
+            .onChange(of: dontTitleSetting) { _, newValue in
+                if newValue.count > 70 {
+                    dontTitleSetting = String(newValue.prefix(70))
+                }
+            }
     }
 
     // MARK: - Export Button

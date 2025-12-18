@@ -20,6 +20,10 @@ public struct CodeEditorView: View {
     @AppStorage("indicatorPosition") private var indicatorPositionRaw: String = IndicatorPosition.topRight.rawValue
     @AppStorage("indicatorStyle") private var indicatorStyleRaw: String = IndicatorStyle.iconAndText.rawValue
     @AppStorage("indicatorSize") private var indicatorSize: Double = 48
+    @AppStorage("doIndicatorIcon") private var doIndicatorIcon: String = "checkmark"
+    @AppStorage("dontIndicatorIcon") private var dontIndicatorIcon: String = "xmark"
+    @AppStorage("doIndicatorLabel") private var doIndicatorLabel: String = "Do's"
+    @AppStorage("dontIndicatorLabel") private var dontIndicatorLabel: String = "Don'ts"
     @AppStorage("showTitle") private var showTitle: Bool = true
     @AppStorage("fontSize") private var fontSize: Double = 14
     @AppStorage("selectedTheme") private var selectedThemeRaw: String = EditorThemeOption.atomOneDark.rawValue
@@ -109,7 +113,9 @@ public struct CodeEditorView: View {
             IndicatorBadgeView(
                 type: panel.type,
                 style: indicatorStyle,
-                size: indicatorSize
+                size: indicatorSize,
+                iconName: panel.type == .doPanel ? doIndicatorIcon : dontIndicatorIcon,
+                label: panel.type == .doPanel ? doIndicatorLabel : dontIndicatorLabel
             )
             .padding(12)
         }

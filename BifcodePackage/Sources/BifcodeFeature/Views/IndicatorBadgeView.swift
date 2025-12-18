@@ -12,23 +12,25 @@ public struct IndicatorBadgeView: View {
     let type: PanelType
     let style: IndicatorStyle
     let size: CGFloat
+    let iconName: String
+    let label: String
 
-    public init(type: PanelType, style: IndicatorStyle, size: CGFloat) {
+    public init(
+        type: PanelType,
+        style: IndicatorStyle,
+        size: CGFloat,
+        iconName: String? = nil,
+        label: String? = nil
+    ) {
         self.type = type
         self.style = style
         self.size = size
+        self.iconName = iconName ?? (type == .doPanel ? "checkmark" : "xmark")
+        self.label = label ?? (type == .doPanel ? "Do's" : "Don'ts")
     }
 
     private var color: Color {
         type == .doPanel ? .indicatorDo : .indicatorDont
-    }
-
-    private var iconName: String {
-        type == .doPanel ? "checkmark" : "xmark"
-    }
-
-    private var label: String {
-        type == .doPanel ? "Do's" : "Don'ts"
     }
 
     public var body: some View {
@@ -44,15 +46,10 @@ public struct IndicatorBadgeView: View {
     }
 
     private var iconView: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: size * 0.15)
-                .stroke(color, lineWidth: 3)
-                .frame(width: size, height: size)
-
-            Image(systemName: iconName)
-                .font(.system(size: size * 0.5, weight: .bold))
-                .foregroundStyle(color)
-        }
+        Image(systemName: iconName)
+            .font(.system(size: size * 0.6, weight: .bold))
+            .foregroundStyle(color)
+            .frame(width: size, height: size)
     }
 
     private var textView: some View {
