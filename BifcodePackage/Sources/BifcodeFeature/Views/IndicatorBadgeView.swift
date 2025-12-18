@@ -7,14 +7,80 @@
 
 import SwiftUI
 
-/// Do/Don't indicator badge
+/// A visual badge indicating whether a code panel shows "Do" or "Don't" examples.
+///
+/// `IndicatorBadgeView` displays an icon, text label, or both to clearly mark
+/// code panels as positive (Do) or negative (Don't) examples. The badge uses
+/// semantic colors from the app's color system.
+///
+/// ## Overview
+///
+/// The badge appearance is controlled by three main factors:
+/// - **Type** - Determines color (green for Do, red for Don't)
+/// - **Style** - Shows icon only, text only, or both
+/// - **Size** - Controls overall badge dimensions
+///
+/// ## Sizing
+///
+/// Badge elements scale proportionally to the `size` parameter:
+/// - Icon: 60% of size
+/// - Text: 30% of size
+///
+/// ## Usage
+///
+/// ```swift
+/// // Icon and text badge for "Do" panel
+/// IndicatorBadgeView(
+///     type: .doPanel,
+///     style: .iconAndText,
+///     size: 48
+/// )
+///
+/// // Custom icon badge for "Don't" panel
+/// IndicatorBadgeView(
+///     type: .dontPanel,
+///     style: .iconOnly,
+///     size: 64,
+///     iconName: "exclamationmark.triangle"
+/// )
+/// ```
+///
+/// ## Topics
+///
+/// ### Creating a Badge
+///
+/// - ``init(type:style:size:iconName:label:)``
+///
+/// ### Related Types
+///
+/// - ``PanelType``
+/// - ``IndicatorStyle``
+/// - ``IndicatorIcon``
 public struct IndicatorBadgeView: View {
+    /// The panel type determining the badge color (Do = green, Don't = red).
     let type: PanelType
+
+    /// The display style controlling which elements are shown.
     let style: IndicatorStyle
+
+    /// The overall size of the badge in points.
     let size: CGFloat
+
+    /// The SF Symbol name for the icon.
     let iconName: String
+
+    /// The text label displayed below the icon.
     let label: String
 
+    /// Creates a new indicator badge with the specified configuration.
+    ///
+    /// - Parameters:
+    ///   - type: The panel type (Do or Don't) determining the badge color.
+    ///   - style: The display style (icon only, text only, or both).
+    ///   - size: The overall badge size in points.
+    ///   - iconName: The SF Symbol name. Defaults to "checkmark" for Do,
+    ///     "xmark" for Don't.
+    ///   - label: The text label. Defaults to "Do's" or "Don'ts".
     public init(
         type: PanelType,
         style: IndicatorStyle,

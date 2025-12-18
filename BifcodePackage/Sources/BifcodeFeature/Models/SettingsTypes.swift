@@ -9,11 +9,41 @@ import AppKit
 import CodeEditSourceEditor
 import Foundation
 
-/// Indicator position options
+// MARK: - Indicator Position
+
+/// The position of the indicator badge within a code panel.
+///
+/// Indicator badges can be placed in different corners of the code editor
+/// to accommodate various design preferences and code layouts.
+///
+/// ## Usage
+///
+/// The position is stored via `@AppStorage` and applied to both panels:
+///
+/// ```swift
+/// @AppStorage("indicatorPosition") private var indicatorPosition = IndicatorPosition.topRight.rawValue
+/// ```
+///
+/// ## Topics
+///
+/// ### Positions
+///
+/// - ``topRight``
+/// - ``bottomRight``
 public enum IndicatorPosition: String, CaseIterable, Sendable {
+    /// Places the indicator in the top-right corner of the editor.
+    ///
+    /// This is the default position, ideal for code that starts from
+    /// the top and doesn't require immediate visual attention.
     case topRight = "top-right"
+
+    /// Places the indicator in the bottom-right corner of the editor.
+    ///
+    /// Useful when the code content starts with important information
+    /// that shouldn't be obscured by the badge.
     case bottomRight = "bottom-right"
 
+    /// A human-readable label for display in pickers.
     public var label: String {
         switch self {
         case .topRight: "Top Right"
@@ -22,12 +52,46 @@ public enum IndicatorPosition: String, CaseIterable, Sendable {
     }
 }
 
-/// Indicator style options
+// MARK: - Indicator Style
+
+/// The visual style of the indicator badge.
+///
+/// Controls whether the badge displays an icon, text label, or both.
+/// This allows users to customize the visual density of indicators.
+///
+/// ## Usage
+///
+/// ```swift
+/// @AppStorage("indicatorStyle") private var indicatorStyle = IndicatorStyle.iconAndText.rawValue
+/// ```
+///
+/// ## Topics
+///
+/// ### Styles
+///
+/// - ``iconOnly``
+/// - ``textOnly``
+/// - ``iconAndText``
 public enum IndicatorStyle: String, CaseIterable, Sendable {
+    /// Shows only the SF Symbol icon without text.
+    ///
+    /// Creates a minimal, icon-only badge. The icon size is 60% of
+    /// the badge size parameter.
     case iconOnly = "icon"
+
+    /// Shows only the text label without an icon.
+    ///
+    /// Displays the label text (e.g., "Do's" or "Don'ts") without
+    /// any icon. Text size is 30% of the badge size parameter.
     case textOnly = "text"
+
+    /// Shows both the icon and text label.
+    ///
+    /// The default style, displaying the icon above the text label
+    /// for maximum clarity.
     case iconAndText = "both"
 
+    /// A human-readable label for display in pickers.
     public var label: String {
         switch self {
         case .iconOnly: "Icon Only"
@@ -37,40 +101,143 @@ public enum IndicatorStyle: String, CaseIterable, Sendable {
     }
 }
 
-/// Curated SF Symbol options for indicators
+// MARK: - Indicator Icon
+
+/// Curated SF Symbol icons for indicator badges.
+///
+/// Provides a curated selection of SF Symbols appropriate for
+/// "Do" (positive) and "Don't" (negative) indicators. Icons are
+/// grouped by semantic meaning for easy selection in the UI.
+///
+/// ## Usage
+///
+/// Access icons by category for pickers:
+///
+/// ```swift
+/// // For "Do" panels
+/// let doIcons = IndicatorIcon.positiveIcons
+///
+/// // For "Don't" panels
+/// let dontIcons = IndicatorIcon.negativeIcons
+/// ```
+///
+/// ## Topics
+///
+/// ### Positive Icons
+///
+/// - ``checkmark``
+/// - ``checkmarkCircle``
+/// - ``checkmarkSquare``
+/// - ``thumbsUp``
+/// - ``star``
+///
+/// ### Negative Icons
+///
+/// - ``xmark``
+/// - ``xmarkCircle``
+/// - ``xmarkSquare``
+/// - ``thumbsDown``
+/// - ``warning``
+///
+/// ### Icon Access
+///
+/// - ``systemName``
+/// - ``positiveIcons``
+/// - ``negativeIcons``
 public enum IndicatorIcon: String, CaseIterable, Sendable {
     // Positive indicators
+
+    /// A simple checkmark icon.
     case checkmark
+
+    /// A checkmark inside a circle.
     case checkmarkCircle = "checkmark.circle"
+
+    /// A checkmark inside a square.
     case checkmarkSquare = "checkmark.square"
+
+    /// A thumbs up hand gesture.
     case thumbsUp = "hand.thumbsup"
+
+    /// A filled star icon.
     case star = "star.fill"
 
     // Negative indicators
+
+    /// A simple X mark icon.
     case xmark
+
+    /// An X mark inside a circle.
     case xmarkCircle = "xmark.circle"
+
+    /// An X mark inside a square.
     case xmarkSquare = "xmark.square"
+
+    /// A thumbs down hand gesture.
     case thumbsDown = "hand.thumbsdown"
+
+    /// An exclamation mark in a triangle (warning).
     case warning = "exclamationmark.triangle"
 
+    /// The SF Symbol system name for this icon.
+    ///
+    /// Use this value with `Image(systemName:)`:
+    ///
+    /// ```swift
+    /// Image(systemName: icon.systemName)
+    /// ```
     public var systemName: String { rawValue }
 
-    /// Icons suitable for "Do" indicators
+    /// Icons suitable for "Do" (positive) indicators.
+    ///
+    /// Returns: checkmark, checkmark.circle, checkmark.square,
+    /// hand.thumbsup, star.fill
     public static var positiveIcons: [IndicatorIcon] {
         [.checkmark, .checkmarkCircle, .checkmarkSquare, .thumbsUp, .star]
     }
 
-    /// Icons suitable for "Don't" indicators
+    /// Icons suitable for "Don't" (negative) indicators.
+    ///
+    /// Returns: xmark, xmark.circle, xmark.square,
+    /// hand.thumbsdown, exclamationmark.triangle
     public static var negativeIcons: [IndicatorIcon] {
         [.xmark, .xmarkCircle, .xmarkSquare, .thumbsDown, .warning]
     }
 }
 
-/// Window layout options
+// MARK: - Window Layout
+
+/// The arrangement of code panels in the main view.
+///
+/// Controls whether the Do and Don't panels are displayed
+/// side-by-side (horizontal) or stacked (vertical).
+///
+/// ## Usage
+///
+/// ```swift
+/// @AppStorage("windowLayout") private var windowLayout = WindowLayout.horizontal.rawValue
+/// ```
+///
+/// ## Topics
+///
+/// ### Layouts
+///
+/// - ``horizontal``
+/// - ``vertical``
 public enum WindowLayout: String, CaseIterable, Sendable {
+    /// Panels are arranged side-by-side horizontally.
+    ///
+    /// The Don't panel appears on the left, and the Do panel
+    /// appears on the right. Best for wide displays.
     case horizontal
+
+    /// Panels are stacked vertically.
+    ///
+    /// The Don't panel appears on top, and the Do panel
+    /// appears below. Best for narrow displays or portrait mode.
     case vertical
 
+    /// A human-readable label for display in pickers.
     public var label: String {
         switch self {
         case .horizontal: "Side by Side"
@@ -81,16 +248,97 @@ public enum WindowLayout: String, CaseIterable, Sendable {
 
 // MARK: - Editor Themes
 
-/// Available editor theme options
+/// Available syntax highlighting themes for the code editor.
+///
+/// `EditorThemeOption` provides a curated selection of popular code editor
+/// themes. Each theme defines colors for text, keywords, strings, comments,
+/// and other syntax elements.
+///
+/// ## Usage
+///
+/// Select a theme and access its underlying `EditorTheme`:
+///
+/// ```swift
+/// @AppStorage("selectedTheme") private var selectedTheme = EditorThemeOption.atomOneDark.rawValue
+///
+/// // Get the EditorTheme for CodeEditSourceEditor
+/// let theme = EditorThemeOption.atomOneDark.editorTheme
+/// ```
+///
+/// ## Available Themes
+///
+/// | Theme | Description |
+/// |-------|-------------|
+/// | Atom One Dark | Popular dark theme from Atom editor |
+/// | Dracula | High contrast dark theme |
+/// | GitHub Dark | GitHub's official dark mode |
+/// | Monokai | Classic theme from Sublime Text |
+/// | Nord | Arctic, bluish color palette |
+/// | Solarized Dark | Solarized dark variant |
+/// | Xcode Default | macOS Xcode default dark theme |
+///
+/// ## Topics
+///
+/// ### Themes
+///
+/// - ``atomOneDark``
+/// - ``dracula``
+/// - ``githubDark``
+/// - ``monokai``
+/// - ``nord``
+/// - ``solarizedDark``
+/// - ``xcodeDefault``
+///
+/// ### Accessing Theme Data
+///
+/// - ``label``
+/// - ``editorTheme``
 public enum EditorThemeOption: String, CaseIterable, Sendable {
+    /// Atom One Dark theme.
+    ///
+    /// A popular dark theme originally from the Atom editor.
+    /// Features a dark gray background with muted, readable colors.
     case atomOneDark = "atom-one-dark"
+
+    /// Dracula theme.
+    ///
+    /// A high-contrast dark theme with vibrant colors.
+    /// Features a purple/pink accent color scheme.
     case dracula
+
+    /// GitHub Dark theme.
+    ///
+    /// GitHub's official dark mode color scheme.
+    /// Features a very dark background with blue accents.
     case githubDark = "github-dark"
+
+    /// Monokai theme.
+    ///
+    /// A classic theme originally from Sublime Text.
+    /// Features warm colors on a dark brown-gray background.
     case monokai
+
+    /// Nord theme.
+    ///
+    /// An arctic, bluish color palette inspired by polar nights.
+    /// Features cool blue and gray tones.
     case nord
+
+    /// Solarized Dark theme.
+    ///
+    /// The dark variant of the Solarized color scheme.
+    /// Features a teal-tinged dark background with carefully
+    /// chosen contrasting colors.
     case solarizedDark = "solarized-dark"
+
+    /// Xcode Default Dark theme.
+    ///
+    /// The default dark theme from Apple's Xcode.
+    /// Features a very dark background with the familiar
+    /// Xcode syntax coloring.
     case xcodeDefault = "xcode-default"
 
+    /// A human-readable label for display in pickers.
     public var label: String {
         switch self {
         case .atomOneDark: "Atom One Dark"
@@ -103,7 +351,15 @@ public enum EditorThemeOption: String, CaseIterable, Sendable {
         }
     }
 
-    /// Converts to CodeEditSourceEditor's EditorTheme
+    /// The underlying `EditorTheme` for CodeEditSourceEditor.
+    ///
+    /// Use this property to configure the `SourceEditor` appearance:
+    ///
+    /// ```swift
+    /// SourceEditorConfiguration(
+    ///     appearance: .init(theme: selectedTheme.editorTheme, ...)
+    /// )
+    /// ```
     public var editorTheme: EditorTheme {
         switch self {
         case .atomOneDark: .atomOneDark
@@ -119,8 +375,21 @@ public enum EditorThemeOption: String, CaseIterable, Sendable {
 
 // MARK: - EditorTheme Presets
 
+/// Extension providing predefined theme presets for `EditorTheme`.
+///
+/// Each theme defines complete color settings for syntax highlighting:
+/// - Text colors (default, keywords, types, variables)
+/// - String and number literals
+/// - Comments
+/// - Editor chrome (background, selection, line highlight)
+///
+/// > Note: These properties use `nonisolated(unsafe)` because they are
+/// > constant static values that don't require actor isolation.
 extension EditorTheme {
-    /// Atom One Dark theme
+    /// Atom One Dark theme preset.
+    ///
+    /// A popular dark theme with a `#282c34` background and muted,
+    /// readable syntax colors.
     public nonisolated(unsafe) static let atomOneDark = EditorTheme(
         text: .init(color: NSColor(red: 0.67, green: 0.69, blue: 0.75, alpha: 1.0)),
         insertionPoint: .white,
@@ -140,7 +409,10 @@ extension EditorTheme {
         comments: .init(color: NSColor(red: 0.36, green: 0.40, blue: 0.44, alpha: 1.0))
     )
 
-    /// Dracula theme
+    /// Dracula theme preset.
+    ///
+    /// A high-contrast dark theme with vibrant purple and pink accents
+    /// on a `#282a36` background.
     public nonisolated(unsafe) static let dracula = EditorTheme(
         text: .init(color: NSColor(red: 0.97, green: 0.97, blue: 0.95, alpha: 1.0)),
         insertionPoint: .white,
@@ -160,7 +432,10 @@ extension EditorTheme {
         comments: .init(color: NSColor(red: 0.38, green: 0.45, blue: 0.55, alpha: 1.0))
     )
 
-    /// GitHub Dark theme
+    /// GitHub Dark theme preset.
+    ///
+    /// GitHub's official dark mode color scheme with a very dark
+    /// `#0d1117` background and blue accents.
     public nonisolated(unsafe) static let githubDark = EditorTheme(
         text: .init(color: NSColor(red: 0.79, green: 0.82, blue: 0.87, alpha: 1.0)),
         insertionPoint: .white,
@@ -180,7 +455,10 @@ extension EditorTheme {
         comments: .init(color: NSColor(red: 0.53, green: 0.57, blue: 0.63, alpha: 1.0))
     )
 
-    /// Monokai theme
+    /// Monokai theme preset.
+    ///
+    /// A classic theme from Sublime Text with warm colors on a
+    /// `#272822` brown-gray background.
     public nonisolated(unsafe) static let monokai = EditorTheme(
         text: .init(color: NSColor(red: 0.97, green: 0.97, blue: 0.95, alpha: 1.0)),
         insertionPoint: .white,
@@ -200,7 +478,10 @@ extension EditorTheme {
         comments: .init(color: NSColor(red: 0.46, green: 0.44, blue: 0.37, alpha: 1.0))
     )
 
-    /// Nord theme
+    /// Nord theme preset.
+    ///
+    /// An arctic, bluish color palette with cool blue-gray tones
+    /// on a `#2e3440` background.
     public nonisolated(unsafe) static let nord = EditorTheme(
         text: .init(color: NSColor(red: 0.85, green: 0.87, blue: 0.91, alpha: 1.0)),
         insertionPoint: .white,
@@ -220,7 +501,10 @@ extension EditorTheme {
         comments: .init(color: NSColor(red: 0.38, green: 0.43, blue: 0.50, alpha: 1.0))
     )
 
-    /// Solarized Dark theme
+    /// Solarized Dark theme preset.
+    ///
+    /// The dark variant of Solarized with a teal-tinged `#002b36`
+    /// background and carefully balanced colors.
     public nonisolated(unsafe) static let solarizedDark = EditorTheme(
         text: .init(color: NSColor(red: 0.51, green: 0.58, blue: 0.59, alpha: 1.0)),
         insertionPoint: .white,
@@ -240,7 +524,10 @@ extension EditorTheme {
         comments: .init(color: NSColor(red: 0.35, green: 0.43, blue: 0.46, alpha: 1.0))
     )
 
-    /// Xcode Default (Dark) theme
+    /// Xcode Default Dark theme preset.
+    ///
+    /// Apple's default dark theme for Xcode with a very dark
+    /// `#1c1c1e` background and familiar Xcode syntax coloring.
     public nonisolated(unsafe) static let xcodeDefault = EditorTheme(
         text: .init(color: NSColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)),
         insertionPoint: .white,
