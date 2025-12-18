@@ -53,10 +53,12 @@ struct ExportPanelView: View {
                 .fill(Color.editorCloseButton)
                 .frame(width: 14, height: 14)
 
-            // Title
+            // Title - single line with truncation
             Label(panel.title, systemImage: "text.document.fill")
                 .font(.system(size: 13, weight: .medium))
                 .foregroundStyle(Color.titleText)
+                .lineLimit(1)
+                .truncationMode(.tail)
 
             Spacer()
         }
