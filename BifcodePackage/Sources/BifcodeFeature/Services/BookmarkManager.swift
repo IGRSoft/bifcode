@@ -9,14 +9,60 @@ import Foundation
 
 /// Manages security-scoped URL bookmarks for persistent file access across app launches.
 ///
-/// This manager handles the creation, storage, and resolution of security-scoped bookmarks
-/// that allow a sandboxed macOS app to maintain access to user-selected directories.
+/// `BookmarkManager` enables a sandboxed macOS app to maintain access to user-selected
+/// directories across app restarts. It handles the creation, storage, and resolution of
+/// security-scoped bookmarks using macOS security APIs.
 ///
-/// Usage:
-/// 1. When user selects a folder via NSOpenPanel, call `storeBookmark(for:)`
-/// 2. To access the stored location, call `resolveBookmark()` and use the returned URL
-/// 3. Before file operations, call `startAccessingSecurityScopedResource()` on the URL
-/// 4. After file operations, call `stopAccessingSecurityScopedResource()` on the URL
+/// ## Overview
+///
+/// In sandboxed apps, users must explicitly grant access to directories outside the
+/// app's container. Security-scoped bookmarks preserve this access between sessions.
+///
+/// ## Usage
+///
+/// The typical workflow for using `BookmarkManager`:
+///
+/// ```swift
+/// // 1. User selects a folder via NSOpenPanel
+/// let panel = NSOpenPanel()
+/// panel.canChooseDirectories = true
+/// if panel.runModal() == .OK, let url = panel.url {
+///     // 2. Store the bookmark
+///     try BookmarkManager.shared.storeBookmark(for: url)
+/// }
+///
+/// // 3. Later, resolve the bookmark to get the URL
+/// if let savedURL = BookmarkManager.shared.resolveBookmark() {
+///     // 4. Start security-scoped access
+///     guard savedURL.startAccessingSecurityScopedResource() else {
+///         throw SomeError.accessDenied
+///     }
+///
+///     defer {
+///         // 5. Stop access when done
+///         savedURL.stopAccessingSecurityScopedResource()
+///     }
+///
+///     // Perform file operations...
+/// }
+/// ```
+///
+/// ## Topics
+///
+/// ### Accessing the Shared Instance
+///
+/// - ``shared``
+///
+/// ### Managing Bookmarks
+///
+/// - ``storeBookmark(for:)``
+/// - ``resolveBookmark()``
+/// - ``clearBookmark()``
+///
+/// ### Querying State
+///
+/// - ``hasBookmark``
+/// - ``bookmarkedLocationName``
 @MainActor
 public final class BookmarkManager: Sendable {
     // MARK: - Singleton

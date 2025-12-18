@@ -10,9 +10,58 @@ import CodeEditLanguages
 import CodeEditSourceEditor
 import SwiftUI
 
-/// A complete code editor panel with title bar, syntax highlighting editor, and Do/Don't indicator
+/// A complete code editor panel with title bar, syntax highlighting, and indicator badge.
+///
+/// `CodeEditorView` is the main interactive component for editing code in Bifcode.
+/// It combines a title bar, CodeEditSourceEditor for syntax highlighting, and an
+/// ``IndicatorBadgeView`` to show the "Do" or "Don't" designation.
+///
+/// ## Overview
+///
+/// Each panel consists of three visual layers:
+/// 1. **Title Bar** - Shows the panel title with a document icon
+/// 2. **Code Editor** - Syntax-highlighted code using `SourceEditor`
+/// 3. **Indicator Badge** - Positioned "Do" or "Don't" badge
+///
+/// ## Code Limits
+///
+/// The editor enforces limits to ensure exported images remain readable:
+/// - Maximum 24 lines of code
+/// - Maximum 210 characters per line
+///
+/// ## Settings Integration
+///
+/// The view reads settings directly from `@AppStorage`:
+/// - Indicator position, style, size, icons, and labels
+/// - Font size and theme
+/// - Title visibility
+///
+/// ## Usage
+///
+/// ```swift
+/// @Bindable var panel: CodePanel
+///
+/// CodeEditorView(panel: panel) {
+///     // Called when code changes
+///     print("Code updated: \(panel.code)")
+/// }
+/// ```
+///
+/// ## Topics
+///
+/// ### Creating an Editor
+///
+/// - ``init(panel:onCodeChange:)``
+///
+/// ### Related Types
+///
+/// - ``CodePanel``
+/// - ``IndicatorBadgeView``
 public struct CodeEditorView: View {
+    /// The code panel model containing the code, title, and language.
     @Bindable var panel: CodePanel
+
+    /// Callback invoked when the code content changes.
     let onCodeChange: () -> Void
 
     // MARK: - Settings (via @AppStorage)
@@ -40,6 +89,18 @@ public struct CodeEditorView: View {
         EditorThemeOption(rawValue: selectedThemeRaw) ?? .atomOneDark
     }
 
+    /// Creates a new code editor view for the specified panel.
+    ///
+    /// - Parameters:
+    ///   - panel: The ``CodePanel`` model to display and edit.
+    ///   - onCodeChange: A closure called whenever the code content changes.
+    ///     Defaults to an empty closure.
+    ///
+    /// ```swift
+    /// CodeEditorView(panel: viewModel.doPanel) {
+    ///     updateExportPreview()
+    /// }
+    /// ```
     public init(
         panel: CodePanel,
         onCodeChange: @escaping () -> Void = {}

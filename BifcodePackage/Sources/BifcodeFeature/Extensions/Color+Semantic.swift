@@ -7,6 +7,50 @@
 
 import SwiftUI
 
+/// Semantic color definitions for Bifcode UI elements.
+///
+/// This extension provides named colors that load from the asset catalog
+/// with automatic light/dark mode support. All colors are defined in
+/// `Colors.xcassets` within the BifcodeFeature module.
+///
+/// ## Color Categories
+///
+/// The colors are organized into functional groups:
+///
+/// ### Indicator Colors
+/// - ``indicatorDo`` - Green for positive "Do's" examples
+/// - ``indicatorDont`` - Red for negative "Don'ts" examples
+///
+/// ### Editor Colors
+/// - ``editorBackground`` - Code editor background
+/// - ``editorText`` - Default code text
+/// - ``editorLineNumber`` - Line number gutter text
+/// - ``editorGutter`` - Line number gutter background
+/// - ``editorCloseButton`` - Traffic light placeholder
+///
+/// ### Window Colors
+/// - ``windowBackground`` - Main window background
+/// - ``titleBarBackground`` - Panel title bar
+/// - ``titleText`` - Title bar text
+/// - ``windowBorder`` - Panel border stroke
+///
+/// ### UI Colors
+/// - ``toolbarBackground`` - Toolbar container
+/// - ``contentBackground`` - Main content area
+/// - ``secondaryText`` - De-emphasized text
+///
+/// ## Usage
+///
+/// ```swift
+/// Text("Do's")
+///     .foregroundColor(.indicatorDo)
+///
+/// Rectangle()
+///     .fill(Color.editorBackground)
+/// ```
+///
+/// > Important: Never use hardcoded colors like `.red` or `.green`.
+/// > Always use semantic colors for theme consistency.
 extension Color {
     // MARK: - Indicator Colors
 

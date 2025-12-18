@@ -9,26 +9,72 @@ import AppKit
 import CodeEditSourceEditor
 import SwiftUI
 
-/// Combined export view with both panels for ImageRenderer
-/// This view is used exclusively for generating the export image
+/// A container view arranging both code panels for image export.
+///
+/// `ExportView` arranges the Do and Don't ``ExportPanelView`` instances
+/// either horizontally or vertically based on the layout setting. This view
+/// is used exclusively for generating the export image—it's rendered
+/// offscreen and captured as a bitmap.
+///
+/// ## Overview
+///
+/// The export view:
+/// - Arranges panels based on ``WindowLayout`` (horizontal or vertical)
+/// - Applies consistent padding (24pt) and spacing (24pt)
+/// - Adds drop shadows to each panel
+/// - Uses a transparent background for the final image
+///
+/// > Note: This is an internal view and not part of the public API.
+/// > It's created by ``ContentView/renderExportViewToImage()`` during export.
 struct ExportView: View {
+    /// The "Do's" code panel to export.
     let doPanel: CodePanel
+
+    /// The "Don'ts" code panel to export.
     let dontPanel: CodePanel
+
+    /// The panel arrangement (horizontal or vertical).
     let layout: WindowLayout
+
+    /// Position of the indicator badge.
     let indicatorPosition: IndicatorPosition
+
+    /// Style of the indicator badge.
     let indicatorStyle: IndicatorStyle
+
+    /// Size of the indicator badge in points.
     let indicatorSize: CGFloat
+
+    /// SF Symbol name for the Do badge.
     let doIndicatorIcon: String
+
+    /// SF Symbol name for the Don't badge.
     let dontIndicatorIcon: String
+
+    /// Text label for the Do badge.
     let doIndicatorLabel: String
+
+    /// Text label for the Don't badge.
     let dontIndicatorLabel: String
+
+    /// Whether to show the title bar on panels.
     let showTitle: Bool
+
+    /// Font size for code text.
     let fontSize: CGFloat
+
+    /// The syntax highlighting theme.
     let theme: EditorTheme
 
     // Panel dimensions for export
+
+    /// Width of each panel in points.
     let panelWidth: CGFloat
+
+    /// Height of the Do panel in points.
     let doPanelHeight: CGFloat
+
+    /// Height of the Don't panel in points.
     let dontPanelHeight: CGFloat
 
     var body: some View {

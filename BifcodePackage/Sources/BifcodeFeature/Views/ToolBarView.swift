@@ -9,7 +9,42 @@ import CodeEditLanguages
 import CodeEditSourceEditor
 import SwiftUI
 
-/// Toolbar view with all settings inline
+/// A toolbar providing all code style and indicator settings with an export button.
+///
+/// `ToolBarView` is the main settings interface for Bifcode. It presents controls
+/// organized into sections for code style, indicator customization, and export.
+///
+/// ## Overview
+///
+/// The toolbar contains three main sections:
+///
+/// ### Code Style Section
+/// - **Language Picker** - Select from 19 programming languages
+/// - **Theme Picker** - Choose from 7 syntax highlighting themes
+/// - **Layout Toggle** - Switch between horizontal and vertical layouts
+/// - **Font Size Slider** - Adjust code font (10-24pt)
+/// - **Panel Titles** - Edit "Do" and "Don't" panel titles
+///
+/// ### Indicator Style Section
+/// - **Style Picker** - Icon only, text only, or both
+/// - **Position Picker** - Top-right or bottom-right
+/// - **Size Slider** - Badge size (32-80px)
+/// - **Icon Pickers** - Choose icons for Do/Don't badges
+/// - **Label Fields** - Custom text for indicator labels
+///
+/// ### Export Section
+/// - **Export Button** - Save as PNG (disabled when panels are empty)
+/// - **Choose Button** - Select save location folder
+///
+/// ## Settings Persistence
+///
+/// All settings are automatically persisted via `@AppStorage` to UserDefaults.
+///
+/// ## Topics
+///
+/// ### Creating a Toolbar
+///
+/// - ``init(doTitleSetting:dontTitleSetting:isExportDisabled:onExport:onLanguageChange:)``
 public struct ToolBarView: View {
     // MARK: - App Storage
 
@@ -47,6 +82,26 @@ public struct ToolBarView: View {
 
     // MARK: - Initialization
 
+    /// Creates a new toolbar view with the specified configuration.
+    ///
+    /// - Parameters:
+    ///   - doTitleSetting: Binding to the "Do's" panel title.
+    ///   - dontTitleSetting: Binding to the "Don'ts" panel title.
+    ///   - isExportDisabled: Whether the export button should be disabled.
+    ///     Set to `true` when both code panels are empty.
+    ///   - onExport: Closure called when the export button is tapped.
+    ///   - onLanguageChange: Closure called when the language selection changes,
+    ///     providing the newly selected ``CodeLanguage``.
+    ///
+    /// ```swift
+    /// ToolBarView(
+    ///     doTitleSetting: $doTitle,
+    ///     dontTitleSetting: $dontTitle,
+    ///     isExportDisabled: viewModel.doPanel.code.isEmpty,
+    ///     onExport: { Task { await exportImage() } },
+    ///     onLanguageChange: { viewModel.setLanguage($0) }
+    /// )
+    /// ```
     public init(
         doTitleSetting: Binding<String>,
         dontTitleSetting: Binding<String>,

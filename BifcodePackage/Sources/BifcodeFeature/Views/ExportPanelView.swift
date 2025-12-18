@@ -10,20 +10,60 @@ import CodeEditLanguages
 import CodeEditSourceEditor
 import SwiftUI
 
-/// Static code panel view for ImageRenderer export
-/// Uses SourceEditor with same settings as CodeEditorView for consistent rendering
+/// A static, non-interactive code panel for export rendering.
+///
+/// `ExportPanelView` renders a single code panel with syntax highlighting
+/// and indicator badge for image export. Unlike ``CodeEditorView``, this
+/// view is disabled (non-interactive) and designed for offscreen rendering.
+///
+/// ## Overview
+///
+/// The export panel maintains visual consistency with the interactive
+/// ``CodeEditorView`` by using the same:
+/// - `SourceEditor` configuration
+/// - Title bar styling
+/// - Indicator badge positioning
+/// - Color theming
+///
+/// ## Differences from CodeEditorView
+///
+/// | Aspect | CodeEditorView | ExportPanelView |
+/// |--------|---------------|-----------------|
+/// | Interactive | Yes | No (disabled) |
+/// | @AppStorage | Reads settings | Receives as params |
+/// | Editor state | Shared | Local |
+/// | Purpose | User editing | Image export |
+///
+/// > Note: This is an internal view and not part of the public API.
 struct ExportPanelView: View {
+    /// The code panel to render.
     @Bindable var panel: CodePanel
+
+    /// Position of the indicator badge.
     let indicatorPosition: IndicatorPosition
+
+    /// Style of the indicator badge.
     let indicatorStyle: IndicatorStyle
+
+    /// Size of the indicator badge in points.
     let indicatorSize: CGFloat
+
+    /// SF Symbol name for the indicator icon.
     let indicatorIconName: String
+
+    /// Text label for the indicator.
     let indicatorLabel: String
+
+    /// Whether to show the title bar.
     let showTitle: Bool
+
+    /// Font size for code text.
     let fontSize: CGFloat
+
+    /// The syntax highlighting theme.
     let theme: EditorTheme
 
-    /// Editor state for the source editor
+    /// Local editor state (not shared with interactive editor).
     @State private var editorState = SourceEditorState()
 
     // MARK: - Body

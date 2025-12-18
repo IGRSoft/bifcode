@@ -10,7 +10,57 @@ import CodeEditLanguages
 import CodeEditSourceEditor
 import SwiftUI
 
-/// Main content view with Do/Don't code panels
+/// The main view of the Bifcode application displaying side-by-side code comparison panels.
+///
+/// `ContentView` is the root view that orchestrates the entire user interface, including
+/// the toolbar, code editor panels, and the export pipeline. It manages user settings
+/// via `@AppStorage` and coordinates between the UI and ``AppViewModel``.
+///
+/// ## Overview
+///
+/// The view consists of two main sections:
+/// 1. **Toolbar** - Language selection, panel titles, indicator settings, and export button
+/// 2. **Panels Area** - Two ``CodeEditorView`` instances for Do's and Don'ts code
+///
+/// ## Layout Modes
+///
+/// The panels can be arranged in two layouts controlled by ``WindowLayout``:
+/// - **Horizontal** - Panels side-by-side (default)
+/// - **Vertical** - Panels stacked with scroll support
+///
+/// ## Export Pipeline
+///
+/// Export uses an offscreen `NSWindow` rendering technique because standard
+/// `ImageRenderer` cannot capture `NSViewRepresentable` views like `SourceEditor`.
+/// The pipeline:
+/// 1. Calculates dimensions based on code content and font metrics
+/// 2. Creates an ``ExportView`` with the calculated dimensions
+/// 3. Hosts in an offscreen `NSWindow` for proper layer rendering
+/// 4. Captures via `bitmapImageRepForCachingDisplay` at 2x Retina scale
+/// 5. Saves to user-selected location via ``AppViewModel``
+///
+/// ## Settings Persistence
+///
+/// All user preferences are stored via `@AppStorage`:
+/// - Panel titles and indicator labels
+/// - Indicator icons (SF Symbol names)
+/// - Layout, position, style settings
+/// - Font size and theme selection
+///
+/// ## Topics
+///
+/// ### Related Views
+///
+/// - ``ToolBarView``
+/// - ``CodeEditorView``
+/// - ``ExportView``
+///
+/// ### Supporting Types
+///
+/// - ``AppViewModel``
+/// - ``WindowLayout``
+/// - ``IndicatorPosition``
+/// - ``IndicatorStyle``
 public struct ContentView: View {
     @State private var viewModel = AppViewModel()
 
@@ -153,6 +203,13 @@ public struct ContentView: View {
 
     // MARK: - Export
 
+    /// Exports the current code panels as a PNG image.
+    ///
+    /// This method orchestrates the export pipeline:
+    /// 1. Renders the panels to an `NSImage` via ``renderExportViewToImage()``
+    /// 2. Saves the image using ``AppViewModel/saveImage(_:)``
+    ///
+    /// > Note: Export is disabled when both code panels are empty.
     @MainActor
     private func exportImage() async {
         // Use NSHostingView + snapshot instead of ImageRenderer
@@ -171,8 +228,33 @@ public struct ContentView: View {
         }
     }
 
-    /// Renders the export view to an NSImage using an offscreen window
-    /// This works with NSViewRepresentable views (like SourceEditor) unlike ImageRenderer
+    /// Renders the export view to an NSImage using an offscreen window.
+    ///
+    /// This method uses an offscreen `NSWindow` technique because `ImageRenderer`
+    /// cannot capture `NSViewRepresentable` views like `SourceEditor` from
+    /// CodeEditSourceEditor.
+    ///
+    /// ## Rendering Steps
+    ///
+    /// 1. **Size Calculation** - Computes dimensions based on:
+    ///    - Longest line in both code panels
+    ///    - Monospace font character width
+    ///    - Line counts for each panel (minimum 5 lines)
+    ///    - Additional space for gutters, indicators, padding, and shadows
+    ///
+    /// 2. **View Setup** - Creates an ``ExportView`` with calculated dimensions
+    ///    and hosts it in an `NSHostingView`
+    ///
+    /// 3. **Offscreen Window** - Creates a borderless window positioned off-screen
+    ///    to allow proper layer rendering
+    ///
+    /// 4. **Render Wait** - Waits for `SourceEditor` to fully render using
+    ///    multiple short sleeps with `Task.yield()`
+    ///
+    /// 5. **Capture** - Uses `bitmapImageRepForCachingDisplay` for proper layer
+    ///    capture, then scales to 2x for Retina displays
+    ///
+    /// - Returns: The rendered image at 2x Retina scale, or `nil` if rendering fails.
     @MainActor
     private func renderExportViewToImage() async -> NSImage? {
         // Calculate size based on layout and content
