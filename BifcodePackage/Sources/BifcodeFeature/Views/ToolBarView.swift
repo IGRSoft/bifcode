@@ -20,6 +20,8 @@ public struct ToolBarView: View {
     @AppStorage("fontSize") private var fontSize: Double = 14
     @AppStorage("selectedTheme") private var selectedThemeRaw: String = EditorThemeOption.atomOneDark.rawValue
 
+    @AppStorage("saveLocation") private var saveLocationPath: String = ""
+    
     @Binding private var doTitleSetting: String
     @Binding private var dontTitleSetting: String
 
@@ -42,70 +44,18 @@ public struct ToolBarView: View {
     }
 
     // MARK: - Body
-
+    
     public var body: some View {
-        HStack(alignment: .top, spacing: 16) {
-            VStack(spacing: 16) {
-                Text("Code Style")
-                    .font(.caption)
-                    .foregroundStyle(Color.secondaryText)
+        HStack(alignment: .top, spacing: 8) {
+            codeSettingsView()
+                .padding(.trailing, 8)
 
-                HStack(spacing: 8) {
-                    // Language
-                    languagePicker
+            Divider().frame(height: 150)
 
-                    Divider().frame(width: 1, height: 20)
-                        .padding(.leading, 8)
-
-                    // Theme
-                    themePicker
-
-                    Divider().frame(width: 1, height: 20)
-                        .padding(.leading, 8)
-
-                    // Layout
-                    layoutToggle
-                }
-                .fixedSize()
-
-                // Font Size
-                fontSizeControl
-                
-                VStack(spacing: 16) {
-                    Text("Panel Titles")
-                        .font(.caption)
-                        .foregroundStyle(Color.secondaryText)
-
-                    HStack(spacing: 8) {
-                        doTitleField
-                        dontTitleField
-                    }
-                }
-                .frame(maxWidth: .infinity)
-            }
-            .fixedSize()
-            .layoutPriority(1)
-
-            Divider().frame(height: 48)
-
-            VStack(spacing: 16) {
-                Text("Indicator Style")
-                    .font(.caption)
-                    .foregroundStyle(Color.secondaryText)
-
-                HStack(spacing: 8) {
-                    // Indicator Style
-                    indicatorStylePicker
-
-                    // Indicator Position
-                    indicatorPositionPicker
-                }
-
-                // Indicator Size
-                indicatorSizeControl
-            }
-
-            Divider().frame(height: 48)
+            indicatorSettingsView()
+                .padding(.trailing, 8)
+            
+            Divider().frame(height: 150)
 
             Spacer(minLength: 0)
 
@@ -117,6 +67,68 @@ public struct ToolBarView: View {
         .background(Color.toolbarBackground)
     }
 
+    @ViewBuilder
+    private func codeSettingsView() -> some View {
+        VStack(spacing: 16) {
+            Text("Code Style")
+                .font(.caption)
+                .foregroundStyle(Color.secondaryText)
+            
+            HStack(spacing: 8) {
+                // Language
+                languagePicker
+                
+                // Theme
+                themePicker
+                
+                Divider().frame(width: 1, height: 20)
+                    .padding(.leading, 8)
+                
+                // Layout
+                layoutToggle
+            }
+            .fixedSize()
+            
+            // Font Size
+            fontSizeControl
+            
+            VStack(spacing: 16) {
+                Text("Panel Titles")
+                    .font(.caption)
+                    .foregroundStyle(Color.secondaryText)
+                
+                HStack(spacing: 8) {
+                    doTitleField
+                    dontTitleField
+                }
+            }
+            .frame(maxWidth: .infinity)
+        }
+        .fixedSize()
+        .layoutPriority(1)
+    }
+    
+    @ViewBuilder
+    private func indicatorSettingsView() -> some View {
+        VStack(spacing: 16) {
+            Text("Indicator Style")
+                .font(.caption)
+                .foregroundStyle(Color.secondaryText)
+            
+            HStack(spacing: 8) {
+                // Indicator Style
+                indicatorStylePicker
+                
+                // Indicator Position
+                indicatorPositionPicker
+            }
+            .fixedSize()
+            
+            // Indicator Size
+            indicatorSizeControl
+        }
+    }
+    
     // MARK: - Language Picker
 
     private var languagePicker: some View {
@@ -126,7 +138,8 @@ public struct ToolBarView: View {
                     Text(lang.id.rawValue.capitalized).tag(lang)
                 }
             }
-            .frame(width: 100)
+            .pickerStyle(.menu)
+            .fixedSize()
         }
     }
 
@@ -147,7 +160,8 @@ public struct ToolBarView: View {
                 Text(theme.label).tag(theme.rawValue)
             }
         }
-        .frame(width: 140)
+        .pickerStyle(.menu)
+        .fixedSize()
     }
 
     // MARK: - Layout Toggle
@@ -171,7 +185,8 @@ public struct ToolBarView: View {
                 Text(style.label).tag(style)
             }
         }
-        .frame(width: 120)
+        .pickerStyle(.menu)
+        .fixedSize()
     }
 
     // MARK: - Indicator Position
@@ -185,7 +200,8 @@ public struct ToolBarView: View {
                 Text(position.label).tag(position)
             }
         }
-        .frame(width: 120)
+        .pickerStyle(.menu)
+        .fixedSize()
     }
 
     // MARK: - Indicator Size
@@ -193,13 +209,15 @@ public struct ToolBarView: View {
     private var indicatorSizeControl: some View {
         HStack(spacing: 4) {
             Slider(value: $indicatorSize, in: 32 ... 80, step: 4)
-                .frame(width: 160)
+                .frame(maxWidth: .infinity)
 
             Text("\(Int(indicatorSize))")
                 .font(.body)
                 .monospacedDigit()
-                .frame(width: 20, alignment: .trailing)
+                .padding(.leading, 8)
+                .fixedSize()
         }
+        .padding(.horizontal, 24)
     }
 
     // MARK: - Font Size
@@ -233,13 +251,31 @@ public struct ToolBarView: View {
     // MARK: - Export Button
 
     private var exportButton: some View {
-        Button {
-            onExport()
-        } label: {
-            Label("Export", systemImage: "square.and.arrow.up")
-                .fixedSize()
+        VStack(spacing: 16) {
+            Button { onExport() } label: {
+                Image(systemName: "square.and.arrow.up")
+                    .font(.system(size: 34))
+            }
+            .buttonStyle(.borderedProminent)
+            .fixedSize()
+            
+            Button("Choose") {
+                chooseSaveLocation()
+            }
         }
-        .buttonStyle(.borderedProminent)
+    }
+    
+    // MARK: - Actions
+
+    private func chooseSaveLocation() {
+        let panel = NSOpenPanel()
+        panel.canChooseFiles = false
+        panel.canChooseDirectories = true
+        panel.allowsMultipleSelection = false
+
+        if panel.runModal() == .OK, let url = panel.url {
+            saveLocationPath = url.path()
+        }
     }
 }
 
