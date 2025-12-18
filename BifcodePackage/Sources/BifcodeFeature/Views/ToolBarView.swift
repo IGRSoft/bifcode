@@ -43,17 +43,20 @@ public struct ToolBarView: View {
 
     var onExport: () -> Void
     var onLanguageChange: (CodeLanguage) -> Void
+    var isExportDisabled: Bool
 
     // MARK: - Initialization
 
     public init(
         doTitleSetting: Binding<String>,
         dontTitleSetting: Binding<String>,
+        isExportDisabled: Bool = false,
         onExport: @escaping () -> Void,
         onLanguageChange: @escaping (CodeLanguage) -> Void
     ) {
         _doTitleSetting = doTitleSetting
         _dontTitleSetting = dontTitleSetting
+        self.isExportDisabled = isExportDisabled
         self.onExport = onExport
         self.onLanguageChange = onLanguageChange
     }
@@ -315,7 +318,7 @@ public struct ToolBarView: View {
 
     private var fontSizeControl: some View {
         HStack(spacing: 4) {
-            Slider(value: $fontSize, in: 10 ... 34, step: 1)
+            Slider(value: $fontSize, in: 10 ... 24, step: 1)
                 .frame(maxWidth: .infinity)
 
             Text("\(Int(fontSize))")
@@ -353,15 +356,24 @@ public struct ToolBarView: View {
 
     // MARK: - Export Button
 
+    @State private var isExportButtonHovered = false
+
     private var exportButton: some View {
         VStack(spacing: 16) {
             Button { onExport() } label: {
                 Image(systemName: "square.and.arrow.up")
-                    .font(.system(size: 34))
+                    .font(.system(size: 24))
+                    .frame(width: 56, height: 56)
             }
             .buttonStyle(.borderedProminent)
-            .fixedSize()
-            
+            .clipShape(Circle())
+            .scaleEffect(isExportButtonHovered && !isExportDisabled ? 1.1 : 1.0)
+            .animation(.easeInOut(duration: 0.15), value: isExportButtonHovered)
+            .onHover { hovering in
+                isExportButtonHovered = hovering
+            }
+            .disabled(isExportDisabled)
+
             Button("Choose") {
                 chooseSaveLocation()
             }
@@ -395,6 +407,17 @@ public struct ToolBarView: View {
     ToolBarView(
         doTitleSetting: .constant("1"),
         dontTitleSetting: .constant("2"),
+        isExportDisabled: false,
+        onExport: {},
+        onLanguageChange: { _ in }
+    )
+}
+
+#Preview("ToolBarView - Export Disabled") {
+    ToolBarView(
+        doTitleSetting: .constant("1"),
+        dontTitleSetting: .constant("2"),
+        isExportDisabled: true,
         onExport: {},
         onLanguageChange: { _ in }
     )

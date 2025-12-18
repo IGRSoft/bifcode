@@ -74,8 +74,10 @@ public struct CodeEditorView: View {
     }
 
     /// Minimum panel height based on content lines
+    /// Uses minimum of 5 lines to prevent broken views with 1-4 lines
     private var minPanelHeight: CGFloat {
-        let lineCount = max(panel.code.components(separatedBy: "\n").count, 1)
+        let minLineCount = 5
+        let lineCount = max(panel.code.components(separatedBy: "\n").count, minLineCount)
         let editorPadding: CGFloat = 10
         let titleBarHeight: CGFloat = showTitle ? 38 : 0
         return titleBarHeight + (CGFloat(lineCount) * lineHeight) + editorPadding
@@ -97,11 +99,13 @@ public struct CodeEditorView: View {
                 .lineLimit(1)
                 .truncationMode(.tail)
 
-            Spacer()
+            Spacer(minLength: 0)
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 10)
+        .frame(maxWidth: .infinity)
         .background(Color.titleBarBackground)
+        .clipShape(UnevenRoundedRectangle(topLeadingRadius: 12, topTrailingRadius: 12))
     }
 
     // MARK: - Editor Area

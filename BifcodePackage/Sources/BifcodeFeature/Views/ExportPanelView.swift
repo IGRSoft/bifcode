@@ -60,11 +60,13 @@ struct ExportPanelView: View {
                 .lineLimit(1)
                 .truncationMode(.tail)
 
-            Spacer()
+            Spacer(minLength: 0)
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 10)
+        .frame(maxWidth: .infinity)
         .background(Color.titleBarBackground)
+        .clipShape(UnevenRoundedRectangle(topLeadingRadius: 12, topTrailingRadius: 12))
     }
 
     // MARK: - Editor Area
