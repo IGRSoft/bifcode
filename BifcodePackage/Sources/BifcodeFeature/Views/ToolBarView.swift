@@ -24,7 +24,6 @@ public struct ToolBarView: View {
     @AppStorage("fontSize") private var fontSize: Double = 14
     @AppStorage("selectedTheme") private var selectedThemeRaw: String = EditorThemeOption.atomOneDark.rawValue
 
-    @AppStorage("saveLocation") private var saveLocationPath: String = ""
     @AppStorage("selectedLanguage") private var selectedLanguageRaw: String = "swift"
 
     /// Current indicator style for disable logic
@@ -376,9 +375,16 @@ public struct ToolBarView: View {
         panel.canChooseFiles = false
         panel.canChooseDirectories = true
         panel.allowsMultipleSelection = false
+        panel.prompt = "Choose"
+        panel.message = "Select a folder to save exported images"
 
         if panel.runModal() == .OK, let url = panel.url {
-            saveLocationPath = url.path()
+            do {
+                try BookmarkManager.shared.storeBookmark(for: url)
+            } catch {
+                // Log bookmark creation failure - user can try again
+                print("Failed to create bookmark: \(error)")
+            }
         }
     }
 }

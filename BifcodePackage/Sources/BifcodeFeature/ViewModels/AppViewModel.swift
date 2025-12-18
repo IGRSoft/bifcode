@@ -18,17 +18,27 @@ public final class AppViewModel {
     public let doPanel: CodePanel
     public let dontPanel: CodePanel
 
-    // MARK: - Settings (via @AppStorage)
+    // MARK: - Save Location
 
-    @ObservationIgnored
-    @AppStorage("saveLocation") private var saveLocationPath: String = ""
-
-    /// Computed URL for save location, defaults to Desktop
+    /// Computed URL for save location, defaults to Desktop.
+    /// Uses security-scoped bookmarks to persist access across app launches.
     public var saveLocation: URL {
-        if saveLocationPath.isEmpty {
-            return FileManager.default.urls(for: .desktopDirectory, in: .userDomainMask).first!
+        // Try to resolve bookmarked location first
+        if let bookmarkedURL = BookmarkManager.shared.resolveBookmark() {
+            return bookmarkedURL
         }
-        return URL(fileURLWithPath: saveLocationPath)
+        // Fall back to Desktop
+        return FileManager.default.urls(for: .desktopDirectory, in: .userDomainMask).first!
+    }
+
+    /// Whether a custom save location has been set via bookmark
+    public var hasCustomSaveLocation: Bool {
+        BookmarkManager.shared.hasBookmark
+    }
+
+    /// Display name of the current save location
+    public var saveLocationName: String {
+        BookmarkManager.shared.bookmarkedLocationName ?? "Desktop"
     }
 
     // MARK: - Initialization
@@ -55,9 +65,30 @@ public final class AppViewModel {
 
     // MARK: - Export
 
+    /// Save an image to the configured save location.
+    ///
+    /// Handles security-scoped resource access for bookmarked locations.
+    /// - Parameter image: The NSImage to save as PNG
+    /// - Throws: `ExportError` if conversion or saving fails
     public func saveImage(_ image: NSImage) async throws {
+        let location = saveLocation
+        let needsSecurityScope = hasCustomSaveLocation
+
+        // Start security-scoped access if using bookmarked URL
+        if needsSecurityScope {
+            guard location.startAccessingSecurityScopedResource() else {
+                throw ExportError.accessDenied
+            }
+        }
+
+        defer {
+            if needsSecurityScope {
+                location.stopAccessingSecurityScopedResource()
+            }
+        }
+
         let filename = "bifcode-\(Date().timeIntervalSince1970).png"
-        let url = saveLocation.appendingPathComponent(filename)
+        let url = location.appendingPathComponent(filename)
 
         guard let tiffData = image.tiffRepresentation,
               let bitmap = NSBitmapImageRep(data: tiffData),
@@ -75,11 +106,13 @@ public final class AppViewModel {
 public enum ExportError: LocalizedError {
     case conversionFailed
     case saveFailed
+    case accessDenied
 
     public var errorDescription: String? {
         switch self {
         case .conversionFailed: "Failed to convert image to PNG"
         case .saveFailed: "Failed to save image"
+        case .accessDenied: "Cannot access save location. Please choose a new folder."
         }
     }
 }
