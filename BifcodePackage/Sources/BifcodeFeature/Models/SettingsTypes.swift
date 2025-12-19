@@ -246,13 +246,53 @@ public enum WindowLayout: String, CaseIterable, Sendable {
     }
 }
 
+// MARK: - Theme Mode
+
+/// The color mode for the code editor themes.
+///
+/// Controls whether dark or light themes are displayed in the theme picker.
+/// Users can toggle between modes, and the selected theme will switch to
+/// an equivalent theme in the new mode when available.
+///
+/// ## Usage
+///
+/// ```swift
+/// @AppStorage("themeMode") private var themeMode = ThemeMode.dark.rawValue
+/// ```
+///
+/// ## Topics
+///
+/// ### Modes
+///
+/// - ``dark``
+/// - ``light``
+public enum ThemeMode: String, CaseIterable, Sendable {
+    /// Dark mode themes with dark backgrounds.
+    ///
+    /// Ideal for low-light environments and reducing eye strain.
+    case dark
+
+    /// Light mode themes with light backgrounds.
+    ///
+    /// Better for bright environments and matching system light mode.
+    case light
+
+    /// A human-readable label for display in pickers.
+    public var label: String {
+        switch self {
+        case .dark: "Dark"
+        case .light: "Light"
+        }
+    }
+}
+
 // MARK: - Editor Themes
 
 /// Available syntax highlighting themes for the code editor.
 ///
 /// `EditorThemeOption` provides a curated selection of popular code editor
-/// themes. Each theme defines colors for text, keywords, strings, comments,
-/// and other syntax elements.
+/// themes in both dark and light variants. Each theme defines colors for text,
+/// keywords, strings, comments, and other syntax elements.
 ///
 /// ## Usage
 ///
@@ -267,6 +307,8 @@ public enum WindowLayout: String, CaseIterable, Sendable {
 ///
 /// ## Available Themes
 ///
+/// ### Dark Themes
+///
 /// | Theme | Description |
 /// |-------|-------------|
 /// | Atom One Dark | Popular dark theme from Atom editor |
@@ -277,9 +319,18 @@ public enum WindowLayout: String, CaseIterable, Sendable {
 /// | Solarized Dark | Solarized dark variant |
 /// | Xcode Default | macOS Xcode default dark theme |
 ///
+/// ### Light Themes
+///
+/// | Theme | Description |
+/// |-------|-------------|
+/// | Atom One Light | Light variant of Atom One |
+/// | GitHub Light | GitHub's official light mode |
+/// | Solarized Light | Solarized light variant |
+/// | Xcode Light | macOS Xcode default light theme |
+///
 /// ## Topics
 ///
-/// ### Themes
+/// ### Dark Themes
 ///
 /// - ``atomOneDark``
 /// - ``dracula``
@@ -289,11 +340,23 @@ public enum WindowLayout: String, CaseIterable, Sendable {
 /// - ``solarizedDark``
 /// - ``xcodeDefault``
 ///
+/// ### Light Themes
+///
+/// - ``atomOneLight``
+/// - ``githubLight``
+/// - ``solarizedLight``
+/// - ``xcodeLight``
+///
 /// ### Accessing Theme Data
 ///
 /// - ``label``
 /// - ``editorTheme``
+/// - ``mode``
+/// - ``themes(for:)``
+/// - ``equivalent(in:)``
 public enum EditorThemeOption: String, CaseIterable, Sendable {
+    // MARK: - Dark Themes
+
     /// Atom One Dark theme.
     ///
     /// A popular dark theme originally from the Atom editor.
@@ -338,6 +401,32 @@ public enum EditorThemeOption: String, CaseIterable, Sendable {
     /// Xcode syntax coloring.
     case xcodeDefault = "xcode-default"
 
+    // MARK: - Light Themes
+
+    /// Atom One Light theme.
+    ///
+    /// The light variant of the popular Atom One theme.
+    /// Features a light gray background with readable syntax colors.
+    case atomOneLight = "atom-one-light"
+
+    /// GitHub Light theme.
+    ///
+    /// GitHub's official light mode color scheme.
+    /// Features a white background with familiar GitHub coloring.
+    case githubLight = "github-light"
+
+    /// Solarized Light theme.
+    ///
+    /// The light variant of the Solarized color scheme.
+    /// Features a cream-colored background with warm tones.
+    case solarizedLight = "solarized-light"
+
+    /// Xcode Default Light theme.
+    ///
+    /// The default light theme from Apple's Xcode.
+    /// Features a white background with familiar Xcode syntax coloring.
+    case xcodeLight = "xcode-light"
+
     /// A human-readable label for display in pickers.
     public var label: String {
         switch self {
@@ -348,6 +437,66 @@ public enum EditorThemeOption: String, CaseIterable, Sendable {
         case .nord: "Nord"
         case .solarizedDark: "Solarized Dark"
         case .xcodeDefault: "Xcode Default"
+        case .atomOneLight: "Atom One Light"
+        case .githubLight: "GitHub Light"
+        case .solarizedLight: "Solarized Light"
+        case .xcodeLight: "Xcode Light"
+        }
+    }
+
+    /// The theme mode (dark or light).
+    ///
+    /// Use this to filter themes by mode in the UI.
+    public var mode: ThemeMode {
+        switch self {
+        case .atomOneDark, .dracula, .githubDark, .monokai, .nord, .solarizedDark, .xcodeDefault:
+            .dark
+        case .atomOneLight, .githubLight, .solarizedLight, .xcodeLight:
+            .light
+        }
+    }
+
+    /// Returns all themes for a specific mode.
+    ///
+    /// Use this to filter the theme picker based on the current mode:
+    ///
+    /// ```swift
+    /// let darkThemes = EditorThemeOption.themes(for: .dark)
+    /// let lightThemes = EditorThemeOption.themes(for: .light)
+    /// ```
+    ///
+    /// - Parameter mode: The theme mode to filter by.
+    /// - Returns: An array of themes matching the specified mode.
+    public static func themes(for mode: ThemeMode) -> [EditorThemeOption] {
+        allCases.filter { $0.mode == mode }
+    }
+
+    /// Returns the equivalent theme in the target mode, if available.
+    ///
+    /// When switching between dark and light modes, this method finds
+    /// the corresponding theme variant. For themes without an equivalent
+    /// (like Dracula or Monokai), returns `nil`.
+    ///
+    /// ```swift
+    /// let darkTheme = EditorThemeOption.atomOneDark
+    /// let lightEquivalent = darkTheme.equivalent(in: .light) // .atomOneLight
+    /// ```
+    ///
+    /// - Parameter targetMode: The mode to find an equivalent theme in.
+    /// - Returns: The equivalent theme, or `nil` if none exists.
+    public func equivalent(in targetMode: ThemeMode) -> EditorThemeOption? {
+        guard mode != targetMode else { return self }
+
+        switch self {
+        case .atomOneDark: return .atomOneLight
+        case .atomOneLight: return .atomOneDark
+        case .githubDark: return .githubLight
+        case .githubLight: return .githubDark
+        case .solarizedDark: return .solarizedLight
+        case .solarizedLight: return .solarizedDark
+        case .xcodeDefault: return .xcodeLight
+        case .xcodeLight: return .xcodeDefault
+        case .dracula, .monokai, .nord: return nil
         }
     }
 
@@ -369,6 +518,10 @@ public enum EditorThemeOption: String, CaseIterable, Sendable {
         case .nord: .nord
         case .solarizedDark: .solarizedDark
         case .xcodeDefault: .xcodeDefault
+        case .atomOneLight: .atomOneLight
+        case .githubLight: .githubLight
+        case .solarizedLight: .solarizedLight
+        case .xcodeLight: .xcodeLight
         }
     }
 }
@@ -545,5 +698,99 @@ extension EditorTheme {
         strings: .init(color: NSColor(red: 0.99, green: 0.42, blue: 0.36, alpha: 1.0)),
         characters: .init(color: NSColor(red: 0.82, green: 0.62, blue: 0.99, alpha: 1.0)),
         comments: .init(color: NSColor(red: 0.42, green: 0.48, blue: 0.51, alpha: 1.0))
+    )
+
+    // MARK: - Light Theme Presets
+
+    /// Atom One Light theme preset.
+    ///
+    /// The light variant of Atom One with a `#fafafa` background
+    /// and readable syntax colors.
+    public nonisolated(unsafe) static let atomOneLight = EditorTheme(
+        text: .init(color: NSColor(red: 0.22, green: 0.23, blue: 0.26, alpha: 1.0)), // #383a42
+        insertionPoint: .black,
+        invisibles: .init(color: NSColor(white: 0.8, alpha: 1.0)),
+        background: NSColor(red: 0.98, green: 0.98, blue: 0.98, alpha: 1.0), // #fafafa
+        lineHighlight: NSColor.clear,
+        selection: NSColor(red: 0.90, green: 0.91, blue: 0.92, alpha: 1.0),
+        keywords: .init(color: NSColor(red: 0.65, green: 0.15, blue: 0.64, alpha: 1.0)), // #a626a4
+        commands: .init(color: NSColor(red: 0.25, green: 0.43, blue: 0.77, alpha: 1.0)), // #4078f2
+        types: .init(color: NSColor(red: 0.76, green: 0.49, blue: 0.0, alpha: 1.0)), // #c18401
+        attributes: .init(color: NSColor(red: 0.76, green: 0.49, blue: 0.0, alpha: 1.0)),
+        variables: .init(color: NSColor(red: 0.90, green: 0.25, blue: 0.21, alpha: 1.0)), // #e45649
+        values: .init(color: NSColor(red: 0.60, green: 0.40, blue: 0.0, alpha: 1.0)), // #986801
+        numbers: .init(color: NSColor(red: 0.60, green: 0.40, blue: 0.0, alpha: 1.0)),
+        strings: .init(color: NSColor(red: 0.31, green: 0.63, blue: 0.31, alpha: 1.0)), // #50a14f
+        characters: .init(color: NSColor(red: 0.31, green: 0.63, blue: 0.31, alpha: 1.0)),
+        comments: .init(color: NSColor(red: 0.63, green: 0.63, blue: 0.65, alpha: 1.0)) // #a0a1a7
+    )
+
+    /// GitHub Light theme preset.
+    ///
+    /// GitHub's official light mode color scheme with a `#ffffff`
+    /// background and familiar GitHub coloring.
+    public nonisolated(unsafe) static let githubLight = EditorTheme(
+        text: .init(color: NSColor(red: 0.14, green: 0.16, blue: 0.18, alpha: 1.0)), // #24292e
+        insertionPoint: .black,
+        invisibles: .init(color: NSColor(white: 0.8, alpha: 1.0)),
+        background: NSColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0), // #ffffff
+        lineHighlight: NSColor.clear,
+        selection: NSColor(red: 0.88, green: 0.93, blue: 0.98, alpha: 1.0),
+        keywords: .init(color: NSColor(red: 0.84, green: 0.23, blue: 0.29, alpha: 1.0)), // #d73a49
+        commands: .init(color: NSColor(red: 0.44, green: 0.26, blue: 0.69, alpha: 1.0)), // #6f42c1
+        types: .init(color: NSColor(red: 0.44, green: 0.26, blue: 0.69, alpha: 1.0)),
+        attributes: .init(color: NSColor(red: 0.44, green: 0.26, blue: 0.69, alpha: 1.0)),
+        variables: .init(color: NSColor(red: 0.14, green: 0.16, blue: 0.18, alpha: 1.0)),
+        values: .init(color: NSColor(red: 0.0, green: 0.36, blue: 0.58, alpha: 1.0)), // #005cc5
+        numbers: .init(color: NSColor(red: 0.0, green: 0.36, blue: 0.58, alpha: 1.0)),
+        strings: .init(color: NSColor(red: 0.01, green: 0.18, blue: 0.38, alpha: 1.0)), // #032f62
+        characters: .init(color: NSColor(red: 0.01, green: 0.18, blue: 0.38, alpha: 1.0)),
+        comments: .init(color: NSColor(red: 0.42, green: 0.45, blue: 0.49, alpha: 1.0)) // #6a737d
+    )
+
+    /// Solarized Light theme preset.
+    ///
+    /// The light variant of Solarized with a cream-colored `#fdf6e3`
+    /// background and carefully balanced colors.
+    public nonisolated(unsafe) static let solarizedLight = EditorTheme(
+        text: .init(color: NSColor(red: 0.40, green: 0.48, blue: 0.51, alpha: 1.0)), // #657b83
+        insertionPoint: .black,
+        invisibles: .init(color: NSColor(white: 0.8, alpha: 1.0)),
+        background: NSColor(red: 0.99, green: 0.96, blue: 0.89, alpha: 1.0), // #fdf6e3
+        lineHighlight: NSColor.clear,
+        selection: NSColor(red: 0.93, green: 0.91, blue: 0.84, alpha: 1.0),
+        keywords: .init(color: NSColor(red: 0.52, green: 0.60, blue: 0.0, alpha: 1.0)), // #859900
+        commands: .init(color: NSColor(red: 0.15, green: 0.55, blue: 0.82, alpha: 1.0)), // #268bd2
+        types: .init(color: NSColor(red: 0.71, green: 0.54, blue: 0.0, alpha: 1.0)), // #b58900
+        attributes: .init(color: NSColor(red: 0.71, green: 0.54, blue: 0.0, alpha: 1.0)),
+        variables: .init(color: NSColor(red: 0.15, green: 0.55, blue: 0.82, alpha: 1.0)),
+        values: .init(color: NSColor(red: 0.16, green: 0.63, blue: 0.60, alpha: 1.0)), // #2aa198
+        numbers: .init(color: NSColor(red: 0.16, green: 0.63, blue: 0.60, alpha: 1.0)),
+        strings: .init(color: NSColor(red: 0.16, green: 0.63, blue: 0.60, alpha: 1.0)),
+        characters: .init(color: NSColor(red: 0.16, green: 0.63, blue: 0.60, alpha: 1.0)),
+        comments: .init(color: NSColor(red: 0.58, green: 0.63, blue: 0.63, alpha: 1.0)) // #93a1a1
+    )
+
+    /// Xcode Default Light theme preset.
+    ///
+    /// Apple's default light theme for Xcode with a `#ffffff`
+    /// background and familiar Xcode syntax coloring.
+    public nonisolated(unsafe) static let xcodeLight = EditorTheme(
+        text: .init(color: NSColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)), // #000000
+        insertionPoint: .black,
+        invisibles: .init(color: NSColor(white: 0.8, alpha: 1.0)),
+        background: NSColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0), // #ffffff
+        lineHighlight: NSColor.clear,
+        selection: NSColor(red: 0.73, green: 0.84, blue: 0.95, alpha: 1.0),
+        keywords: .init(color: NSColor(red: 0.68, green: 0.24, blue: 0.64, alpha: 1.0)), // #ad3da4
+        commands: .init(color: NSColor(red: 0.11, green: 0.43, blue: 0.47, alpha: 1.0)), // #1c6b72
+        types: .init(color: NSColor(red: 0.11, green: 0.38, blue: 0.56, alpha: 1.0)), // #1c5f8f
+        attributes: .init(color: NSColor(red: 0.59, green: 0.40, blue: 0.15, alpha: 1.0)), // #976726
+        variables: .init(color: NSColor(red: 0.11, green: 0.43, blue: 0.47, alpha: 1.0)),
+        values: .init(color: NSColor(red: 0.11, green: 0.15, blue: 0.73, alpha: 1.0)), // #1c26ba
+        numbers: .init(color: NSColor(red: 0.11, green: 0.15, blue: 0.73, alpha: 1.0)),
+        strings: .init(color: NSColor(red: 0.82, green: 0.12, blue: 0.11, alpha: 1.0)), // #d12f1b
+        characters: .init(color: NSColor(red: 0.11, green: 0.15, blue: 0.73, alpha: 1.0)),
+        comments: .init(color: NSColor(red: 0.36, green: 0.42, blue: 0.47, alpha: 1.0)) // #5d6c79
     )
 }

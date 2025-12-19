@@ -87,6 +87,7 @@ public struct ContentView: View {
     @AppStorage("showTitle") private var showTitle: Bool = true
     @AppStorage("fontSize") private var fontSize: Double = 14
     @AppStorage("selectedTheme") private var selectedThemeRaw: String = EditorThemeOption.atomOneDark.rawValue
+    @AppStorage("themeMode") private var themeModeRaw: String = ThemeMode.dark.rawValue
 
     private var layout: WindowLayout {
         WindowLayout(rawValue: windowLayoutRaw) ?? .horizontal
@@ -102,6 +103,10 @@ public struct ContentView: View {
 
     private var selectedTheme: EditorThemeOption {
         EditorThemeOption(rawValue: selectedThemeRaw) ?? .atomOneDark
+    }
+
+    private var themeMode: ThemeMode {
+        ThemeMode(rawValue: themeModeRaw) ?? .dark
     }
 
     public init() {}
@@ -129,7 +134,7 @@ public struct ContentView: View {
         .frame(minHeight: 400)
         .onAppear {
             // Initialize with stored language and titles on appear
-            //viewModel.setLanguage(selectedLanguage)
+            // viewModel.setLanguage(selectedLanguage)
             viewModel.update(doTitle: doTitleSetting, dontTitle: dontTitleSetting)
         }
         .onChange(of: selectedLanguageRaw) { _, _ in
@@ -195,6 +200,7 @@ public struct ContentView: View {
             showTitle: showTitle,
             fontSize: fontSize,
             theme: selectedTheme.editorTheme,
+            themeMode: themeMode,
             panelWidth: panelWidth,
             doPanelHeight: doPanelHeight,
             dontPanelHeight: dontPanelHeight
