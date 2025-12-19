@@ -63,6 +63,9 @@ struct ExportPanelView: View {
     /// The syntax highlighting theme.
     let theme: EditorTheme
 
+    /// The current theme mode for window styling.
+    let themeMode: ThemeMode
+
     /// Local editor state (not shared with interactive editor).
     @State private var editorState = SourceEditorState()
 
@@ -80,7 +83,7 @@ struct ExportPanelView: View {
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.windowBorder, lineWidth: 1)
+                .stroke(Color.windowBorder(for: themeMode), lineWidth: 1)
         )
     }
 
@@ -90,13 +93,13 @@ struct ExportPanelView: View {
         HStack(spacing: 14) {
             // Traffic light placeholder
             Circle()
-                .fill(Color.editorCloseButton)
+                .fill(Color.editorCloseButton(for: themeMode))
                 .frame(width: 14, height: 14)
 
             // Title - single line with truncation
             Label(panel.title, systemImage: "text.document.fill")
                 .font(.system(size: 13, weight: .medium))
-                .foregroundStyle(Color.titleText)
+                .foregroundStyle(Color.titleText(for: themeMode))
                 .lineLimit(1)
                 .truncationMode(.tail)
 
@@ -105,7 +108,7 @@ struct ExportPanelView: View {
         .padding(.horizontal, 12)
         .padding(.vertical, 10)
         .frame(maxWidth: .infinity)
-        .background(Color.titleBarBackground)
+        .background(Color.titleBarBackground(for: themeMode))
         .clipShape(UnevenRoundedRectangle(topLeadingRadius: 12, topTrailingRadius: 12))
     }
 
@@ -179,7 +182,8 @@ struct ExportPanelView: View {
         indicatorLabel: "Do's",
         showTitle: true,
         fontSize: 14,
-        theme: .atomOneDark
+        theme: .atomOneDark,
+        themeMode: .dark
     )
     .frame(width: 400, height: 200)
     .padding()
@@ -203,7 +207,8 @@ struct ExportPanelView: View {
         indicatorLabel: "Don'ts",
         showTitle: true,
         fontSize: 14,
-        theme: .atomOneDark
+        theme: .atomOneDark,
+        themeMode: .dark
     )
     .frame(width: 400, height: 200)
     .padding()

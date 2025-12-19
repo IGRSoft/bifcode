@@ -66,6 +66,9 @@ struct ExportView: View {
     /// The syntax highlighting theme.
     let theme: EditorTheme
 
+    /// The current theme mode for window styling.
+    let themeMode: ThemeMode
+
     // Panel dimensions for export
 
     /// Width of each panel in points.
@@ -104,7 +107,8 @@ struct ExportView: View {
             indicatorLabel: dontIndicatorLabel,
             showTitle: showTitle,
             fontSize: fontSize,
-            theme: theme
+            theme: theme,
+            themeMode: themeMode
         )
         .frame(width: panelWidth, height: dontPanelHeight)
         .shadow(color: .black.opacity(0.3), radius: 12, x: 0, y: 4)
@@ -118,7 +122,8 @@ struct ExportView: View {
             indicatorLabel: doIndicatorLabel,
             showTitle: showTitle,
             fontSize: fontSize,
-            theme: theme
+            theme: theme,
+            themeMode: themeMode
         )
         .frame(width: panelWidth, height: doPanelHeight)
         .shadow(color: .black.opacity(0.3), radius: 12, x: 0, y: 4)
@@ -154,6 +159,7 @@ struct ExportView: View {
         showTitle: true,
         fontSize: 14,
         theme: .atomOneDark,
+        themeMode: .dark,
         panelWidth: 350,
         doPanelHeight: 120,
         dontPanelHeight: 120
@@ -188,6 +194,7 @@ struct ExportView: View {
         showTitle: true,
         fontSize: 14,
         theme: .atomOneDark,
+        themeMode: .dark,
         panelWidth: 400,
         doPanelHeight: 120,
         dontPanelHeight: 120

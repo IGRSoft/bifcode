@@ -58,6 +58,7 @@ public struct ToolBarView: View {
     @AppStorage("dontIndicatorLabel") private var dontIndicatorLabel: String = "Don'ts"
     @AppStorage("fontSize") private var fontSize: Double = 14
     @AppStorage("selectedTheme") private var selectedThemeRaw: String = EditorThemeOption.atomOneDark.rawValue
+    @AppStorage("themeMode") private var themeModeRaw: String = ThemeMode.dark.rawValue
 
     @AppStorage("selectedLanguage") private var selectedLanguageRaw: String = "swift"
 
@@ -69,6 +70,21 @@ public struct ToolBarView: View {
     /// Selected language derived from stored raw value
     private var selectedLanguage: CodeLanguage {
         CodeLanguage.allLanguages.first { $0.id.rawValue == selectedLanguageRaw } ?? .swift
+    }
+
+    /// Current theme mode derived from stored raw value
+    private var currentThemeMode: ThemeMode {
+        ThemeMode(rawValue: themeModeRaw) ?? .dark
+    }
+
+    /// Current selected theme derived from stored raw value
+    private var currentTheme: EditorThemeOption {
+        EditorThemeOption(rawValue: selectedThemeRaw) ?? .atomOneDark
+    }
+
+    /// All available themes (not filtered by mode)
+    private var availableThemes: [EditorThemeOption] {
+        EditorThemeOption.allCases
     }
 
     @Binding private var doTitleSetting: String
@@ -123,12 +139,12 @@ public struct ToolBarView: View {
             codeSettingsView()
                 .padding(.trailing, 8)
 
-            Divider().frame(height: 150)
+            Divider().frame(height: 160)
 
             indicatorSettingsView()
                 .padding(.trailing, 8)
             
-            Divider().frame(height: 150)
+            Divider().frame(height: 160)
 
             Spacer(minLength: 0)
 
@@ -150,15 +166,9 @@ public struct ToolBarView: View {
             HStack(spacing: 8) {
                 // Language
                 languagePicker
-                
+
                 // Theme
                 themePicker
-                
-                Divider().frame(width: 1, height: 20)
-                    .padding(.leading, 8)
-                
-                // Layout
-                layoutToggle
             }
             .fixedSize()
             
@@ -166,16 +176,20 @@ public struct ToolBarView: View {
             fontSizeControl
             
             VStack(spacing: 16) {
-                Text("Panel Titles")
-                    .font(.caption)
-                    .foregroundStyle(Color.secondaryText)
+                HStack(spacing: 16) {
+                    // Theme Mode Toggle
+                    themeModeToggle
+                    
+                    // Layout
+                    layoutToggle
+                }
                 
                 HStack(spacing: 16) {
-                    doTitleField
                     dontTitleField
+                    
+                    doTitleField
                 }
             }
-            .padding(.top, 11)
             .frame(maxWidth: .infinity)
         }
         .fixedSize()
@@ -214,10 +228,10 @@ public struct ToolBarView: View {
 
             // Indicator Labels
             HStack(spacing: 8) {
-                doIndicatorLabelField
+                dontIndicatorLabelField
                     .padding(.horizontal, 8)
                     .frame(maxWidth: .infinity)
-                dontIndicatorLabelField
+                doIndicatorLabelField
                     .frame(maxWidth: .infinity)
             }
             .frame(maxWidth: .infinity)
@@ -251,11 +265,22 @@ public struct ToolBarView: View {
         ]
     }
 
+    // MARK: - Theme Mode Toggle
+
+    private var themeModeToggle: some View {
+        Picker("", selection: $themeModeRaw) {
+            Image(systemName: "moon.fill").tag(ThemeMode.dark.rawValue)
+            Image(systemName: "sun.max.fill").tag(ThemeMode.light.rawValue)
+        }
+        .pickerStyle(.segmented)
+        .fixedSize()
+    }
+
     // MARK: - Theme Picker
 
     private var themePicker: some View {
         Picker("", selection: $selectedThemeRaw) {
-            ForEach(EditorThemeOption.allCases, id: \.rawValue) { theme in
+            ForEach(availableThemes, id: \.rawValue) { theme in
                 Text(theme.label).tag(theme.rawValue)
             }
         }
@@ -390,7 +415,7 @@ public struct ToolBarView: View {
     private var doTitleField: some View {
         TextField("Do Title", text: $doTitleSetting)
             .textFieldStyle(.roundedBorder)
-            .frame(width: 150)
+            .frame(width: 128)
             .onChange(of: doTitleSetting) { _, newValue in
                 if newValue.count > 70 {
                     doTitleSetting = String(newValue.prefix(70))
@@ -401,7 +426,7 @@ public struct ToolBarView: View {
     private var dontTitleField: some View {
         TextField("Don't Title", text: $dontTitleSetting)
             .textFieldStyle(.roundedBorder)
-            .frame(width: 150)
+            .frame(width: 128)
             .onChange(of: dontTitleSetting) { _, newValue in
                 if newValue.count > 70 {
                     dontTitleSetting = String(newValue.prefix(70))

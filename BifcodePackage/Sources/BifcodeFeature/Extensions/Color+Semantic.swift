@@ -129,4 +129,42 @@ extension Color {
     /// Light: Semi-transparent black
     /// Dark: Semi-transparent white
     public static let secondaryText = Color("SecondaryText", bundle: .module)
+
+    // MARK: - Theme Mode Aware Colors
+
+    /// Title bar background based on theme mode
+    /// - Parameter mode: The current theme mode (dark or light)
+    /// - Returns: Appropriate title bar background color
+    public static func titleBarBackground(for mode: ThemeMode) -> Color {
+        mode == .dark
+            ? Color("TitleBarBackground", bundle: .module)
+            : Color("TitleBarBackgroundLight", bundle: .module)
+    }
+
+    /// Title text color based on theme mode
+    /// - Parameter mode: The current theme mode (dark or light)
+    /// - Returns: Appropriate title text color
+    public static func titleText(for mode: ThemeMode) -> Color {
+        mode == .dark
+            ? Color("TitleText", bundle: .module)
+            : Color("TitleTextLight", bundle: .module)
+    }
+
+    /// Window border color based on theme mode
+    /// - Parameter mode: The current theme mode (dark or light)
+    /// - Returns: Appropriate window border color
+    public static func windowBorder(for mode: ThemeMode) -> Color {
+        mode == .dark
+            ? Color("WindowBorder", bundle: .module)
+            : Color("WindowBorderLight", bundle: .module)
+    }
+
+    /// Close button color based on theme mode
+    /// - Parameter mode: The current theme mode (dark or light)
+    /// - Returns: Appropriate close button color
+    public static func editorCloseButton(for mode: ThemeMode) -> Color {
+        mode == .dark
+            ? Color("EditorCloseButton", bundle: .module)
+            : Color("EditorCloseButtonLight", bundle: .module)
+    }
 }
