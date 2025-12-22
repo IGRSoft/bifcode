@@ -137,13 +137,21 @@ public struct ToolBarView: View {
     
     public var body: some View {
         HStack(alignment: .top, spacing: 8) {
+            Spacer(minLength: 0)
+            
             codeSettingsView()
                 .padding(.trailing, 8)
 
+            Spacer(minLength: 0)
+            
             Divider().frame(height: 160)
 
+            Spacer(minLength: 0)
+            
             indicatorSettingsView()
                 .padding(.trailing, 8)
+            
+            Spacer(minLength: 0)
             
             Divider().frame(height: 160)
 
@@ -151,6 +159,8 @@ public struct ToolBarView: View {
 
             // Export
             exportButton
+            
+            Spacer(minLength: 0)
         }
         .padding(.horizontal)
         .padding(.vertical, 8)
@@ -466,8 +476,9 @@ public struct ToolBarView: View {
             Button("Choose") {
                 chooseSaveLocation()
             }
-
+            
             storeButton
+                .padding(.top, 10)
         }
     }
 
@@ -476,9 +487,9 @@ public struct ToolBarView: View {
             isStorePresented = true
         } label: {
             Image(systemName: "storefront")
-                .font(.system(size: 16))
+                .font(.system(size: 24))
         }
-        .foregroundStyle(hasMadePurchase ? .green : .secondary)
+        .foregroundStyle(hasMadePurchase ? .green : .yellow)
         .sheet(isPresented: $isStorePresented) {
             DeveloperSupportStoreView(
                 configuration: storeConfiguration,
