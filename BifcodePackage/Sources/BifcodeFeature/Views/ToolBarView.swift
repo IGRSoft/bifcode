@@ -7,6 +7,7 @@
 
 import CodeEditLanguages
 import CodeEditSourceEditor
+import DeveloperSupportStore
 import SwiftUI
 
 /// A toolbar providing all code style and indicator settings with an export button.
@@ -437,6 +438,14 @@ public struct ToolBarView: View {
     // MARK: - Export Button
 
     @State private var isExportButtonHovered = false
+    @State private var isStorePresented = false
+
+    /// Tracks whether the user has made any purchase (subscription or tip).
+    /// Persisted via AppStorage so the green icon state survives app restarts.
+    @AppStorage("hasMadePurchase") private var hasMadePurchase = false
+
+    private let storeConfiguration = BifcodeStoreConfiguration()
+    private let storeService = StoreService()
 
     private var exportButton: some View {
         VStack(spacing: 16) {
@@ -457,6 +466,48 @@ public struct ToolBarView: View {
             Button("Choose") {
                 chooseSaveLocation()
             }
+
+            storeButton
+        }
+    }
+
+    private var storeButton: some View {
+        Button {
+            isStorePresented = true
+        } label: {
+            Image(systemName: "storefront")
+                .font(.system(size: 16))
+        }
+        .foregroundStyle(hasMadePurchase ? .green : .secondary)
+        .sheet(isPresented: $isStorePresented) {
+            DeveloperSupportStoreView(
+                configuration: storeConfiguration,
+                storeService: storeService,
+                onPurchaseSuccess: { _ in
+                    hasMadePurchase = true
+                },
+                onDismiss: {
+                    isStorePresented = false
+                }
+            )
+        }
+        .task {
+            await checkPurchaseStatus()
+        }
+    }
+
+    private func checkPurchaseStatus() async {
+        // Skip sync if user has already made a purchase (persisted via AppStorage)
+        guard !hasMadePurchase else { return }
+
+        do {
+            try await storeService.syncStoreData()
+            // Check if there's an active subscription
+            if storeService.hasActiveSubscription {
+                hasMadePurchase = true
+            }
+        } catch {
+            // Silently fail - purchase status will remain false
         }
     }
     
