@@ -130,6 +130,35 @@ extension Color {
     /// Dark: Semi-transparent white
     public static let secondaryText = Color("SecondaryText", bundle: .module)
 
+    /// Tertiary text color for labels and hints
+    /// Light: Lighter semi-transparent black
+    /// Dark: Lighter semi-transparent white
+    public static var tertiaryText: Color {
+        Color.secondary.opacity(0.7)
+    }
+
+    /// Section header text color
+    /// Light: Dark gray
+    /// Dark: Light gray
+    public static var sectionHeader: Color {
+        Color.primary.opacity(0.85)
+    }
+
+    /// Control group background for visual separation
+    /// Light: Subtle light overlay
+    /// Dark: Subtle dark overlay
+    public static var controlGroupBackground: Color {
+        Color.primary.opacity(0.04)
+    }
+
+    /// Store button - purchased state (uses semantic green)
+    public static let storePurchased = Color("IndicatorDo", bundle: .module)
+
+    /// Store button - not purchased state (uses system accent)
+    public static var storeDefault: Color {
+        Color.accentColor
+    }
+
     // MARK: - Theme Mode Aware Colors
 
     /// Title bar background based on theme mode

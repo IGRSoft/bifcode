@@ -134,110 +134,145 @@ public struct ToolBarView: View {
     }
 
     // MARK: - Body
-    
-    public var body: some View {
-        HStack(alignment: .top, spacing: 8) {
-            codeSettingsView()
-                .padding(.trailing, 8)
 
-            Divider().frame(height: 160)
+    public var body: some View {
+        HStack(alignment: .top, spacing: 24) {
+            codeSettingsView()
+
+            Divider()
+                .frame(height: 184)
+                .padding(.vertical, 8)
 
             indicatorSettingsView()
-                .padding(.trailing, 8)
-            
-            Divider().frame(height: 160)
 
-            Spacer(minLength: 0)
+            Divider()
+                .frame(height: 184)
+                .padding(.vertical, 8)
 
-            // Export
             exportButton
         }
-        .padding(.horizontal)
-        .padding(.vertical, 8)
+        .padding(.horizontal, 20)
+        .padding(.vertical, 12)
+        .frame(maxWidth: .infinity)
         .background(Color.toolbarBackground)
     }
 
     @ViewBuilder
     private func codeSettingsView() -> some View {
-        VStack(spacing: 16) {
+        VStack(alignment: .leading, spacing: 12) {
+            // Section Header - HIG: Use clear, hierarchical typography
             Text("Code Style")
-                .font(.caption)
-                .foregroundStyle(Color.secondaryText)
-            
-            HStack(spacing: 8) {
-                // Language
-                languagePicker
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(Color.sectionHeader)
 
-                // Theme
+            // Language & Theme Row
+            HStack(spacing: 12) {
+                languagePicker
                 themePicker
             }
-            .fixedSize()
-            
-            // Font Size
-            fontSizeControl
-            
-            VStack(spacing: 16) {
-                HStack(spacing: 16) {
-                    // Theme Mode Toggle
+
+            // Font Size with Label
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Font Size")
+                    .font(.caption)
+                    .foregroundStyle(Color.tertiaryText)
+                fontSizeControl
+            }
+
+            // Mode & Layout Controls
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Theme")
+                        .font(.caption)
+                        .foregroundStyle(Color.tertiaryText)
                     themeModeToggle
-                    
-                    // Layout
+                }
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Layout")
+                        .font(.caption)
+                        .foregroundStyle(Color.tertiaryText)
                     layoutToggle
                 }
-                
-                HStack(spacing: 16) {
+            }
+
+            // Panel Titles
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Don't Title")
+                        .font(.caption)
+                        .foregroundStyle(Color.tertiaryText)
                     dontTitleField
-                    
+                }
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Do Title")
+                        .font(.caption)
+                        .foregroundStyle(Color.tertiaryText)
                     doTitleField
                 }
             }
-            .frame(maxWidth: .infinity)
         }
-        .fixedSize()
-        .layoutPriority(1)
+        .fixedSize(horizontal: true, vertical: false)
     }
     
     @ViewBuilder
     private func indicatorSettingsView() -> some View {
-        VStack(spacing: 16) {
+        VStack(alignment: .leading, spacing: 12) {
+            // Section Header - HIG: Use clear, hierarchical typography
             Text("Indicator Style")
-                .font(.caption)
-                .foregroundStyle(Color.secondaryText)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(Color.sectionHeader)
 
-            HStack(spacing: 8) {
-                // Indicator Style
+            // Style & Position Pickers
+            HStack(spacing: 12) {
                 indicatorStylePicker
-
-                // Indicator Position
                 indicatorPositionPicker
             }
-            .fixedSize()
-            .layoutPriority(1)
-            
-            // Indicator Size
-            indicatorSizeControl
-            
-            // Icon Pickers
-            HStack(spacing: 16) {
-                doIconPicker
-                    .frame(maxWidth: .infinity)
-                Spacer()
-                dontIconPicker
-                    .padding(.leading, 8)
+
+            // Indicator Size with Label
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Badge Size")
+                    .font(.caption)
+                    .foregroundStyle(Color.tertiaryText)
+                indicatorSizeControl
             }
-            .frame(maxWidth: .infinity)
+
+            // Icon Pickers with Labels
+            HStack(spacing: 16) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Don't Icon")
+                        .font(.caption)
+                        .foregroundStyle(Color.tertiaryText)
+                    dontIconPicker
+                }
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Do Icon")
+                        .font(.caption)
+                        .foregroundStyle(Color.tertiaryText)
+                    doIconPicker
+                }
+            }
 
             // Indicator Labels
-            HStack(spacing: 8) {
-                dontIndicatorLabelField
-                    .padding(.horizontal, 8)
-                    .frame(maxWidth: .infinity)
-                doIndicatorLabelField
-                    .frame(maxWidth: .infinity)
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Don't Label")
+                        .font(.caption)
+                        .foregroundStyle(Color.tertiaryText)
+                    dontIndicatorLabelField
+                }
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Do Label")
+                        .font(.caption)
+                        .foregroundStyle(Color.tertiaryText)
+                    doIndicatorLabelField
+                }
             }
-            .frame(maxWidth: .infinity)
         }
-        .fixedSize()
+        .fixedSize(horizontal: true, vertical: false)
     }
     
     // MARK: - Language Picker
@@ -332,7 +367,7 @@ public struct ToolBarView: View {
     // MARK: - Icon Pickers
 
     private var doIconPicker: some View {
-        Picker("Do", selection: $doIndicatorIcon) {
+        Picker("", selection: $doIndicatorIcon) {
             ForEach(IndicatorIcon.positiveIcons, id: \.rawValue) { icon in
                 Image(systemName: icon.systemName)
                     .tag(icon.systemName)
@@ -344,7 +379,7 @@ public struct ToolBarView: View {
     }
 
     private var dontIconPicker: some View {
-        Picker("Don't", selection: $dontIndicatorIcon) {
+        Picker("", selection: $dontIndicatorIcon) {
             ForEach(IndicatorIcon.negativeIcons, id: \.rawValue) { icon in
                 Image(systemName: icon.systemName)
                     .tag(icon.systemName)
@@ -358,8 +393,9 @@ public struct ToolBarView: View {
     // MARK: - Indicator Label Fields
 
     private var doIndicatorLabelField: some View {
-        TextField("Do Label", text: $doIndicatorLabel)
+        TextField("Do's", text: $doIndicatorLabel)
             .textFieldStyle(.roundedBorder)
+            .frame(width: 120)
             .disabled(currentIndicatorStyle == .iconOnly)
             .onChange(of: doIndicatorLabel) { _, newValue in
                 if newValue.count > 10 {
@@ -369,8 +405,9 @@ public struct ToolBarView: View {
     }
 
     private var dontIndicatorLabelField: some View {
-        TextField("Don't Label", text: $dontIndicatorLabel)
+        TextField("Don'ts", text: $dontIndicatorLabel)
             .textFieldStyle(.roundedBorder)
+            .frame(width: 120)
             .disabled(currentIndicatorStyle == .iconOnly)
             .onChange(of: dontIndicatorLabel) { _, newValue in
                 if newValue.count > 10 {
@@ -382,33 +419,29 @@ public struct ToolBarView: View {
     // MARK: - Indicator Size
 
     private var indicatorSizeControl: some View {
-        HStack(spacing: 4) {
+        HStack(spacing: 8) {
             Slider(value: $indicatorSize, in: 32 ... 80, step: 4)
-                .frame(maxWidth: .infinity)
+                .frame(width: 236)
 
             Text("\(Int(indicatorSize))")
-                .font(.body)
-                .monospacedDigit()
-                .padding(.leading, 8)
-                .fixedSize()
+                .font(.caption.monospacedDigit())
+                .foregroundStyle(Color.secondaryText)
+                .frame(width: 24, alignment: .trailing)
         }
-        .padding(.horizontal, 24)
     }
 
     // MARK: - Font Size
 
     private var fontSizeControl: some View {
-        HStack(spacing: 4) {
+        HStack(spacing: 8) {
             Slider(value: $fontSize, in: 10 ... 24, step: 1)
-                .frame(maxWidth: .infinity)
+                .frame(width: 248)
 
             Text("\(Int(fontSize))")
-                .font(.body)
-                .monospacedDigit()
-                .padding(.leading, 8)
-                .fixedSize()
+                .font(.caption.monospacedDigit())
+                .foregroundStyle(Color.secondaryText)
+                .frame(width: 24, alignment: .trailing)
         }
-        .padding(.horizontal, 24)
     }
 
     // MARK: - Title Fields
@@ -416,7 +449,7 @@ public struct ToolBarView: View {
     private var doTitleField: some View {
         TextField("Do Title", text: $doTitleSetting)
             .textFieldStyle(.roundedBorder)
-            .frame(width: 128)
+            .frame(width: 120)
             .onChange(of: doTitleSetting) { _, newValue in
                 if newValue.count > 70 {
                     doTitleSetting = String(newValue.prefix(70))
@@ -427,7 +460,7 @@ public struct ToolBarView: View {
     private var dontTitleField: some View {
         TextField("Don't Title", text: $dontTitleSetting)
             .textFieldStyle(.roundedBorder)
-            .frame(width: 128)
+            .frame(width: 120)
             .onChange(of: dontTitleSetting) { _, newValue in
                 if newValue.count > 70 {
                     dontTitleSetting = String(newValue.prefix(70))
@@ -448,37 +481,51 @@ public struct ToolBarView: View {
     private let storeService = StoreService()
 
     private var exportButton: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 12) {
+            // Primary Export Action - HIG: Use .prominent for key actions
             Button { onExport() } label: {
                 Image(systemName: "square.and.arrow.up")
-                    .font(.system(size: 24))
-                    .frame(width: 56, height: 56)
+                    .font(.system(size: 22, weight: .medium))
+                    .frame(width: 48, height: 48)
             }
             .buttonStyle(.borderedProminent)
             .clipShape(Circle())
-            .scaleEffect(isExportButtonHovered && !isExportDisabled ? 1.1 : 1.0)
+            .scaleEffect(isExportButtonHovered && !isExportDisabled ? 1.05 : 1.0)
             .animation(.easeInOut(duration: 0.15), value: isExportButtonHovered)
             .onHover { hovering in
                 isExportButtonHovered = hovering
             }
             .disabled(isExportDisabled)
+            .help("Export as PNG")
 
-            Button("Choose") {
-                chooseSaveLocation()
+            // Secondary Actions
+            VStack(spacing: 8) {
+                Button {
+                    chooseSaveLocation()
+                } label: {
+                    Label("Location", systemImage: "folder")
+                        .font(.caption)
+                }
+                .buttonStyle(.borderless)
+                .help("Choose save location")
+
+                storeButton
+                    .padding(.top, 32)
             }
-
-            storeButton
         }
+        .frame(minWidth: 80)
     }
 
     private var storeButton: some View {
         Button {
             isStorePresented = true
         } label: {
-            Image(systemName: "storefront")
-                .font(.system(size: 16))
+            Image(systemName: hasMadePurchase ? "heart.fill" : "storefront")
+                .font(.system(size: 24))
+                .foregroundStyle(hasMadePurchase ? Color.storePurchased : Color.storeDefault)
         }
-        .foregroundStyle(hasMadePurchase ? .green : .secondary)
+        .buttonStyle(.borderless)
+        .help(hasMadePurchase ? "Thank you for supporting!" : "Support development")
         .sheet(isPresented: $isStorePresented) {
             DeveloperSupportStoreView(
                 configuration: storeConfiguration,
