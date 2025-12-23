@@ -158,12 +158,18 @@ public struct ContentView: View {
                     panels
                 }
                 .padding(24)
+                .accessibilityElement(children: .contain)
+                .accessibilityLabel("Code comparison")
+                .accessibilityHint("Side by side Do and Don't panels")
             } else {
                 ScrollView {
                     VStack(spacing: 24) {
                         panels
                     }
                     .padding(24)
+                    .accessibilityElement(children: .contain)
+                    .accessibilityLabel("Code comparison")
+                    .accessibilityHint("Stacked Do and Don't panels")
                 }
             }
         }

@@ -109,6 +109,13 @@ public struct IndicatorBadgeView: View {
                 textView
             }
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(type == .doPanel
+            ? "Do indicator: \(label)"
+            : "Don't indicator: \(label)")
+        .accessibilityHint(type == .doPanel
+            ? "Marks recommended code example"
+            : "Marks code example to avoid")
     }
 
     private var iconView: some View {

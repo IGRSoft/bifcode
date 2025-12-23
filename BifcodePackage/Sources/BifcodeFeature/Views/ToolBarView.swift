@@ -63,6 +63,8 @@ public struct ToolBarView: View {
 
     @AppStorage("selectedLanguage") private var selectedLanguageRaw: String = "swift"
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     /// Current indicator style for disable logic
     private var currentIndicatorStyle: IndicatorStyle {
         IndicatorStyle(rawValue: indicatorStyle) ?? .iconAndText
@@ -286,6 +288,8 @@ public struct ToolBarView: View {
             }
             .pickerStyle(.menu)
             .fixedSize()
+            .accessibilityLabel("Programming Language")
+            .accessibilityHint("Select syntax highlighting language")
             .onChange(of: selectedLanguageRaw) { _, _ in
                 onLanguageChange(selectedLanguage)
             }
@@ -310,6 +314,8 @@ public struct ToolBarView: View {
         }
         .pickerStyle(.segmented)
         .fixedSize()
+        .accessibilityLabel("Theme Mode")
+        .accessibilityHint("Toggle dark or light mode")
     }
 
     // MARK: - Theme Picker
@@ -322,6 +328,8 @@ public struct ToolBarView: View {
         }
         .pickerStyle(.menu)
         .fixedSize()
+        .accessibilityLabel("Color Theme")
+        .accessibilityHint("Select code highlighting theme")
     }
 
     // MARK: - Layout Toggle
@@ -332,6 +340,8 @@ public struct ToolBarView: View {
             Image(systemName: "rectangle.split.1x2").tag(WindowLayout.vertical.rawValue)
         }
         .pickerStyle(.segmented)
+        .accessibilityLabel("Layout")
+        .accessibilityHint("Horizontal or vertical panel arrangement")
     }
 
     // MARK: - Indicator Style
@@ -347,6 +357,8 @@ public struct ToolBarView: View {
         }
         .pickerStyle(.menu)
         .fixedSize()
+        .accessibilityLabel("Indicator Style")
+        .accessibilityHint("Show icon, text, or both")
     }
 
     // MARK: - Indicator Position
@@ -362,6 +374,8 @@ public struct ToolBarView: View {
         }
         .pickerStyle(.menu)
         .fixedSize()
+        .accessibilityLabel("Indicator Position")
+        .accessibilityHint("Badge position on panels")
     }
 
     // MARK: - Icon Pickers
@@ -376,6 +390,10 @@ public struct ToolBarView: View {
         .pickerStyle(.menu)
         .fixedSize()
         .disabled(currentIndicatorStyle == .textOnly)
+        .accessibilityLabel("Do Icon")
+        .accessibilityHint(currentIndicatorStyle == .textOnly
+            ? "Disabled: Change indicator style to enable"
+            : "Select icon for positive examples")
     }
 
     private var dontIconPicker: some View {
@@ -388,6 +406,10 @@ public struct ToolBarView: View {
         .pickerStyle(.menu)
         .fixedSize()
         .disabled(currentIndicatorStyle == .textOnly)
+        .accessibilityLabel("Don't Icon")
+        .accessibilityHint(currentIndicatorStyle == .textOnly
+            ? "Disabled: Change indicator style to enable"
+            : "Select icon for negative examples")
     }
 
     // MARK: - Indicator Label Fields
@@ -402,6 +424,10 @@ public struct ToolBarView: View {
                     doIndicatorLabel = String(newValue.prefix(10))
                 }
             }
+            .accessibilityLabel("Do Indicator Text")
+            .accessibilityHint(currentIndicatorStyle == .iconOnly
+                ? "Disabled: Change indicator style to enable"
+                : "Custom label for positive indicator")
     }
 
     private var dontIndicatorLabelField: some View {
@@ -414,6 +440,10 @@ public struct ToolBarView: View {
                     dontIndicatorLabel = String(newValue.prefix(10))
                 }
             }
+            .accessibilityLabel("Don't Indicator Text")
+            .accessibilityHint(currentIndicatorStyle == .iconOnly
+                ? "Disabled: Change indicator style to enable"
+                : "Custom label for negative indicator")
     }
 
     // MARK: - Indicator Size
@@ -428,6 +458,10 @@ public struct ToolBarView: View {
                 .foregroundStyle(Color.secondaryText)
                 .frame(width: 24, alignment: .trailing)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Badge Size")
+        .accessibilityValue("\(Int(indicatorSize)) pixels")
+        .accessibilityHint("Adjust from 32 to 80 pixels")
     }
 
     // MARK: - Font Size
@@ -442,6 +476,10 @@ public struct ToolBarView: View {
                 .foregroundStyle(Color.secondaryText)
                 .frame(width: 24, alignment: .trailing)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Font Size")
+        .accessibilityValue("\(Int(fontSize)) points")
+        .accessibilityHint("Adjust from 10 to 24 points")
     }
 
     // MARK: - Title Fields
@@ -455,6 +493,8 @@ public struct ToolBarView: View {
                     doTitleSetting = String(newValue.prefix(70))
                 }
             }
+            .accessibilityLabel("Do Panel Title")
+            .accessibilityHint("Title shown above positive code example")
     }
 
     private var dontTitleField: some View {
@@ -466,6 +506,8 @@ public struct ToolBarView: View {
                     dontTitleSetting = String(newValue.prefix(70))
                 }
             }
+            .accessibilityLabel("Don't Panel Title")
+            .accessibilityHint("Title shown above negative code example")
     }
 
     // MARK: - Export Button
@@ -491,12 +533,16 @@ public struct ToolBarView: View {
             .buttonStyle(.borderedProminent)
             .clipShape(Circle())
             .scaleEffect(isExportButtonHovered && !isExportDisabled ? 1.05 : 1.0)
-            .animation(.easeInOut(duration: 0.15), value: isExportButtonHovered)
+            .animation(reduceMotion ? nil : .easeInOut(duration: 0.15), value: isExportButtonHovered)
             .onHover { hovering in
                 isExportButtonHovered = hovering
             }
             .disabled(isExportDisabled)
             .help("Export as PNG")
+            .accessibilityLabel("Export as PNG")
+            .accessibilityHint(isExportDisabled
+                ? "Disabled: Add code to enable export"
+                : "Save comparison image to selected folder")
 
             // Secondary Actions
             VStack(spacing: 8) {
@@ -508,6 +554,8 @@ public struct ToolBarView: View {
                 }
                 .buttonStyle(.borderless)
                 .help("Choose save location")
+                .accessibilityLabel("Choose Save Location")
+                .accessibilityHint("Select folder for exported images")
 
                 storeButton
                     .padding(.top, 32)
@@ -526,6 +574,7 @@ public struct ToolBarView: View {
         }
         .buttonStyle(.borderless)
         .help(hasMadePurchase ? "Thank you for supporting!" : "Support development")
+        .accessibilityLabel(hasMadePurchase ? "Thank you for supporting" : "Support Development")
         .sheet(isPresented: $isStorePresented) {
             DeveloperSupportStoreView(
                 configuration: storeConfiguration,
