@@ -149,8 +149,10 @@ public final class AppViewModel {
     ///
     /// Handles security-scoped resource access for bookmarked locations.
     /// - Parameter image: The NSImage to save as PNG
+    /// - Returns: The URL where the image was saved
     /// - Throws: `ExportError` if conversion or saving fails
-    public func saveImage(_ image: NSImage) async throws {
+    @discardableResult
+    public func saveImage(_ image: NSImage) async throws -> URL {
         let location = saveLocation
         let needsSecurityScope = hasCustomSaveLocation
 
@@ -178,6 +180,7 @@ public final class AppViewModel {
         }
 
         try pngData.write(to: url)
+        return url
     }
 }
 
