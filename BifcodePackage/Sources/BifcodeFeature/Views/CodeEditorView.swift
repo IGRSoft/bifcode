@@ -172,6 +172,8 @@ public struct CodeEditorView: View {
         .frame(maxWidth: .infinity)
         .background(Color.titleBarBackground(for: themeMode))
         .clipShape(UnevenRoundedRectangle(topLeadingRadius: 12, topTrailingRadius: 12))
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(panel.title) panel header")
     }
 
     // MARK: - Editor Area
@@ -191,6 +193,8 @@ public struct CodeEditorView: View {
             )
             .padding(12)
         }
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("\(panel.type == .doPanel ? "Do" : "Don't") code editor")
     }
 
     // MARK: - Code Limits

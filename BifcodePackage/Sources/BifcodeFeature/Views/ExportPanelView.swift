@@ -110,6 +110,8 @@ struct ExportPanelView: View {
         .frame(maxWidth: .infinity)
         .background(Color.titleBarBackground(for: themeMode))
         .clipShape(UnevenRoundedRectangle(topLeadingRadius: 12, topTrailingRadius: 12))
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(panel.title) panel header")
     }
 
     // MARK: - Editor Area
@@ -129,6 +131,8 @@ struct ExportPanelView: View {
             )
             .padding(12)
         }
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("\(panel.type == .doPanel ? "Do" : "Don't") code panel")
     }
 
     /// Unique identifier for forcing editor recreation when language or theme changes
