@@ -63,6 +63,9 @@ import SwiftUI
 /// - ``IndicatorStyle``
 public struct ContentView: View {
     @State private var viewModel = AppViewModel()
+    @State private var exportResult: ExportResult?
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     // Language is stored via @AppStorage in ToolBarView, we read it here to initialize panels
     @AppStorage("selectedLanguage") private var selectedLanguageRaw: String = "swift"
@@ -118,17 +121,30 @@ public struct ContentView: View {
     }
 
     public var body: some View {
-        VStack(spacing: 0) {
-            ToolBarView(
-                doTitleSetting: $doTitleSetting,
-                dontTitleSetting: $dontTitleSetting,
-                isExportDisabled: isCodeEmpty,
-                onExport: { Task(operation: exportImage) },
-                onLanguageChange: { viewModel.setLanguage($0) }
-            )
+        ZStack(alignment: .top) {
+            VStack(spacing: 0) {
+                ToolBarView(
+                    doTitleSetting: $doTitleSetting,
+                    dontTitleSetting: $dontTitleSetting,
+                    isExportDisabled: isCodeEmpty,
+                    onExport: { Task(operation: exportImage) },
+                    onLanguageChange: { viewModel.setLanguage($0) }
+                )
 
-            panelsView
-                .padding(16)
+                panelsView
+                    .padding(16)
+            }
+
+            // Toast overlay at top of toolbar
+            if let result = exportResult {
+                ToastView(result: result) {
+                    withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.25)) {
+                        exportResult = nil
+                    }
+                }
+                .padding(.top, 8)
+                .zIndex(100)
+            }
         }
         .background(Color.contentBackground)
         .frame(minHeight: 400)
@@ -220,6 +236,7 @@ public struct ContentView: View {
     /// This method orchestrates the export pipeline:
     /// 1. Renders the panels to an `NSImage` via ``renderExportViewToImage()``
     /// 2. Saves the image using ``AppViewModel/saveImage(_:)``
+    /// 3. Displays a toast notification with the result
     ///
     /// > Note: Export is disabled when both code panels are empty.
     @MainActor
@@ -227,16 +244,21 @@ public struct ContentView: View {
         // Use NSHostingView + snapshot instead of ImageRenderer
         // because ImageRenderer cannot render NSViewRepresentable views like SourceEditor
         guard let nsImage = await renderExportViewToImage() else {
-            // TODO: Show error alert
-            print("Export failed: Could not render view to image")
+            withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.25)) {
+                exportResult = .failure(ExportError.conversionFailed)
+            }
             return
         }
 
         do {
-            try await viewModel.saveImage(nsImage)
+            let savedURL = try await viewModel.saveImage(nsImage)
+            withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.25)) {
+                exportResult = .success(savedURL)
+            }
         } catch {
-            // TODO: Show error alert
-            print("Export failed: \(error.localizedDescription)")
+            withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.25)) {
+                exportResult = .failure(error)
+            }
         }
     }
 

@@ -159,6 +159,14 @@ extension Color {
         Color.accentColor
     }
 
+    // MARK: - Toast Colors
+
+    /// Toast success background - uses semantic green
+    public static let toastSuccess = Color("IndicatorDo", bundle: .module)
+
+    /// Toast error background - uses semantic red
+    public static let toastError = Color("IndicatorDont", bundle: .module)
+
     // MARK: - Theme Mode Aware Colors
 
     /// Title bar background based on theme mode
