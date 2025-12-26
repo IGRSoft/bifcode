@@ -36,6 +36,13 @@
 			);
 			target = 8BC2655B2DEDD3F400F279A4 /* Bifcode */;
 		};
+		A5D11BF52EFEF6FB0019F439 /* Exceptions for "Bifcode" folder in "Bifcode" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 8BC2655B2DEDD3F400F279A4 /* Bifcode */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -49,6 +56,9 @@
 		};
 		8BC2655E2DEDD3F400F279A4 /* Bifcode */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				A5D11BF52EFEF6FB0019F439 /* Exceptions for "Bifcode" folder in "Bifcode" target */,
+			);
 			path = Bifcode;
 			sourceTree = "<group>";
 		};
@@ -296,7 +306,12 @@
 			baseConfigurationReferenceRelativePath = Debug.xcconfig;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CURRENT_PROJECT_VERSION = 1001;
 				DEAD_CODE_STRIPPING = YES;
+				INFOPLIST_FILE = Bifcode/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Bifcode;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 			};
 			name = Debug;
 		};
@@ -306,8 +321,13 @@
 			baseConfigurationReferenceRelativePath = Release.xcconfig;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CURRENT_PROJECT_VERSION = 1001;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				INFOPLIST_FILE = Bifcode/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Bifcode;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 			};
 			name = Release;
 		};
