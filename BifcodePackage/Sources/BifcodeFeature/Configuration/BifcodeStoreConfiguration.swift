@@ -19,5 +19,16 @@ public struct BifcodeStoreConfiguration: StoreConfigurationProtocol {
         URL(string: "https://igrsoft.com/info/app/bifcode/terms.html")!
     }
 
+    public var colors: StoreColors {
+        StoreColors(
+            primaryText: Color("storePrimaryText", bundle: .module),
+            secondaryText: Color("storeSecondaryText", bundle: .module),
+            secondaryBackground: Color("storeSecondaryBackground", bundle: .module),
+            selectedView: Color("storeSelectedView", bundle: .module),
+            buttonBackground: Color("storeButtonBackground", bundle: .module),
+            buttonHovered: Color("storeButtonHovered", bundle: .module)
+        )
+    }
+    
     public init() {}
 }
