@@ -2,6 +2,19 @@
 
 A macOS app for creating visual code comparison images — perfect for documentation, tutorials, and style guides showing "Do" vs "Don't" code examples.
 
+## Powered By
+
+<a href="https://github.com/CodeEditApp/CodeEditSourceEditor">
+  <img src="https://img.shields.io/badge/Powered%20by-CodeEditSourceEditor-blue?style=for-the-badge" alt="Powered by CodeEditSourceEditor">
+</a>
+
+Bifcode's code editor is built on [**CodeEditSourceEditor**](https://github.com/CodeEditApp/CodeEditSourceEditor) — an Xcode-inspired code editor component from the [CodeEditApp](https://github.com/CodeEditApp) team.
+
+**Support the project:**
+- ⭐ [Star CodeEditSourceEditor on GitHub](https://github.com/CodeEditApp/CodeEditSourceEditor)
+- 🏠 [Check out CodeEdit](https://github.com/CodeEditApp/CodeEdit) — A native macOS code editor
+- 💖 [Sponsor CodeEditApp](https://github.com/sponsors/CodeEditApp)
+
 ## Features
 
 ### Code Editor

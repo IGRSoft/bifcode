@@ -3,7 +3,7 @@
 ## Overview
 
 - **Type**: macOS application
-- **Stack**: Swift 6.2, SwiftUI, HighlightSwift
+- **Stack**: Swift 6.2, SwiftUI, CodeEditSourceEditor
 - **Architecture**: MVVM with @Observable
 - **Platform**: macOS 15.0+ only
 
@@ -157,14 +157,20 @@ BifcodeUITests/                              # UI tests
 
 | Package | Version | Purpose |
 |---------|---------|---------|
-| [HighlightSwift](https://github.com/appstefan/HighlightSwift) | 1.1+ | Syntax highlighting & language auto-detection |
+| [CodeEditSourceEditor](https://github.com/CodeEditApp/CodeEditSourceEditor) | 0.12.0+ | Xcode-inspired code editor with syntax highlighting |
+| [CodeEditLanguages](https://github.com/CodeEditApp/CodeEditLanguages) | 0.1.20+ | Tree-sitter language support (19+ languages) |
+| [DeveloperSupportStore](https://github.com/IGRSoft/DeveloperSupportStore) | 1.0.0+ | In-app purchase support |
 
-### Adding HighlightSwift
+### Adding CodeEditSourceEditor
 
 In Xcode:
 1. File → Add Package Dependencies
-2. URL: `https://github.com/appstefan/highlightswift`
-3. Version: 1.1+
+2. URL: `https://github.com/CodeEditApp/CodeEditSourceEditor`
+3. Version: 0.12.0+
+
+**Support the CodeEditApp project:**
+- ⭐ [Star on GitHub](https://github.com/CodeEditApp/CodeEditSourceEditor)
+- 💖 [Sponsor CodeEditApp](https://github.com/sponsors/CodeEditApp)
 
 ---
 
@@ -172,11 +178,11 @@ In Xcode:
 
 ### Code Editor
 
-- Line numbers (configurable visibility)
-- Syntax highlighting via HighlightSwift `CodeText`
-- Auto-detect language with manual override
+- Syntax highlighting via CodeEditSourceEditor `SourceEditor`
+- 19+ supported languages via CodeEditLanguages
+- 11 syntax themes (7 dark, 4 light)
 - Monospace font (SF Mono or system monospace)
-- Dark theme background
+- Dark and light theme modes
 
 ### Indicator Badge
 
@@ -234,9 +240,9 @@ rg -n "Color\." BifcodePackage/Sources
 # Find all @AppStorage usage
 rg -n "@AppStorage" BifcodePackage/Sources
 
-# Find HighlightSwift usage
-rg -n "import HighlightSwift" BifcodePackage/Sources
-rg -n "CodeText" BifcodePackage/Sources
+# Find CodeEditSourceEditor usage
+rg -n "import CodeEditSourceEditor" BifcodePackage/Sources
+rg -n "SourceEditor" BifcodePackage/Sources
 
 # Find export logic
 rg -n "ImageRenderer\|NSImage" BifcodePackage/Sources
@@ -300,7 +306,7 @@ Standard tools available:
 
 ## Common Gotchas
 
-1. **HighlightSwift Async**: Use `await highlight.attributedText()` for manual highlighting
+1. **CodeEditSourceEditor State**: Use `SourceEditorState` for cursor position and selection management
 2. **ImageRenderer macOS**: Requires `@MainActor` context
 3. **Window Sizing**: Use `GeometryReader` for content-based sizing
 4. **Font Metrics**: SF Mono has different metrics than system fonts
