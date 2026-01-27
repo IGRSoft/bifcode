@@ -60,8 +60,12 @@ public struct ToolBarView: View {
     @AppStorage("fontSize") private var fontSize: Double = 14
     @AppStorage("selectedTheme") private var selectedThemeRaw: String = EditorThemeOption.atomOneDark.rawValue
     @AppStorage("themeMode") private var themeModeRaw: String = ThemeMode.dark.rawValue
-    
+
     @AppStorage("selectedLanguage") private var selectedLanguageRaw: String = "swift"
+
+    // Watermark settings
+    @AppStorage("showWatermark") private var showWatermark: Bool = true
+    @AppStorage("watermarkText") private var watermarkText: String = "bifcode"
     
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     
@@ -523,45 +527,89 @@ public struct ToolBarView: View {
     private let storeService = StoreService()
     
     private var exportButton: some View {
-        VStack(spacing: 12) {
-            // Primary Export Action - HIG: Use .prominent for key actions
-            Button { onExport() } label: {
-                Image(systemName: "square.and.arrow.up")
-                    .font(.system(size: 22, weight: .medium))
-                    .frame(width: 48, height: 48)
-            }
-            .buttonStyle(.borderedProminent)
-            .clipShape(Circle())
-            .scaleEffect(isExportButtonHovered && !isExportDisabled ? 1.05 : 1.0)
-            .animation(reduceMotion ? nil : .easeInOut(duration: 0.15), value: isExportButtonHovered)
-            .onHover { hovering in
-                isExportButtonHovered = hovering
-            }
-            .disabled(isExportDisabled)
-            .help("Export as PNG")
-            .accessibilityLabel("Export as PNG")
-            .accessibilityHint(isExportDisabled
-                ? "Disabled: Add code to enable export"
-                : "Save comparison image to selected folder")
-            
-            // Secondary Actions
-            VStack(spacing: 8) {
-                Button {
-                    chooseSaveLocation()
-                } label: {
-                    Label("Location", systemImage: "folder")
-                        .font(.caption)
+        HStack(alignment: .top, spacing: 16) {
+            // Watermark Settings
+            watermarkSettingsView()
+
+            // Export Actions
+            VStack(spacing: 12) {
+                // Primary Export Action - HIG: Use .prominent for key actions
+                Button { onExport() } label: {
+                    Image(systemName: "square.and.arrow.up")
+                        .font(.system(size: 22, weight: .medium))
+                        .frame(width: 48, height: 48)
                 }
-                .buttonStyle(.borderless)
-                .help("Choose save location")
-                .accessibilityLabel("Choose Save Location")
-                .accessibilityHint("Select folder for exported images")
-                
-                storeButton
-                    .padding(.top, 32)
+                .buttonStyle(.borderedProminent)
+                .clipShape(Circle())
+                .scaleEffect(isExportButtonHovered && !isExportDisabled ? 1.05 : 1.0)
+                .animation(reduceMotion ? nil : .easeInOut(duration: 0.15), value: isExportButtonHovered)
+                .onHover { hovering in
+                    isExportButtonHovered = hovering
+                }
+                .disabled(isExportDisabled)
+                .help("Export as PNG")
+                .accessibilityLabel("Export as PNG")
+                .accessibilityHint(isExportDisabled
+                    ? "Disabled: Add code to enable export"
+                    : "Save comparison image to selected folder")
+
+                // Secondary Actions
+                VStack(spacing: 8) {
+                    Button {
+                        chooseSaveLocation()
+                    } label: {
+                        Label("Location", systemImage: "folder")
+                            .font(.caption)
+                    }
+                    .buttonStyle(.borderless)
+                    .help("Choose save location")
+                    .accessibilityLabel("Choose Save Location")
+                    .accessibilityHint("Select folder for exported images")
+
+                    storeButton
+                        .padding(.top, 32)
+                }
+            }
+            .frame(minWidth: 80)
+        }
+    }
+
+    @ViewBuilder
+    private func watermarkSettingsView() -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            // Section Header
+            Text("Watermark")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(Color.sectionHeader)
+
+            // Enable/Disable Toggle
+            Toggle("Show", isOn: $showWatermark)
+                .toggleStyle(.checkbox)
+                .font(.caption)
+                .accessibilityLabel("Show Watermark")
+                .accessibilityHint("Toggle watermark visibility in exports")
+
+            // Watermark Text Field
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Text")
+                    .font(.caption)
+                    .foregroundStyle(Color.tertiaryText)
+                TextField("bifcode", text: $watermarkText)
+                    .textFieldStyle(.roundedBorder)
+                    .frame(width: 100)
+                    .disabled(!showWatermark)
+                    .onChange(of: watermarkText) { _, newValue in
+                        if newValue.count > 30 {
+                            watermarkText = String(newValue.prefix(30))
+                        }
+                    }
+                    .accessibilityLabel("Watermark Text")
+                    .accessibilityHint(showWatermark
+                        ? "Custom text shown at bottom of exports"
+                        : "Disabled: Enable watermark to edit")
             }
         }
-        .frame(minWidth: 80)
+        .fixedSize(horizontal: true, vertical: false)
     }
     
     private var storeButton: some View {

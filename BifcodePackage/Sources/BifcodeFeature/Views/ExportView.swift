@@ -68,9 +68,17 @@ struct ExportView: View {
     
     /// The current theme mode for window styling.
     let themeMode: ThemeMode
-    
+
+    // Watermark settings
+
+    /// Whether to show the watermark in exports.
+    let showWatermark: Bool
+
+    /// The text to display as watermark.
+    let watermarkText: String
+
     // Panel dimensions for export
-    
+
     /// Width of each panel in points.
     let panelWidth: CGFloat
     
@@ -81,18 +89,30 @@ struct ExportView: View {
     let dontPanelHeight: CGFloat
     
     var body: some View {
-        Group {
-            if layout == .horizontal {
-                HStack(alignment: .top, spacing: 24) {
-                    panels
-                }
-            } else {
-                VStack(spacing: 24) {
-                    panels
+        ZStack(alignment: .bottom) {
+            Group {
+                if layout == .horizontal {
+                    HStack(alignment: .top, spacing: 24) {
+                        panels
+                    }
+                } else {
+                    VStack(spacing: 24) {
+                        panels
+                    }
                 }
             }
+            .padding(24)
+
+            // Watermark overlay at bottom-center
+            if showWatermark, !watermarkText.isEmpty {
+                Text(watermarkText)
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundStyle(Color.watermarkText)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .padding(.bottom, 8)
+            }
         }
-        .padding(24)
         .background(Color.clear)
     }
     
@@ -160,6 +180,8 @@ struct ExportView: View {
         fontSize: 14,
         theme: .atomOneDark,
         themeMode: .dark,
+        showWatermark: true,
+        watermarkText: "bifcode",
         panelWidth: 350,
         doPanelHeight: 120,
         dontPanelHeight: 120
@@ -195,6 +217,8 @@ struct ExportView: View {
         fontSize: 14,
         theme: .atomOneDark,
         themeMode: .dark,
+        showWatermark: true,
+        watermarkText: "bifcode",
         panelWidth: 400,
         doPanelHeight: 120,
         dontPanelHeight: 120
