@@ -2,12 +2,91 @@
 //  SettingsTypes.swift
 //
 //  Created on 17.12.2025.
-//  Copyright © 2025 IGR Soft. All rights reserved.
+//  Copyright © 2026 IGR Soft. All rights reserved.
 //
 
 import AppKit
 import CodeEditSourceEditor
 import Foundation
+
+// MARK: - Font Family
+
+/// The font family for code display in the editor.
+///
+/// Provides a selection of popular monospace fonts suitable for code editing.
+/// The default is the system monospace font (SF Mono on macOS).
+///
+/// ## Usage
+///
+/// ```swift
+/// @AppStorage("fontFamily") private var fontFamily = FontFamily.system.rawValue
+/// ```
+///
+/// ## Available Fonts
+///
+/// - **System** - SF Mono (default system monospace)
+/// - **Menlo** - Classic macOS monospace font
+/// - **Monaco** - Legacy macOS programming font
+/// - **Courier** - Traditional monospace font
+///
+/// ## Topics
+///
+/// ### Fonts
+///
+/// - ``system``
+/// - ``menlo``
+/// - ``monaco``
+/// - ``courier``
+public enum FontFamily: String, CaseIterable, Sendable {
+    /// System monospace font (SF Mono on macOS).
+    ///
+    /// The default font, matching Apple's design guidelines
+    /// for code display. Available in all weights.
+    case system
+
+    /// Menlo font family.
+    ///
+    /// A classic macOS monospace font derived from Bitstream Vera Sans Mono.
+    /// Has been the default Terminal font for many years.
+    case menlo = "Menlo"
+
+    /// Monaco font family.
+    ///
+    /// The original macOS programming font, used in classic Mac OS
+    /// and early versions of Xcode. Has a distinctive, compact style.
+    case monaco = "Monaco"
+
+    /// Courier New font family.
+    ///
+    /// A traditional typewriter-style monospace font. Has a more
+    /// classic, formal appearance than other options.
+    case courier = "Courier New"
+
+    /// A human-readable label for display in pickers.
+    public var label: String {
+        switch self {
+        case .system: "SF Mono"
+        case .menlo: "Menlo"
+        case .monaco: "Monaco"
+        case .courier: "Courier New"
+        }
+    }
+
+    /// Creates an NSFont with this font family at the specified size.
+    ///
+    /// - Parameter size: The font size in points.
+    /// - Returns: An NSFont configured with this font family, or the
+    ///   system monospace font if the specified font is unavailable.
+    public func font(size: CGFloat) -> NSFont {
+        switch self {
+        case .system:
+            NSFont.monospacedSystemFont(ofSize: size, weight: .regular)
+        case .menlo, .monaco, .courier:
+            NSFont(name: rawValue, size: size)
+                ?? NSFont.monospacedSystemFont(ofSize: size, weight: .regular)
+        }
+    }
+}
 
 // MARK: - Indicator Position
 

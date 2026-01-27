@@ -2,7 +2,7 @@
 //  ToolBarView.swift
 //
 //  Created on 17.12.2025.
-//  Copyright © 2025 IGR Soft. All rights reserved.
+//  Copyright © 2026 IGR Soft. All rights reserved.
 //
 
 import CodeEditLanguages
@@ -58,6 +58,7 @@ public struct ToolBarView: View {
     @AppStorage("doIndicatorLabel") private var doIndicatorLabel: String = "Do's"
     @AppStorage("dontIndicatorLabel") private var dontIndicatorLabel: String = "Don'ts"
     @AppStorage("fontSize") private var fontSize: Double = 14
+    @AppStorage("fontFamily") private var fontFamilyRaw: String = FontFamily.system.rawValue
     @AppStorage("selectedTheme") private var selectedThemeRaw: String = EditorThemeOption.atomOneDark.rawValue
     @AppStorage("themeMode") private var themeModeRaw: String = ThemeMode.dark.rawValue
 
@@ -173,12 +174,21 @@ public struct ToolBarView: View {
                 themePicker
             }
 
-            // Font Size with Label
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Font Size")
-                    .font(.caption)
-                    .foregroundStyle(Color.tertiaryText)
-                fontSizeControl
+            // Font Family & Size
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Font")
+                        .font(.caption)
+                        .foregroundStyle(Color.tertiaryText)
+                    fontFamilyPicker
+                }
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Size")
+                        .font(.caption)
+                        .foregroundStyle(Color.tertiaryText)
+                    fontSizeControl
+                }
             }
 
             // Mode & Layout Controls
@@ -294,6 +304,20 @@ public struct ToolBarView: View {
                 onLanguageChange(selectedLanguage)
             }
         }
+    }
+
+    // MARK: - Font Family Picker
+
+    private var fontFamilyPicker: some View {
+        Picker("", selection: $fontFamilyRaw) {
+            ForEach(FontFamily.allCases, id: \.rawValue) { family in
+                Text(family.label).tag(family.rawValue)
+            }
+        }
+        .pickerStyle(.menu)
+        .fixedSize()
+        .accessibilityLabel("Font Family")
+        .accessibilityHint("Select monospace font for code editor")
     }
 
     private var commonLanguages: [CodeLanguage] {

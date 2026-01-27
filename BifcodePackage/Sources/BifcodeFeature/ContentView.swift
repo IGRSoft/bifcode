@@ -2,7 +2,7 @@
 //  ContentView.swift
 //
 //  Created on 17.12.2025.
-//  Copyright © 2025 IGR Soft. All rights reserved.
+//  Copyright © 2026 IGR Soft. All rights reserved.
 //
 
 import AppKit
@@ -89,6 +89,7 @@ public struct ContentView: View {
     @AppStorage("indicatorSize") private var indicatorSize: Double = 48
     @AppStorage("showTitle") private var showTitle: Bool = true
     @AppStorage("fontSize") private var fontSize: Double = 14
+    @AppStorage("fontFamily") private var fontFamilyRaw: String = FontFamily.system.rawValue
     @AppStorage("selectedTheme") private var selectedThemeRaw: String = EditorThemeOption.atomOneDark.rawValue
     @AppStorage("themeMode") private var themeModeRaw: String = ThemeMode.dark.rawValue
 
@@ -102,6 +103,10 @@ public struct ContentView: View {
 
     private var indicatorStyle: IndicatorStyle {
         IndicatorStyle(rawValue: indicatorStyleRaw) ?? .iconAndText
+    }
+
+    private var fontFamily: FontFamily {
+        FontFamily(rawValue: fontFamilyRaw) ?? .system
     }
 
     private var selectedTheme: EditorThemeOption {
@@ -292,7 +297,7 @@ public struct ContentView: View {
     @MainActor
     private func renderExportViewToImage() async -> NSImage? {
         // Calculate size based on layout and content
-        let font = NSFont.monospacedSystemFont(ofSize: fontSize, weight: .regular)
+        let font = fontFamily.font(size: fontSize)
 
         // Find the longest line in both panels
         let doLines = viewModel.doPanel.code.components(separatedBy: "\n")

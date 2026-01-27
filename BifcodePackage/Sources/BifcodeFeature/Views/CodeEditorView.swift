@@ -2,7 +2,7 @@
 //  CodeEditorView.swift
 //
 //  Created on 17.12.2025.
-//  Copyright © 2025 IGR Soft. All rights reserved.
+//  Copyright © 2026 IGR Soft. All rights reserved.
 //
 
 import AppKit
@@ -75,6 +75,7 @@ public struct CodeEditorView: View {
     @AppStorage("dontIndicatorLabel") private var dontIndicatorLabel: String = "Don'ts"
     @AppStorage("showTitle") private var showTitle: Bool = true
     @AppStorage("fontSize") private var fontSize: Double = 14
+    @AppStorage("fontFamily") private var fontFamilyRaw: String = FontFamily.system.rawValue
     @AppStorage("selectedTheme") private var selectedThemeRaw: String = EditorThemeOption.atomOneDark.rawValue
     @AppStorage("themeMode") private var themeModeRaw: String = ThemeMode.dark.rawValue
 
@@ -84,6 +85,10 @@ public struct CodeEditorView: View {
 
     private var indicatorStyle: IndicatorStyle {
         IndicatorStyle(rawValue: indicatorStyleRaw) ?? .iconAndText
+    }
+
+    private var fontFamily: FontFamily {
+        FontFamily(rawValue: fontFamilyRaw) ?? .system
     }
 
     private var selectedTheme: EditorThemeOption {
@@ -135,7 +140,7 @@ public struct CodeEditorView: View {
 
     /// Line height matching the editor's font
     private var lineHeight: CGFloat {
-        let font = NSFont.monospacedSystemFont(ofSize: fontSize, weight: .regular)
+        let font = fontFamily.font(size: fontSize)
         return font.ascender - font.descender + font.leading
     }
 
@@ -230,7 +235,7 @@ public struct CodeEditorView: View {
 
     /// Unique identifier for forcing editor recreation when language, theme, or font changes
     private var editorIdentifier: String {
-        "\(panel.id)-\(panel.language.id)-\(selectedThemeRaw)-\(Int(fontSize))"
+        "\(panel.id)-\(panel.language.id)-\(selectedThemeRaw)-\(fontFamilyRaw)-\(Int(fontSize))"
     }
 
     /// Tracks if initial appearance has occurred to force editor recreation
@@ -262,7 +267,7 @@ public struct CodeEditorView: View {
         SourceEditorConfiguration(
             appearance: .init(
                 theme: selectedTheme.editorTheme,
-                font: NSFont.monospacedSystemFont(ofSize: fontSize, weight: .regular),
+                font: fontFamily.font(size: fontSize),
                 wrapLines: false
             ),
             peripherals: .init(showMinimap: false, showFoldingRibbon: false)
