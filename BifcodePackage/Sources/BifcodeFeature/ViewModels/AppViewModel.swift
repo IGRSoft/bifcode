@@ -2,7 +2,7 @@
 //  AppViewModel.swift
 //
 //  Created on 17.12.2025.
-//  Copyright © 2025 IGR Soft. All rights reserved.
+//  Copyright © 2026 IGR Soft. All rights reserved.
 //
 
 import CodeEditLanguages
@@ -60,22 +60,22 @@ import SwiftUI
 @Observable
 public final class AppViewModel {
     // MARK: - Properties
-
+    
     /// The "Do's" code panel containing positive code examples.
     ///
     /// This panel displays code that demonstrates best practices or
     /// recommended approaches. The indicator badge shows a green checkmark
     /// by default.
     public let doPanel: CodePanel
-
+    
     /// The "Don'ts" code panel containing negative code examples.
     ///
     /// This panel displays code that demonstrates anti-patterns or
     /// approaches to avoid. The indicator badge shows a red X by default.
     public let dontPanel: CodePanel
-
+    
     // MARK: - Save Location
-
+    
     /// Computed URL for save location, defaults to Desktop.
     /// Uses security-scoped bookmarks to persist access across app launches.
     public var saveLocation: URL {
@@ -86,19 +86,19 @@ public final class AppViewModel {
         // Fall back to Desktop
         return FileManager.default.urls(for: .desktopDirectory, in: .userDomainMask).first!
     }
-
+    
     /// Whether a custom save location has been set via bookmark
     public var hasCustomSaveLocation: Bool {
         BookmarkManager.shared.hasBookmark
     }
-
+    
     /// Display name of the current save location
     public var saveLocationName: String {
         BookmarkManager.shared.bookmarkedLocationName ?? "Desktop"
     }
-
+    
     // MARK: - Initialization
-
+    
     /// Creates a new view model with default panel configurations.
     ///
     /// Initializes both the Do and Don't panels with Swift as the default
@@ -109,9 +109,9 @@ public final class AppViewModel {
         doPanel = CodePanel(type: .doPanel)
         dontPanel = CodePanel(type: .dontPanel)
     }
-
+    
     // MARK: - Language Management
-
+    
     /// Updates the syntax highlighting language for both panels.
     ///
     /// Call this method when the user selects a different programming
@@ -128,7 +128,7 @@ public final class AppViewModel {
         doPanel.language = language
         dontPanel.language = language
     }
-
+    
     /// Updates the titles for both code panels.
     ///
     /// Panel titles are displayed in the title bar above each code editor.
@@ -142,9 +142,9 @@ public final class AppViewModel {
         doPanel.title = doTitle
         dontPanel.title = dontTitle
     }
-
+    
     // MARK: - Export
-
+    
     /// Save an image to the configured save location.
     ///
     /// Handles security-scoped resource access for bookmarked locations.
@@ -155,30 +155,30 @@ public final class AppViewModel {
     public func saveImage(_ image: NSImage) async throws -> URL {
         let location = saveLocation
         let needsSecurityScope = hasCustomSaveLocation
-
+        
         // Start security-scoped access if using bookmarked URL
         if needsSecurityScope {
             guard location.startAccessingSecurityScopedResource() else {
                 throw ExportError.accessDenied
             }
         }
-
+        
         defer {
             if needsSecurityScope {
                 location.stopAccessingSecurityScopedResource()
             }
         }
-
+        
         let filename = "bifcode-\(Date().timeIntervalSince1970).png"
         let url = location.appendingPathComponent(filename)
-
+        
         guard let tiffData = image.tiffRepresentation,
               let bitmap = NSBitmapImageRep(data: tiffData),
               let pngData = bitmap.representation(using: .png, properties: [:])
         else {
             throw ExportError.conversionFailed
         }
-
+        
         try pngData.write(to: url)
         return url
     }
@@ -205,18 +205,18 @@ public enum ExportError: LocalizedError {
     /// This typically occurs if the `NSImage` has invalid or
     /// unsupported image data.
     case conversionFailed
-
+    
     /// The PNG data could not be written to disk.
     ///
     /// This may occur due to disk space issues or file system errors.
     case saveFailed
-
+    
     /// The save location cannot be accessed.
     ///
     /// This occurs when the security-scoped bookmark is stale or invalid.
     /// The user should choose a new save location via the "Choose" button.
     case accessDenied
-
+    
     public var errorDescription: String? {
         switch self {
         case .conversionFailed: "Failed to convert image to PNG"

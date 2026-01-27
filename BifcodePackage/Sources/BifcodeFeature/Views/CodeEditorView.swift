@@ -2,7 +2,7 @@
 //  CodeEditorView.swift
 //
 //  Created on 17.12.2025.
-//  Copyright © 2025 IGR Soft. All rights reserved.
+//  Copyright © 2026 IGR Soft. All rights reserved.
 //
 
 import AppKit
@@ -60,12 +60,12 @@ import SwiftUI
 public struct CodeEditorView: View {
     /// The code panel model containing the code, title, and language.
     @Bindable var panel: CodePanel
-
+    
     /// Callback invoked when the code content changes.
     let onCodeChange: () -> Void
-
+    
     // MARK: - Settings (via @AppStorage)
-
+    
     @AppStorage("indicatorPosition") private var indicatorPositionRaw: String = IndicatorPosition.topRight.rawValue
     @AppStorage("indicatorStyle") private var indicatorStyleRaw: String = IndicatorStyle.iconAndText.rawValue
     @AppStorage("indicatorSize") private var indicatorSize: Double = 48
@@ -77,23 +77,23 @@ public struct CodeEditorView: View {
     @AppStorage("fontSize") private var fontSize: Double = 14
     @AppStorage("selectedTheme") private var selectedThemeRaw: String = EditorThemeOption.atomOneDark.rawValue
     @AppStorage("themeMode") private var themeModeRaw: String = ThemeMode.dark.rawValue
-
+    
     private var indicatorPosition: IndicatorPosition {
         IndicatorPosition(rawValue: indicatorPositionRaw) ?? .topRight
     }
-
+    
     private var indicatorStyle: IndicatorStyle {
         IndicatorStyle(rawValue: indicatorStyleRaw) ?? .iconAndText
     }
-
+    
     private var selectedTheme: EditorThemeOption {
         EditorThemeOption(rawValue: selectedThemeRaw) ?? .atomOneDark
     }
-
+    
     private var themeMode: ThemeMode {
         ThemeMode(rawValue: themeModeRaw) ?? .dark
     }
-
+    
     /// Creates a new code editor view for the specified panel.
     ///
     /// - Parameters:
@@ -113,14 +113,14 @@ public struct CodeEditorView: View {
         self.panel = panel
         self.onCodeChange = onCodeChange
     }
-
+    
     public var body: some View {
         VStack(spacing: 0) {
             if showTitle {
                 titleBar
                     .zIndex(2)
             }
-
+            
             editorArea
                 .zIndex(1)
         }
@@ -132,13 +132,13 @@ public struct CodeEditorView: View {
                 .stroke(Color.windowBorder(for: themeMode), lineWidth: 1)
         )
     }
-
+    
     /// Line height matching the editor's font
     private var lineHeight: CGFloat {
         let font = NSFont.monospacedSystemFont(ofSize: fontSize, weight: .regular)
         return font.ascender - font.descender + font.leading
     }
-
+    
     /// Minimum panel height based on content lines
     /// Uses minimum of 5 lines to prevent broken views with 1-4 lines
     private var minPanelHeight: CGFloat {
@@ -148,23 +148,23 @@ public struct CodeEditorView: View {
         let titleBarHeight: CGFloat = showTitle ? 38 : 0
         return titleBarHeight + (CGFloat(lineCount) * lineHeight) + editorPadding
     }
-
+    
     // MARK: - Title Bar
-
+    
     private var titleBar: some View {
         HStack(spacing: 14) {
             // Traffic light placeholder
             Circle()
                 .fill(Color.editorCloseButton(for: themeMode))
                 .frame(width: 14, height: 14)
-
+            
             // Title - single line with truncation
             Label(panel.title, systemImage: "text.document.fill")
                 .font(.system(size: 13, weight: .medium))
                 .foregroundStyle(Color.titleText(for: themeMode))
                 .lineLimit(1)
                 .truncationMode(.tail)
-
+            
             Spacer(minLength: 0)
         }
         .padding(.horizontal, 12)
@@ -175,14 +175,14 @@ public struct CodeEditorView: View {
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(panel.title) panel header")
     }
-
+    
     // MARK: - Editor Area
-
+    
     private var editorArea: some View {
         ZStack(alignment: indicatorAlignment) {
             // Code editor using CodeEditSourceEditor
             sourceEditor
-
+            
             // Indicator badge
             IndicatorBadgeView(
                 type: panel.type,
@@ -196,24 +196,24 @@ public struct CodeEditorView: View {
         .accessibilityElement(children: .contain)
         .accessibilityLabel("\(panel.type == .doPanel ? "Do" : "Don't") code editor")
     }
-
+    
     // MARK: - Code Limits
-
+    
     /// Maximum characters per line
     private static let maxLineLength = 210
-
+    
     /// Maximum number of lines
     private static let maxLineCount = 24
-
+    
     /// Applies line length and line count limits to the code
     private func applyCodeLimits() {
         var lines = panel.code.components(separatedBy: "\n")
-
+        
         // Limit number of lines
         if lines.count > Self.maxLineCount {
             lines = Array(lines.prefix(Self.maxLineCount))
         }
-
+        
         // Limit line length
         lines = lines.map { line in
             if line.count > Self.maxLineLength {
@@ -221,21 +221,21 @@ public struct CodeEditorView: View {
             }
             return line
         }
-
+        
         let limitedCode = lines.joined(separator: "\n")
         if limitedCode != panel.code {
             panel.code = limitedCode
         }
     }
-
+    
     /// Unique identifier for forcing editor recreation when language, theme, or font changes
     private var editorIdentifier: String {
         "\(panel.id)-\(panel.language.id)-\(selectedThemeRaw)-\(Int(fontSize))"
     }
-
+    
     /// Tracks if initial appearance has occurred to force editor recreation
     @State private var hasAppeared = false
-
+    
     private var sourceEditor: some View {
         SourceEditor(
             $panel.code,
@@ -257,7 +257,7 @@ public struct CodeEditorView: View {
             onCodeChange()
         }
     }
-
+    
     private var editorConfiguration: SourceEditorConfiguration {
         SourceEditorConfiguration(
             appearance: .init(
@@ -268,7 +268,7 @@ public struct CodeEditorView: View {
             peripherals: .init(showMinimap: false, showFoldingRibbon: false)
         )
     }
-
+    
     private var indicatorAlignment: Alignment {
         indicatorPosition == .topRight ? .topTrailing : .bottomTrailing
     }
@@ -282,7 +282,7 @@ public struct CodeEditorView: View {
     // Use descriptive variable names
     let userName = "Alice"
     let isLoggedIn = true
-
+    
     // Handle errors gracefully
     do {
         try processData()
@@ -290,7 +290,7 @@ public struct CodeEditorView: View {
         logger.error(error)
     }
     """
-
+    
     return CodeEditorView(panel: panel)
         .frame(width: 400, height: 300)
         .padding()
@@ -303,11 +303,11 @@ public struct CodeEditorView: View {
     // Avoid single-letter variables
     let x = "Bob"
     let y = false
-
+    
     // Don't ignore errors
     try? processData()
     """
-
+    
     return CodeEditorView(panel: panel)
         .frame(width: 400, height: 300)
         .padding()
@@ -317,7 +317,7 @@ public struct CodeEditorView: View {
 #Preview("Panel - No Title Bar") {
     let panel = CodePanel(type: .doPanel, title: "Do's")
     panel.code = "let greeting = \"Hello, World!\""
-
+    
     return CodeEditorView(panel: panel)
         .frame(width: 400, height: 150)
         .padding()

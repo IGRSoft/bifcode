@@ -2,7 +2,7 @@
 //  CodePanel.swift
 //
 //  Created on 17.12.2025.
-//  Copyright © 2025 IGR Soft. All rights reserved.
+//  Copyright © 2026 IGR Soft. All rights reserved.
 //
 
 import CodeEditLanguages
@@ -27,7 +27,7 @@ public enum PanelType: String, Sendable {
     /// Do panels show code that developers should follow. By default,
     /// they display a green checkmark indicator and "Do's" label.
     case doPanel = "do"
-
+    
     /// A panel displaying negative code examples (anti-patterns).
     ///
     /// Don't panels show code that developers should avoid. By default,
@@ -84,26 +84,26 @@ public final class CodePanel: Identifiable {
     /// Used by SwiftUI for efficient view updates when panels are
     /// displayed in lists or collections.
     public let id = UUID()
-
+    
     /// The type of panel (Do or Don't).
     ///
     /// This determines the default indicator appearance and semantics
     /// of the code displayed.
     public let type: PanelType
-
+    
     /// The source code content displayed in the editor.
     ///
     /// This is the user-editable code that receives syntax highlighting.
     /// The code is limited to 24 lines and 210 characters per line by
     /// ``CodeEditorView``.
     public var code: String = ""
-
+    
     /// The display title shown in the panel's title bar.
     ///
     /// Titles are displayed with a document icon and support up to
     /// 70 characters. Longer titles are truncated with ellipsis.
     public var title: String
-
+    
     /// The programming language used for syntax highlighting.
     ///
     /// Changing this property triggers the editor to re-render with
@@ -115,13 +115,13 @@ public final class CodePanel: Identifiable {
     /// panel.language = .swift   // Highlight as Swift
     /// ```
     public var language: CodeLanguage
-
+    
     /// The editor state containing cursor position, selection, and scroll.
     ///
     /// This state is managed by `SourceEditor` from CodeEditSourceEditor.
     /// It persists cursor position and selection between renders.
     public var editorState: SourceEditorState
-
+    
     /// Creates a new code panel with the specified configuration.
     ///
     /// - Parameters:

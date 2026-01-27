@@ -2,7 +2,7 @@
 //  ToolBarView.swift
 //
 //  Created on 17.12.2025.
-//  Copyright © 2025 IGR Soft. All rights reserved.
+//  Copyright © 2026 IGR Soft. All rights reserved.
 //
 
 import CodeEditLanguages
@@ -48,7 +48,7 @@ import SwiftUI
 /// - ``init(doTitleSetting:dontTitleSetting:isExportDisabled:onExport:onLanguageChange:)``
 public struct ToolBarView: View {
     // MARK: - App Storage
-
+    
     @AppStorage("windowLayout") private var windowLayout: String = WindowLayout.horizontal.rawValue
     @AppStorage("indicatorStyle") private var indicatorStyle: String = IndicatorStyle.iconAndText.rawValue
     @AppStorage("indicatorPosition") private var indicatorPosition: String = IndicatorPosition.topRight.rawValue
@@ -60,47 +60,47 @@ public struct ToolBarView: View {
     @AppStorage("fontSize") private var fontSize: Double = 14
     @AppStorage("selectedTheme") private var selectedThemeRaw: String = EditorThemeOption.atomOneDark.rawValue
     @AppStorage("themeMode") private var themeModeRaw: String = ThemeMode.dark.rawValue
-
+    
     @AppStorage("selectedLanguage") private var selectedLanguageRaw: String = "swift"
-
+    
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-
+    
     /// Current indicator style for disable logic
     private var currentIndicatorStyle: IndicatorStyle {
         IndicatorStyle(rawValue: indicatorStyle) ?? .iconAndText
     }
-
+    
     /// Selected language derived from stored raw value
     private var selectedLanguage: CodeLanguage {
         CodeLanguage.allLanguages.first { $0.id.rawValue == selectedLanguageRaw } ?? .swift
     }
-
+    
     /// Current theme mode derived from stored raw value
     private var currentThemeMode: ThemeMode {
         ThemeMode(rawValue: themeModeRaw) ?? .dark
     }
-
+    
     /// Current selected theme derived from stored raw value
     private var currentTheme: EditorThemeOption {
         EditorThemeOption(rawValue: selectedThemeRaw) ?? .atomOneDark
     }
-
+    
     /// All available themes (not filtered by mode)
     private var availableThemes: [EditorThemeOption] {
         EditorThemeOption.allCases
     }
-
+    
     @Binding private var doTitleSetting: String
     @Binding private var dontTitleSetting: String
-
+    
     // MARK: - Callbacks
-
+    
     var onExport: () -> Void
     var onLanguageChange: (CodeLanguage) -> Void
     var isExportDisabled: Bool
-
+    
     // MARK: - Initialization
-
+    
     /// Creates a new toolbar view with the specified configuration.
     ///
     /// - Parameters:
@@ -134,23 +134,23 @@ public struct ToolBarView: View {
         self.onExport = onExport
         self.onLanguageChange = onLanguageChange
     }
-
+    
     // MARK: - Body
-
+    
     public var body: some View {
         HStack(alignment: .top, spacing: 24) {
             codeSettingsView()
-
+            
             Divider()
                 .frame(height: 184)
                 .padding(.vertical, 8)
-
+            
             indicatorSettingsView()
-
+            
             Divider()
                 .frame(height: 184)
                 .padding(.vertical, 8)
-
+            
             exportButton
         }
         .padding(.horizontal, 20)
@@ -158,7 +158,7 @@ public struct ToolBarView: View {
         .frame(maxWidth: .infinity)
         .background(Color.toolbarBackground)
     }
-
+    
     @ViewBuilder
     private func codeSettingsView() -> some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -166,13 +166,13 @@ public struct ToolBarView: View {
             Text("Code Style")
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(Color.sectionHeader)
-
+            
             // Language & Theme Row
             HStack(spacing: 12) {
                 languagePicker
                 themePicker
             }
-
+            
             // Font Size with Label
             VStack(alignment: .leading, spacing: 4) {
                 Text("Font Size")
@@ -180,7 +180,7 @@ public struct ToolBarView: View {
                     .foregroundStyle(Color.tertiaryText)
                 fontSizeControl
             }
-
+            
             // Mode & Layout Controls
             HStack(spacing: 12) {
                 VStack(alignment: .leading, spacing: 4) {
@@ -189,7 +189,7 @@ public struct ToolBarView: View {
                         .foregroundStyle(Color.tertiaryText)
                     themeModeToggle
                 }
-
+                
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Layout")
                         .font(.caption)
@@ -197,7 +197,7 @@ public struct ToolBarView: View {
                     layoutToggle
                 }
             }
-
+            
             // Panel Titles
             HStack(spacing: 12) {
                 VStack(alignment: .leading, spacing: 4) {
@@ -206,7 +206,7 @@ public struct ToolBarView: View {
                         .foregroundStyle(Color.tertiaryText)
                     dontTitleField
                 }
-
+                
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Do Title")
                         .font(.caption)
@@ -225,13 +225,13 @@ public struct ToolBarView: View {
             Text("Indicator Style")
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(Color.sectionHeader)
-
+            
             // Style & Position Pickers
             HStack(spacing: 12) {
                 indicatorStylePicker
                 indicatorPositionPicker
             }
-
+            
             // Indicator Size with Label
             VStack(alignment: .leading, spacing: 4) {
                 Text("Badge Size")
@@ -239,7 +239,7 @@ public struct ToolBarView: View {
                     .foregroundStyle(Color.tertiaryText)
                 indicatorSizeControl
             }
-
+            
             // Icon Pickers with Labels
             HStack(spacing: 16) {
                 VStack(alignment: .leading, spacing: 4) {
@@ -248,7 +248,7 @@ public struct ToolBarView: View {
                         .foregroundStyle(Color.tertiaryText)
                     dontIconPicker
                 }
-
+                
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Do Icon")
                         .font(.caption)
@@ -256,7 +256,7 @@ public struct ToolBarView: View {
                     doIconPicker
                 }
             }
-
+            
             // Indicator Labels
             HStack(spacing: 12) {
                 VStack(alignment: .leading, spacing: 4) {
@@ -265,7 +265,7 @@ public struct ToolBarView: View {
                         .foregroundStyle(Color.tertiaryText)
                     dontIndicatorLabelField
                 }
-
+                
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Do Label")
                         .font(.caption)
@@ -278,7 +278,7 @@ public struct ToolBarView: View {
     }
     
     // MARK: - Language Picker
-
+    
     private var languagePicker: some View {
         HStack(spacing: 4) {
             Picker("", selection: $selectedLanguageRaw) {
@@ -295,18 +295,18 @@ public struct ToolBarView: View {
             }
         }
     }
-
+    
     private var commonLanguages: [CodeLanguage] {
         [
             .swift, .python, .javascript, .typescript,
             .java, .kotlin, .go, .rust, .ruby,
             .c, .cpp, .cSharp, .php, .sql,
-            .html, .css, .json, .yaml, .bash,
+            .html, .css, .json, .yaml, .bash
         ]
     }
-
+    
     // MARK: - Theme Mode Toggle
-
+    
     private var themeModeToggle: some View {
         Picker("", selection: $themeModeRaw) {
             Image(systemName: "moon.fill").tag(ThemeMode.dark.rawValue)
@@ -317,9 +317,9 @@ public struct ToolBarView: View {
         .accessibilityLabel("Theme Mode")
         .accessibilityHint("Toggle dark or light mode")
     }
-
+    
     // MARK: - Theme Picker
-
+    
     private var themePicker: some View {
         Picker("", selection: $selectedThemeRaw) {
             ForEach(availableThemes, id: \.rawValue) { theme in
@@ -331,9 +331,9 @@ public struct ToolBarView: View {
         .accessibilityLabel("Color Theme")
         .accessibilityHint("Select code highlighting theme")
     }
-
+    
     // MARK: - Layout Toggle
-
+    
     private var layoutToggle: some View {
         Picker("", selection: $windowLayout) {
             Image(systemName: "rectangle.split.2x1").tag(WindowLayout.horizontal.rawValue)
@@ -343,9 +343,9 @@ public struct ToolBarView: View {
         .accessibilityLabel("Layout")
         .accessibilityHint("Horizontal or vertical panel arrangement")
     }
-
+    
     // MARK: - Indicator Style
-
+    
     private var indicatorStylePicker: some View {
         Picker("", selection: Binding(
             get: { IndicatorStyle(rawValue: indicatorStyle) ?? .iconAndText },
@@ -360,9 +360,9 @@ public struct ToolBarView: View {
         .accessibilityLabel("Indicator Style")
         .accessibilityHint("Show icon, text, or both")
     }
-
+    
     // MARK: - Indicator Position
-
+    
     private var indicatorPositionPicker: some View {
         Picker("", selection: Binding(
             get: { IndicatorPosition(rawValue: indicatorPosition) ?? .topRight },
@@ -377,9 +377,9 @@ public struct ToolBarView: View {
         .accessibilityLabel("Indicator Position")
         .accessibilityHint("Badge position on panels")
     }
-
+    
     // MARK: - Icon Pickers
-
+    
     private var doIconPicker: some View {
         Picker("", selection: $doIndicatorIcon) {
             ForEach(IndicatorIcon.positiveIcons, id: \.rawValue) { icon in
@@ -395,7 +395,7 @@ public struct ToolBarView: View {
             ? "Disabled: Change indicator style to enable"
             : "Select icon for positive examples")
     }
-
+    
     private var dontIconPicker: some View {
         Picker("", selection: $dontIndicatorIcon) {
             ForEach(IndicatorIcon.negativeIcons, id: \.rawValue) { icon in
@@ -411,9 +411,9 @@ public struct ToolBarView: View {
             ? "Disabled: Change indicator style to enable"
             : "Select icon for negative examples")
     }
-
+    
     // MARK: - Indicator Label Fields
-
+    
     private var doIndicatorLabelField: some View {
         TextField("Do's", text: $doIndicatorLabel)
             .textFieldStyle(.roundedBorder)
@@ -429,7 +429,7 @@ public struct ToolBarView: View {
                 ? "Disabled: Change indicator style to enable"
                 : "Custom label for positive indicator")
     }
-
+    
     private var dontIndicatorLabelField: some View {
         TextField("Don'ts", text: $dontIndicatorLabel)
             .textFieldStyle(.roundedBorder)
@@ -445,14 +445,14 @@ public struct ToolBarView: View {
                 ? "Disabled: Change indicator style to enable"
                 : "Custom label for negative indicator")
     }
-
+    
     // MARK: - Indicator Size
-
+    
     private var indicatorSizeControl: some View {
         HStack(spacing: 8) {
-            Slider(value: $indicatorSize, in: 32 ... 80, step: 4)
+            Slider(value: $indicatorSize, in: 32...80, step: 4)
                 .frame(width: 236)
-
+            
             Text("\(Int(indicatorSize))")
                 .font(.caption.monospacedDigit())
                 .foregroundStyle(Color.secondaryText)
@@ -463,14 +463,14 @@ public struct ToolBarView: View {
         .accessibilityValue("\(Int(indicatorSize)) pixels")
         .accessibilityHint("Adjust from 32 to 80 pixels")
     }
-
+    
     // MARK: - Font Size
-
+    
     private var fontSizeControl: some View {
         HStack(spacing: 8) {
-            Slider(value: $fontSize, in: 10 ... 24, step: 1)
+            Slider(value: $fontSize, in: 10...24, step: 1)
                 .frame(width: 248)
-
+            
             Text("\(Int(fontSize))")
                 .font(.caption.monospacedDigit())
                 .foregroundStyle(Color.secondaryText)
@@ -481,9 +481,9 @@ public struct ToolBarView: View {
         .accessibilityValue("\(Int(fontSize)) points")
         .accessibilityHint("Adjust from 10 to 24 points")
     }
-
+    
     // MARK: - Title Fields
-
+    
     private var doTitleField: some View {
         TextField("Do Title", text: $doTitleSetting)
             .textFieldStyle(.roundedBorder)
@@ -496,7 +496,7 @@ public struct ToolBarView: View {
             .accessibilityLabel("Do Panel Title")
             .accessibilityHint("Title shown above positive code example")
     }
-
+    
     private var dontTitleField: some View {
         TextField("Don't Title", text: $dontTitleSetting)
             .textFieldStyle(.roundedBorder)
@@ -509,19 +509,19 @@ public struct ToolBarView: View {
             .accessibilityLabel("Don't Panel Title")
             .accessibilityHint("Title shown above negative code example")
     }
-
+    
     // MARK: - Export Button
-
+    
     @State private var isExportButtonHovered = false
     @State private var isStorePresented = false
-
+    
     /// Tracks whether the user has made any purchase (subscription or tip).
     /// Persisted via AppStorage so the green icon state survives app restarts.
     @AppStorage("hasMadePurchase") private var hasMadePurchase = false
-
+    
     private let storeConfiguration = BifcodeStoreConfiguration()
     private let storeService = StoreService()
-
+    
     private var exportButton: some View {
         VStack(spacing: 12) {
             // Primary Export Action - HIG: Use .prominent for key actions
@@ -543,7 +543,7 @@ public struct ToolBarView: View {
             .accessibilityHint(isExportDisabled
                 ? "Disabled: Add code to enable export"
                 : "Save comparison image to selected folder")
-
+            
             // Secondary Actions
             VStack(spacing: 8) {
                 Button {
@@ -556,14 +556,14 @@ public struct ToolBarView: View {
                 .help("Choose save location")
                 .accessibilityLabel("Choose Save Location")
                 .accessibilityHint("Select folder for exported images")
-
+                
                 storeButton
                     .padding(.top, 32)
             }
         }
         .frame(minWidth: 80)
     }
-
+    
     private var storeButton: some View {
         Button {
             isStorePresented = true
@@ -591,11 +591,11 @@ public struct ToolBarView: View {
             await checkPurchaseStatus()
         }
     }
-
+    
     private func checkPurchaseStatus() async {
         // Skip sync if user has already made a purchase (persisted via AppStorage)
         guard !hasMadePurchase else { return }
-
+        
         do {
             try await storeService.syncStoreData()
             // Check if there's an active subscription
@@ -608,7 +608,7 @@ public struct ToolBarView: View {
     }
     
     // MARK: - Actions
-
+    
     private func chooseSaveLocation() {
         let panel = NSOpenPanel()
         panel.canChooseFiles = false
@@ -616,7 +616,7 @@ public struct ToolBarView: View {
         panel.allowsMultipleSelection = false
         panel.prompt = "Choose"
         panel.message = "Select a folder to save exported images"
-
+        
         if panel.runModal() == .OK, let url = panel.url {
             do {
                 try BookmarkManager.shared.storeBookmark(for: url)

@@ -2,7 +2,7 @@
 //  ExportPanelView.swift
 //
 //  Created on 17.12.2025.
-//  Copyright © 2025 IGR Soft. All rights reserved.
+//  Copyright © 2026 IGR Soft. All rights reserved.
 //
 
 import AppKit
@@ -38,45 +38,45 @@ import SwiftUI
 struct ExportPanelView: View {
     /// The code panel to render.
     @Bindable var panel: CodePanel
-
+    
     /// Position of the indicator badge.
     let indicatorPosition: IndicatorPosition
-
+    
     /// Style of the indicator badge.
     let indicatorStyle: IndicatorStyle
-
+    
     /// Size of the indicator badge in points.
     let indicatorSize: CGFloat
-
+    
     /// SF Symbol name for the indicator icon.
     let indicatorIconName: String
-
+    
     /// Text label for the indicator.
     let indicatorLabel: String
-
+    
     /// Whether to show the title bar.
     let showTitle: Bool
-
+    
     /// Font size for code text.
     let fontSize: CGFloat
-
+    
     /// The syntax highlighting theme.
     let theme: EditorTheme
-
+    
     /// The current theme mode for window styling.
     let themeMode: ThemeMode
-
+    
     /// Local editor state (not shared with interactive editor).
     @State private var editorState = SourceEditorState()
-
+    
     // MARK: - Body
-
+    
     var body: some View {
         VStack(spacing: 0) {
             if showTitle {
                 titleBar
             }
-
+            
             editorArea
         }
         .background(Color(nsColor: theme.background))
@@ -86,23 +86,23 @@ struct ExportPanelView: View {
                 .stroke(Color.windowBorder(for: themeMode), lineWidth: 1)
         )
     }
-
+    
     // MARK: - Title Bar
-
+    
     private var titleBar: some View {
         HStack(spacing: 14) {
             // Traffic light placeholder
             Circle()
                 .fill(Color.editorCloseButton(for: themeMode))
                 .frame(width: 14, height: 14)
-
+            
             // Title - single line with truncation
             Label(panel.title, systemImage: "text.document.fill")
                 .font(.system(size: 13, weight: .medium))
                 .foregroundStyle(Color.titleText(for: themeMode))
                 .lineLimit(1)
                 .truncationMode(.tail)
-
+            
             Spacer(minLength: 0)
         }
         .padding(.horizontal, 12)
@@ -113,14 +113,14 @@ struct ExportPanelView: View {
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(panel.title) panel header")
     }
-
+    
     // MARK: - Editor Area
-
+    
     private var editorArea: some View {
         ZStack(alignment: indicatorAlignment) {
             // Code editor using CodeEditSourceEditor with same settings
             sourceEditor
-
+            
             // Indicator badge
             IndicatorBadgeView(
                 type: panel.type,
@@ -134,12 +134,12 @@ struct ExportPanelView: View {
         .accessibilityElement(children: .contain)
         .accessibilityLabel("\(panel.type == .doPanel ? "Do" : "Don't") code panel")
     }
-
+    
     /// Unique identifier for forcing editor recreation when language or theme changes
     private var editorIdentifier: String {
         "\(panel.id)-\(panel.language.id)-export"
     }
-
+    
     private var sourceEditor: some View {
         SourceEditor(
             $panel.code,
@@ -150,7 +150,7 @@ struct ExportPanelView: View {
         .id(editorIdentifier)
         .disabled(true) // Make non-interactive for export
     }
-
+    
     private var editorConfiguration: SourceEditorConfiguration {
         SourceEditorConfiguration(
             appearance: .init(
@@ -161,7 +161,7 @@ struct ExportPanelView: View {
             peripherals: .init(showMinimap: false, showFoldingRibbon: false)
         )
     }
-
+    
     private var indicatorAlignment: Alignment {
         indicatorPosition == .topRight ? .topTrailing : .bottomTrailing
     }
@@ -176,7 +176,7 @@ struct ExportPanelView: View {
     let userName = "Alice"
     let isLoggedIn = true
     """
-
+    
     return ExportPanelView(
         panel: panel,
         indicatorPosition: .topRight,
@@ -201,7 +201,7 @@ struct ExportPanelView: View {
     let x = "Bob"
     let y = false
     """
-
+    
     return ExportPanelView(
         panel: panel,
         indicatorPosition: .topRight,

@@ -2,7 +2,7 @@
 //  BookmarkManager.swift
 //
 //  Created on 18.12.2025.
-//  Copyright © 2025 IGR Soft. All rights reserved.
+//  Copyright © 2026 IGR Soft. All rights reserved.
 //
 
 import Foundation
@@ -66,20 +66,20 @@ import Foundation
 @MainActor
 public final class BookmarkManager: Sendable {
     // MARK: - Singleton
-
+    
     /// Shared instance for app-wide bookmark management
     public static let shared = BookmarkManager()
-
+    
     // MARK: - Constants
-
+    
     private let bookmarkKey = "saveLocationBookmark"
-
+    
     // MARK: - Initialization
-
+    
     private init() {}
-
+    
     // MARK: - Public Methods
-
+    
     /// Store bookmark data for a user-selected URL.
     ///
     /// Creates a security-scoped bookmark that persists access rights across app launches.
@@ -95,7 +95,7 @@ public final class BookmarkManager: Sendable {
         )
         UserDefaults.standard.set(bookmarkData, forKey: bookmarkKey)
     }
-
+    
     /// Resolve stored bookmark to get a security-scoped URL.
     ///
     /// Returns the URL from the stored bookmark, automatically refreshing the bookmark
@@ -106,7 +106,7 @@ public final class BookmarkManager: Sendable {
         guard let bookmarkData = UserDefaults.standard.data(forKey: bookmarkKey) else {
             return nil
         }
-
+        
         var isStale = false
         do {
             let url = try URL(
@@ -115,12 +115,12 @@ public final class BookmarkManager: Sendable {
                 relativeTo: nil,
                 bookmarkDataIsStale: &isStale
             )
-
+            
             // Refresh stale bookmark to maintain access
             if isStale {
                 try? storeBookmark(for: url)
             }
-
+            
             return url
         } catch {
             // Bookmark is invalid - clear it so we fall back to default
@@ -128,7 +128,7 @@ public final class BookmarkManager: Sendable {
             return nil
         }
     }
-
+    
     /// Clear the stored bookmark.
     ///
     /// Call this when the bookmarked location is no longer valid or when
@@ -136,12 +136,12 @@ public final class BookmarkManager: Sendable {
     public func clearBookmark() {
         UserDefaults.standard.removeObject(forKey: bookmarkKey)
     }
-
+    
     /// Check if a bookmark is currently stored.
     public var hasBookmark: Bool {
         UserDefaults.standard.data(forKey: bookmarkKey) != nil
     }
-
+    
     /// Get the display name of the bookmarked location.
     ///
     /// - Returns: The last path component of the bookmarked URL, or nil if no bookmark exists

@@ -2,7 +2,7 @@
 //  IndicatorBadgeView.swift
 //
 //  Created on 17.12.2025.
-//  Copyright © 2025 IGR Soft. All rights reserved.
+//  Copyright © 2026 IGR Soft. All rights reserved.
 //
 
 import SwiftUI
@@ -59,19 +59,19 @@ import SwiftUI
 public struct IndicatorBadgeView: View {
     /// The panel type determining the badge color (Do = green, Don't = red).
     let type: PanelType
-
+    
     /// The display style controlling which elements are shown.
     let style: IndicatorStyle
-
+    
     /// The overall size of the badge in points.
     let size: CGFloat
-
+    
     /// The SF Symbol name for the icon.
     let iconName: String
-
+    
     /// The text label displayed below the icon.
     let label: String
-
+    
     /// Creates a new indicator badge with the specified configuration.
     ///
     /// - Parameters:
@@ -94,17 +94,17 @@ public struct IndicatorBadgeView: View {
         self.iconName = iconName ?? (type == .doPanel ? "checkmark" : "xmark")
         self.label = label ?? (type == .doPanel ? "Do's" : "Don'ts")
     }
-
+    
     private var color: Color {
         type == .doPanel ? .indicatorDo : .indicatorDont
     }
-
+    
     public var body: some View {
         VStack(spacing: 4) {
             if style != .textOnly {
                 iconView
             }
-
+            
             if style != .iconOnly {
                 textView
             }
@@ -117,14 +117,14 @@ public struct IndicatorBadgeView: View {
             ? "Marks recommended code example"
             : "Marks code example to avoid")
     }
-
+    
     private var iconView: some View {
         Image(systemName: iconName)
             .font(.system(size: size * 0.6, weight: .bold))
             .foregroundStyle(color)
             .frame(width: size, height: size)
     }
-
+    
     private var textView: some View {
         Text(label)
             .font(.system(size: size * 0.3, weight: .semibold, design: .rounded))
@@ -142,7 +142,7 @@ public struct IndicatorBadgeView: View {
             IndicatorBadgeView(type: .doPanel, style: .textOnly, size: 48)
             IndicatorBadgeView(type: .doPanel, style: .iconAndText, size: 48)
         }
-
+        
         // Don't Panel variants
         HStack(spacing: 32) {
             IndicatorBadgeView(type: .dontPanel, style: .iconOnly, size: 48)

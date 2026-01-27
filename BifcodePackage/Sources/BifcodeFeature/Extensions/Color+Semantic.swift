@@ -2,7 +2,7 @@
 //  Color+Semantic.swift
 //
 //  Created on 17.12.2025.
-//  Copyright © 2025 IGR Soft. All rights reserved.
+//  Copyright © 2026 IGR Soft. All rights reserved.
 //
 
 import SwiftUI
@@ -51,155 +51,155 @@ import SwiftUI
 ///
 /// > Important: Never use hardcoded colors like `.red` or `.green`.
 /// > Always use semantic colors for theme consistency.
-extension Color {
+public extension Color {
     // MARK: - Indicator Colors
-
+    
     /// Green checkmark indicator for "Do's"
     /// Light: Slightly darker green for better contrast
     /// Dark: Bright green
-    public static let indicatorDo = Color("IndicatorDo", bundle: .module)
-
+    static let indicatorDo = Color("IndicatorDo", bundle: .module)
+    
     /// Red X indicator for "Don'ts"
     /// Light: Slightly darker red for better contrast
     /// Dark: Bright red
-    public static let indicatorDont = Color("IndicatorDont", bundle: .module)
-
+    static let indicatorDont = Color("IndicatorDont", bundle: .module)
+    
     // MARK: - Editor Colors
-
+    
     /// Close button color (traffic light placeholder)
     /// Light: Slightly darker red
     /// Dark: Bright red
-    public static let editorCloseButton = Color("EditorCloseButton", bundle: .module)
-
+    static let editorCloseButton = Color("EditorCloseButton", bundle: .module)
+    
     /// Code editor background
     /// Light: Off-white
     /// Dark: Dark gray
-    public static let editorBackground = Color("EditorBackground", bundle: .module)
-
+    static let editorBackground = Color("EditorBackground", bundle: .module)
+    
     /// Line number text color
     /// Light: Medium gray
     /// Dark: Light gray
-    public static let editorLineNumber = Color("EditorLineNumber", bundle: .module)
-
+    static let editorLineNumber = Color("EditorLineNumber", bundle: .module)
+    
     /// Default code text color (overridden by syntax theme)
     /// Light: Dark gray
     /// Dark: Off-white
-    public static let editorText = Color("EditorText", bundle: .module)
-
+    static let editorText = Color("EditorText", bundle: .module)
+    
     /// Editor gutter background
     /// Light: Slightly darker than editor background
     /// Dark: Slightly darker than editor background
-    public static let editorGutter = Color("EditorGutter", bundle: .module)
-
+    static let editorGutter = Color("EditorGutter", bundle: .module)
+    
     // MARK: - Window Colors
-
+    
     /// Window background
     /// Light: Light gray
     /// Dark: Dark gray
-    public static let windowBackground = Color("WindowBackground", bundle: .module)
-
+    static let windowBackground = Color("WindowBackground", bundle: .module)
+    
     /// Title bar background
     /// Light: Slightly darker than window
     /// Dark: Slightly lighter than window
-    public static let titleBarBackground = Color("TitleBarBackground", bundle: .module)
-
+    static let titleBarBackground = Color("TitleBarBackground", bundle: .module)
+    
     /// Title text color
     /// Light: Dark gray
     /// Dark: Off-white
-    public static let titleText = Color("TitleText", bundle: .module)
-
+    static let titleText = Color("TitleText", bundle: .module)
+    
     /// Window border color
     /// Light: Light gray
     /// Dark: Medium gray
-    public static let windowBorder = Color("WindowBorder", bundle: .module)
-
+    static let windowBorder = Color("WindowBorder", bundle: .module)
+    
     // MARK: - UI Colors
-
+    
     /// Toolbar background
     /// Light: Light gray
     /// Dark: Dark gray
-    public static let toolbarBackground = Color("ToolbarBackground", bundle: .module)
-
+    static let toolbarBackground = Color("ToolbarBackground", bundle: .module)
+    
     /// Main content area background
     /// Light: Off-white
     /// Dark: Near black
-    public static let contentBackground = Color("ContentBackground", bundle: .module)
-
+    static let contentBackground = Color("ContentBackground", bundle: .module)
+    
     /// Secondary text color
     /// Light: Semi-transparent black
     /// Dark: Semi-transparent white
-    public static let secondaryText = Color("SecondaryText", bundle: .module)
-
+    static let secondaryText = Color("SecondaryText", bundle: .module)
+    
     /// Tertiary text color for labels and hints
     /// Light: Lighter semi-transparent black
     /// Dark: Lighter semi-transparent white
-    public static var tertiaryText: Color {
+    static var tertiaryText: Color {
         Color.secondary.opacity(0.7)
     }
-
+    
     /// Section header text color
     /// Light: Dark gray
     /// Dark: Light gray
-    public static var sectionHeader: Color {
+    static var sectionHeader: Color {
         Color.primary.opacity(0.85)
     }
-
+    
     /// Control group background for visual separation
     /// Light: Subtle light overlay
     /// Dark: Subtle dark overlay
-    public static var controlGroupBackground: Color {
+    static var controlGroupBackground: Color {
         Color.primary.opacity(0.04)
     }
-
+    
     /// Store button - purchased state (uses semantic green)
-    public static let storePurchased = Color("IndicatorDo", bundle: .module)
-
+    static let storePurchased = Color("IndicatorDo", bundle: .module)
+    
     /// Store button - not purchased state (uses system accent)
-    public static var storeDefault: Color {
+    static var storeDefault: Color {
         Color.accentColor
     }
-
+    
     // MARK: - Toast Colors
-
+    
     /// Toast success background - uses semantic green
-    public static let toastSuccess = Color("IndicatorDo", bundle: .module)
-
+    static let toastSuccess = Color("IndicatorDo", bundle: .module)
+    
     /// Toast error background - uses semantic red
-    public static let toastError = Color("IndicatorDont", bundle: .module)
-
+    static let toastError = Color("IndicatorDont", bundle: .module)
+    
     // MARK: - Theme Mode Aware Colors
-
+    
     /// Title bar background based on theme mode
     /// - Parameter mode: The current theme mode (dark or light)
     /// - Returns: Appropriate title bar background color
-    public static func titleBarBackground(for mode: ThemeMode) -> Color {
+    static func titleBarBackground(for mode: ThemeMode) -> Color {
         mode == .dark
             ? Color("TitleBarBackground", bundle: .module)
             : Color("TitleBarBackgroundLight", bundle: .module)
     }
-
+    
     /// Title text color based on theme mode
     /// - Parameter mode: The current theme mode (dark or light)
     /// - Returns: Appropriate title text color
-    public static func titleText(for mode: ThemeMode) -> Color {
+    static func titleText(for mode: ThemeMode) -> Color {
         mode == .dark
             ? Color("TitleText", bundle: .module)
             : Color("TitleTextLight", bundle: .module)
     }
-
+    
     /// Window border color based on theme mode
     /// - Parameter mode: The current theme mode (dark or light)
     /// - Returns: Appropriate window border color
-    public static func windowBorder(for mode: ThemeMode) -> Color {
+    static func windowBorder(for mode: ThemeMode) -> Color {
         mode == .dark
             ? Color("WindowBorder", bundle: .module)
             : Color("WindowBorderLight", bundle: .module)
     }
-
+    
     /// Close button color based on theme mode
     /// - Parameter mode: The current theme mode (dark or light)
     /// - Returns: Appropriate close button color
-    public static func editorCloseButton(for mode: ThemeMode) -> Color {
+    static func editorCloseButton(for mode: ThemeMode) -> Color {
         mode == .dark
             ? Color("EditorCloseButton", bundle: .module)
             : Color("EditorCloseButtonLight", bundle: .module)

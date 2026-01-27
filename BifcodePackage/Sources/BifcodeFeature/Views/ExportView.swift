@@ -2,7 +2,7 @@
 //  ExportView.swift
 //
 //  Created on 17.12.2025.
-//  Copyright © 2025 IGR Soft. All rights reserved.
+//  Copyright © 2026 IGR Soft. All rights reserved.
 //
 
 import AppKit
@@ -29,57 +29,57 @@ import SwiftUI
 struct ExportView: View {
     /// The "Do's" code panel to export.
     let doPanel: CodePanel
-
+    
     /// The "Don'ts" code panel to export.
     let dontPanel: CodePanel
-
+    
     /// The panel arrangement (horizontal or vertical).
     let layout: WindowLayout
-
+    
     /// Position of the indicator badge.
     let indicatorPosition: IndicatorPosition
-
+    
     /// Style of the indicator badge.
     let indicatorStyle: IndicatorStyle
-
+    
     /// Size of the indicator badge in points.
     let indicatorSize: CGFloat
-
+    
     /// SF Symbol name for the Do badge.
     let doIndicatorIcon: String
-
+    
     /// SF Symbol name for the Don't badge.
     let dontIndicatorIcon: String
-
+    
     /// Text label for the Do badge.
     let doIndicatorLabel: String
-
+    
     /// Text label for the Don't badge.
     let dontIndicatorLabel: String
-
+    
     /// Whether to show the title bar on panels.
     let showTitle: Bool
-
+    
     /// Font size for code text.
     let fontSize: CGFloat
-
+    
     /// The syntax highlighting theme.
     let theme: EditorTheme
-
+    
     /// The current theme mode for window styling.
     let themeMode: ThemeMode
-
+    
     // Panel dimensions for export
-
+    
     /// Width of each panel in points.
     let panelWidth: CGFloat
-
+    
     /// Height of the Do panel in points.
     let doPanelHeight: CGFloat
-
+    
     /// Height of the Don't panel in points.
     let dontPanelHeight: CGFloat
-
+    
     var body: some View {
         Group {
             if layout == .horizontal {
@@ -95,7 +95,7 @@ struct ExportView: View {
         .padding(24)
         .background(Color.clear)
     }
-
+    
     @ViewBuilder
     private var panels: some View {
         ExportPanelView(
@@ -112,7 +112,7 @@ struct ExportView: View {
         )
         .frame(width: panelWidth, height: dontPanelHeight)
         .shadow(color: .black.opacity(0.3), radius: 12, x: 0, y: 4)
-
+        
         ExportPanelView(
             panel: doPanel,
             indicatorPosition: indicatorPosition,
@@ -138,13 +138,13 @@ struct ExportView: View {
     // Use descriptive names
     let userName = "Alice"
     """
-
+    
     let dontPanel = CodePanel(type: .dontPanel, title: "Don'ts")
     dontPanel.code = """
     // Avoid short names
     let x = "Bob"
     """
-
+    
     return ExportView(
         doPanel: doPanel,
         dontPanel: dontPanel,
@@ -173,13 +173,13 @@ struct ExportView: View {
     // Use descriptive names
     let userName = "Alice"
     """
-
+    
     let dontPanel = CodePanel(type: .dontPanel, title: "Don'ts")
     dontPanel.code = """
     // Avoid short names
     let x = "Bob"
     """
-
+    
     return ExportView(
         doPanel: doPanel,
         dontPanel: dontPanel,

@@ -9,28 +9,28 @@ let package = Package(
         .library(
             name: "BifcodeFeature",
             targets: ["BifcodeFeature"]
-        ),
+        )
     ],
     dependencies: [
         .package(url: "https://github.com/CodeEditApp/CodeEditSourceEditor", from: "0.12.0"),
-        .package(url: "https://github.com/IGRSoft/DeveloperSupportStore", from: "1.0.0"),
+        .package(url: "https://github.com/IGRSoft/DeveloperSupportStore", from: "1.0.0")
     ],
     targets: [
         .target(
             name: "BifcodeFeature",
             dependencies: [
                 .product(name: "CodeEditSourceEditor", package: "CodeEditSourceEditor"),
-                .product(name: "DeveloperSupportStore", package: "DeveloperSupportStore"),
+                .product(name: "DeveloperSupportStore", package: "DeveloperSupportStore")
             ],
             resources: [
-                .process("Resources"),
+                .process("Resources")
             ]
         ),
         .testTarget(
             name: "BifcodeFeatureTests",
             dependencies: [
-                "BifcodeFeature",
+                "BifcodeFeature"
             ]
-        ),
+        )
     ]
 )

@@ -2,7 +2,7 @@
 //  ToastView.swift
 //
 //  Created on 23.12.2025.
-//  Copyright © 2025 IGR Soft. All rights reserved.
+//  Copyright © 2026 IGR Soft. All rights reserved.
 //
 
 import AppKit
@@ -15,25 +15,25 @@ import SwiftUI
 public enum ExportResult: Sendable {
     /// Export completed successfully with the file saved at the given URL.
     case success(URL)
-
+    
     /// Export failed with the given error.
     case failure(Error)
-
+    
     /// Whether the export was successful.
     var isSuccess: Bool {
         if case .success = self { return true }
         return false
     }
-
+    
     /// The exported file URL if successful, nil otherwise.
     var fileURL: URL? {
-        if case .success(let url) = self { return url }
+        if case let .success(url) = self { return url }
         return nil
     }
-
+    
     /// The error if failed, nil otherwise.
     var error: Error? {
-        if case .failure(let error) = self { return error }
+        if case let .failure(error) = self { return error }
         return nil
     }
 }
@@ -76,30 +76,30 @@ public enum ExportResult: Sendable {
 public struct ToastView: View {
     /// The export result to display.
     let result: ExportResult
-
+    
     /// Callback when the toast should be dismissed.
     let onDismiss: () -> Void
-
+    
     /// Auto-dismiss timeout in seconds.
     private let dismissTimeout: TimeInterval = 5.0
-
+    
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-
+    
     public init(result: ExportResult, onDismiss: @escaping () -> Void) {
         self.result = result
         self.onDismiss = onDismiss
     }
-
+    
     public var body: some View {
         Button(action: handleTap) {
             HStack(spacing: 8) {
                 Image(systemName: result.isSuccess ? "checkmark.circle.fill" : "xmark.circle.fill")
                     .font(.system(size: 16, weight: .medium))
-
+                
                 Text(message)
                     .font(.subheadline.weight(.medium))
                     .lineLimit(1)
-
+                
                 if result.isSuccess {
                     Image(systemName: "arrow.right.circle")
                         .font(.system(size: 14))
@@ -123,9 +123,9 @@ public struct ToastView: View {
             onDismiss()
         }
     }
-
+    
     // MARK: - Computed Properties
-
+    
     private var message: String {
         if result.isSuccess {
             "Exported successfully"
@@ -135,15 +135,15 @@ public struct ToastView: View {
             "Export failed"
         }
     }
-
+    
     private var backgroundColor: Color {
         result.isSuccess ? Color.toastSuccess : Color.toastError
     }
-
+    
     private var foregroundColor: Color {
         .white
     }
-
+    
     private var accessibilityLabel: String {
         if result.isSuccess {
             "Export successful. Click to reveal file in Finder."
@@ -153,16 +153,16 @@ public struct ToastView: View {
             "Export failed"
         }
     }
-
+    
     // MARK: - Actions
-
+    
     private func handleTap() {
         if let url = result.fileURL {
             revealInFinder(url)
         }
         onDismiss()
     }
-
+    
     private func revealInFinder(_ url: URL) {
         NSWorkspace.shared.selectFile(
             url.path,

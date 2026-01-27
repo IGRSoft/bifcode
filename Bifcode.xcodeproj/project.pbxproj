@@ -113,6 +113,7 @@
 				8BC265582DEDD3F400F279A4 /* Sources */,
 				8BC265592DEDD3F400F279A4 /* Frameworks */,
 				8BC2655A2DEDD3F400F279A4 /* Resources */,
+				A528AC182F28E6950070B6EB /* SwiftFormat */,
 			);
 			buildRules = (
 			);
@@ -201,6 +202,29 @@
 			);
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		A528AC182F28E6950070B6EB /* SwiftFormat */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			name = SwiftFormat;
+			shellPath = /bin/sh;
+			shellScript = (
+				"# Skip formatting for CLI builds (xcodebuild)",
+				"if [ -z \"$XPC_SERVICE_NAME\" ]; then",
+				"    exit 0",
+				"fi",
+				"",
+				"# Format modified Swift files only",
+				"# Uses formatter.py which runs SwiftFormat + adds blank line indentation",
+				"if [ -f \"$SRCROOT/scripts/formatter.py\" ]; then",
+				"    cd \"$SRCROOT\"",
+				"    python3 scripts/formatter.py",
+				"fi",
+				"",
+			);
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		8BC265582DEDD3F400F279A4 /* Sources */ = {
