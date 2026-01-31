@@ -60,6 +60,7 @@ public struct ToolBarView: View {
     @AppStorage("fontSize") private var fontSize: Double = 14
     @AppStorage("selectedTheme") private var selectedThemeRaw: String = EditorThemeOption.atomOneDark.rawValue
     @AppStorage("themeMode") private var themeModeRaw: String = ThemeMode.dark.rawValue
+    @AppStorage("exportPreset") private var exportPresetRaw: String = ExportPreset.auto.rawValue
     
     @AppStorage("selectedLanguage") private var selectedLanguageRaw: String = "swift"
     
@@ -546,6 +547,8 @@ public struct ToolBarView: View {
             
             // Secondary Actions
             VStack(spacing: 8) {
+                exportPresetPicker
+                
                 Button {
                     chooseSaveLocation()
                 } label: {
@@ -561,7 +564,19 @@ public struct ToolBarView: View {
                     .padding(.top, 32)
             }
         }
-        .frame(minWidth: 80)
+        .frame(minWidth: 100)
+    }
+    
+    private var exportPresetPicker: some View {
+        Picker("", selection: $exportPresetRaw) {
+            ForEach(ExportPreset.allCases, id: \.self) { preset in
+                Text(preset.label).tag(preset.rawValue)
+            }
+        }
+        .pickerStyle(.menu)
+        .fixedSize()
+        .accessibilityLabel("Export Size")
+        .accessibilityHint("Choose preset dimensions for social media")
     }
     
     private var storeButton: some View {

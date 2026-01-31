@@ -286,6 +286,86 @@ public enum ThemeMode: String, CaseIterable, Sendable {
     }
 }
 
+// MARK: - Export Preset
+
+/// Preset export dimensions for different platforms.
+///
+/// Provides optimized dimensions for sharing code comparisons on
+/// various social media platforms and messaging apps.
+///
+/// ## Usage
+///
+/// ```swift
+/// @AppStorage("exportPreset") private var exportPreset = ExportPreset.auto.rawValue
+/// ```
+///
+/// ## Topics
+///
+/// ### Presets
+///
+/// - ``auto``
+/// - ``twitter``
+/// - ``linkedin``
+/// - ``slack``
+public enum ExportPreset: String, CaseIterable, Sendable {
+    /// Automatic sizing based on content.
+    ///
+    /// The default behavior that calculates dimensions from the
+    /// actual code content and settings.
+    case auto
+    
+    /// Twitter/X optimized dimensions (1200×675).
+    ///
+    /// Optimal for Twitter image cards and timeline display.
+    case twitter
+    
+    /// LinkedIn optimized dimensions (1200×627).
+    ///
+    /// Matches LinkedIn's recommended image dimensions for posts.
+    case linkedin
+    
+    /// Slack optimized dimensions (800×600).
+    ///
+    /// Works well in Slack messages and previews.
+    case slack
+    
+    /// A human-readable label for display in pickers.
+    public var label: String {
+        switch self {
+        case .auto: "Auto"
+        case .twitter: "Twitter"
+        case .linkedin: "LinkedIn"
+        case .slack: "Slack"
+        }
+    }
+    
+    /// The target width for this preset, or nil for auto.
+    public var width: CGFloat? {
+        switch self {
+        case .auto: nil
+        case .twitter: 1200
+        case .linkedin: 1200
+        case .slack: 800
+        }
+    }
+    
+    /// The target height for this preset, or nil for auto.
+    public var height: CGFloat? {
+        switch self {
+        case .auto: nil
+        case .twitter: 675
+        case .linkedin: 627
+        case .slack: 600
+        }
+    }
+    
+    /// The target size for this preset, or nil for auto.
+    public var size: CGSize? {
+        guard let width, let height else { return nil }
+        return CGSize(width: width, height: height)
+    }
+}
+
 // MARK: - Editor Themes
 
 /// Available syntax highlighting themes for the code editor.
