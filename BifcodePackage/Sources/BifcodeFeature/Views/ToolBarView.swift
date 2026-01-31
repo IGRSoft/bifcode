@@ -298,10 +298,17 @@ public struct ToolBarView: View {
     
     private var commonLanguages: [CodeLanguage] {
         [
+            // Popular languages
             .swift, .python, .javascript, .typescript,
             .java, .kotlin, .go, .rust, .ruby,
             .c, .cpp, .cSharp, .php, .sql,
-            .html, .css, .json, .yaml, .bash
+            // Web & markup
+            .html, .css, .json, .yaml, .markdown,
+            // DevOps & config
+            .bash, .dockerfile, .toml,
+            // Functional & other
+            .scala, .elixir, .haskell, .lua,
+            .dart, .julia, .perl, .zig
         ]
     }
     
