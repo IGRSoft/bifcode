@@ -88,6 +88,7 @@ public struct ContentView: View {
     @AppStorage("indicatorStyle") private var indicatorStyleRaw: String = IndicatorStyle.iconAndText.rawValue
     @AppStorage("indicatorSize") private var indicatorSize: Double = 48
     @AppStorage("showTitle") private var showTitle: Bool = true
+    @AppStorage("showLineNumbers") private var showLineNumbers: Bool = true
     @AppStorage("fontSize") private var fontSize: Double = 14
     @AppStorage("selectedTheme") private var selectedThemeRaw: String = EditorThemeOption.atomOneDark.rawValue
     @AppStorage("themeMode") private var themeModeRaw: String = ThemeMode.dark.rawValue
@@ -220,6 +221,7 @@ public struct ContentView: View {
             doIndicatorLabel: doIndicatorLabel,
             dontIndicatorLabel: dontIndicatorLabel,
             showTitle: showTitle,
+            showLineNumbers: showLineNumbers,
             fontSize: fontSize,
             theme: selectedTheme.editorTheme,
             themeMode: themeMode,
@@ -307,8 +309,8 @@ public struct ContentView: View {
         
         let codeWidth = CGFloat(maxLineLength) * charWidth
         
-        // Add padding for: line numbers gutter (50), indicator badge, panel padding (24)
-        let gutterWidth: CGFloat = 50
+        // Add padding for: line numbers gutter (50 if shown), indicator badge, panel padding (24)
+        let gutterWidth: CGFloat = showLineNumbers ? 50 : 0
         let indicatorWidth: CGFloat = indicatorSize
         let panelPadding: CGFloat = 24
         
