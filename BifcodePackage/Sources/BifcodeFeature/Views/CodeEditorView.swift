@@ -74,6 +74,7 @@ public struct CodeEditorView: View {
     @AppStorage("doIndicatorLabel") private var doIndicatorLabel: String = "Do's"
     @AppStorage("dontIndicatorLabel") private var dontIndicatorLabel: String = "Don'ts"
     @AppStorage("showTitle") private var showTitle: Bool = true
+    @AppStorage("showLineNumbers") private var showLineNumbers: Bool = true
     @AppStorage("fontSize") private var fontSize: Double = 14
     @AppStorage("selectedTheme") private var selectedThemeRaw: String = EditorThemeOption.atomOneDark.rawValue
     @AppStorage("themeMode") private var themeModeRaw: String = ThemeMode.dark.rawValue
@@ -228,9 +229,9 @@ public struct CodeEditorView: View {
         }
     }
     
-    /// Unique identifier for forcing editor recreation when language, theme, or font changes
+    /// Unique identifier for forcing editor recreation when language, theme, font, or line numbers change
     private var editorIdentifier: String {
-        "\(panel.id)-\(panel.language.id)-\(selectedThemeRaw)-\(Int(fontSize))"
+        "\(panel.id)-\(panel.language.id)-\(selectedThemeRaw)-\(Int(fontSize))-\(showLineNumbers)"
     }
     
     /// Tracks if initial appearance has occurred to force editor recreation
@@ -265,7 +266,11 @@ public struct CodeEditorView: View {
                 font: NSFont.monospacedSystemFont(ofSize: fontSize, weight: .regular),
                 wrapLines: false
             ),
-            peripherals: .init(showMinimap: false, showFoldingRibbon: false)
+            peripherals: .init(
+                showGutter: showLineNumbers,
+                showMinimap: false,
+                showFoldingRibbon: false
+            )
         )
     }
     

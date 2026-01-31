@@ -60,6 +60,7 @@ public struct ToolBarView: View {
     @AppStorage("fontSize") private var fontSize: Double = 14
     @AppStorage("selectedTheme") private var selectedThemeRaw: String = EditorThemeOption.atomOneDark.rawValue
     @AppStorage("themeMode") private var themeModeRaw: String = ThemeMode.dark.rawValue
+    @AppStorage("showLineNumbers") private var showLineNumbers: Bool = true
     
     @AppStorage("selectedLanguage") private var selectedLanguageRaw: String = "swift"
     
@@ -195,6 +196,13 @@ public struct ToolBarView: View {
                         .font(.caption)
                         .foregroundStyle(Color.tertiaryText)
                     layoutToggle
+                }
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Lines")
+                        .font(.caption)
+                        .foregroundStyle(Color.tertiaryText)
+                    lineNumbersToggle
                 }
             }
             
@@ -342,6 +350,18 @@ public struct ToolBarView: View {
         .pickerStyle(.segmented)
         .accessibilityLabel("Layout")
         .accessibilityHint("Horizontal or vertical panel arrangement")
+    }
+    
+    // MARK: - Line Numbers Toggle
+    
+    private var lineNumbersToggle: some View {
+        Picker("", selection: $showLineNumbers) {
+            Image(systemName: "list.number").tag(true)
+            Image(systemName: "text.alignleft").tag(false)
+        }
+        .pickerStyle(.segmented)
+        .accessibilityLabel("Line Numbers")
+        .accessibilityHint("Show or hide line numbers in editor")
     }
     
     // MARK: - Indicator Style

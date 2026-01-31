@@ -57,6 +57,9 @@ struct ExportPanelView: View {
     /// Whether to show the title bar.
     let showTitle: Bool
     
+    /// Whether to show line numbers in the gutter.
+    let showLineNumbers: Bool
+    
     /// Font size for code text.
     let fontSize: CGFloat
     
@@ -158,7 +161,11 @@ struct ExportPanelView: View {
                 font: NSFont.monospacedSystemFont(ofSize: fontSize, weight: .regular),
                 wrapLines: false
             ),
-            peripherals: .init(showMinimap: false, showFoldingRibbon: false)
+            peripherals: .init(
+                showGutter: showLineNumbers,
+                showMinimap: false,
+                showFoldingRibbon: false
+            )
         )
     }
     
@@ -185,6 +192,7 @@ struct ExportPanelView: View {
         indicatorIconName: "checkmark",
         indicatorLabel: "Do's",
         showTitle: true,
+        showLineNumbers: true,
         fontSize: 14,
         theme: .atomOneDark,
         themeMode: .dark
@@ -210,6 +218,7 @@ struct ExportPanelView: View {
         indicatorIconName: "xmark",
         indicatorLabel: "Don'ts",
         showTitle: true,
+        showLineNumbers: true,
         fontSize: 14,
         theme: .atomOneDark,
         themeMode: .dark

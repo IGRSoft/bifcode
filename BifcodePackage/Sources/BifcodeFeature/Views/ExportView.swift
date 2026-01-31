@@ -60,6 +60,9 @@ struct ExportView: View {
     /// Whether to show the title bar on panels.
     let showTitle: Bool
     
+    /// Whether to show line numbers in the gutter.
+    let showLineNumbers: Bool
+    
     /// Font size for code text.
     let fontSize: CGFloat
     
@@ -106,6 +109,7 @@ struct ExportView: View {
             indicatorIconName: dontIndicatorIcon,
             indicatorLabel: dontIndicatorLabel,
             showTitle: showTitle,
+            showLineNumbers: showLineNumbers,
             fontSize: fontSize,
             theme: theme,
             themeMode: themeMode
@@ -121,6 +125,7 @@ struct ExportView: View {
             indicatorIconName: doIndicatorIcon,
             indicatorLabel: doIndicatorLabel,
             showTitle: showTitle,
+            showLineNumbers: showLineNumbers,
             fontSize: fontSize,
             theme: theme,
             themeMode: themeMode
@@ -157,6 +162,7 @@ struct ExportView: View {
         doIndicatorLabel: "Do's",
         dontIndicatorLabel: "Don'ts",
         showTitle: true,
+        showLineNumbers: true,
         fontSize: 14,
         theme: .atomOneDark,
         themeMode: .dark,
@@ -192,6 +198,7 @@ struct ExportView: View {
         doIndicatorLabel: "Do's",
         dontIndicatorLabel: "Don'ts",
         showTitle: true,
+        showLineNumbers: true,
         fontSize: 14,
         theme: .atomOneDark,
         themeMode: .dark,
