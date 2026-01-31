@@ -91,6 +91,8 @@ public struct ContentView: View {
     @AppStorage("fontSize") private var fontSize: Double = 14
     @AppStorage("selectedTheme") private var selectedThemeRaw: String = EditorThemeOption.atomOneDark.rawValue
     @AppStorage("themeMode") private var themeModeRaw: String = ThemeMode.dark.rawValue
+    @AppStorage("showWatermark") private var showWatermark: Bool = true
+    @AppStorage("watermarkText") private var watermarkText: String = "bifcode"
     
     private var layout: WindowLayout {
         WindowLayout(rawValue: windowLayoutRaw) ?? .horizontal
@@ -223,6 +225,8 @@ public struct ContentView: View {
             fontSize: fontSize,
             theme: selectedTheme.editorTheme,
             themeMode: themeMode,
+            showWatermark: showWatermark,
+            watermarkText: watermarkText,
             panelWidth: panelWidth,
             doPanelHeight: doPanelHeight,
             dontPanelHeight: dontPanelHeight

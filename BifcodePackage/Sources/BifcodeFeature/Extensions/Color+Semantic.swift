@@ -160,12 +160,20 @@ public extension Color {
     }
     
     // MARK: - Toast Colors
-    
+
     /// Toast success background - uses semantic green
     static let toastSuccess = Color("IndicatorDo", bundle: .module)
-    
+
     /// Toast error background - uses semantic red
     static let toastError = Color("IndicatorDont", bundle: .module)
+
+    // MARK: - Watermark Colors
+
+    /// Watermark text color for exported images
+    /// Semi-transparent gray that works on both light and dark backgrounds
+    static var watermarkText: Color {
+        Color.primary.opacity(0.35)
+    }
     
     // MARK: - Theme Mode Aware Colors
     
