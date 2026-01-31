@@ -246,6 +246,59 @@ public enum WindowLayout: String, CaseIterable, Sendable {
     }
 }
 
+// MARK: - Export Format
+
+/// The file format for exported images.
+///
+/// Controls whether exports are saved as PNG images or PDF documents.
+///
+/// ## Usage
+///
+/// ```swift
+/// @AppStorage("exportFormat") private var exportFormat = ExportFormat.png.rawValue
+/// ```
+///
+/// ## Topics
+///
+/// ### Formats
+///
+/// - ``png``
+/// - ``pdf``
+public enum ExportFormat: String, CaseIterable, Sendable {
+    /// PNG image format.
+    ///
+    /// Raster format with full color support and transparency.
+    /// Ideal for sharing on social media and web.
+    case png
+    
+    /// PDF document format.
+    ///
+    /// Vector format that maintains quality at any zoom level.
+    /// Ideal for printing and documentation.
+    case pdf
+    
+    /// A human-readable label for display in pickers.
+    public var label: String {
+        switch self {
+        case .png: "PNG"
+        case .pdf: "PDF"
+        }
+    }
+    
+    /// The file extension for this format.
+    public var fileExtension: String {
+        rawValue
+    }
+    
+    /// The UTType identifier for this format.
+    public var utType: String {
+        switch self {
+        case .png: "public.png"
+        case .pdf: "com.adobe.pdf"
+        }
+    }
+}
+
 // MARK: - Theme Mode
 
 /// The color mode for the code editor themes.

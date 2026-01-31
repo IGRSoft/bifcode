@@ -7,6 +7,7 @@
 
 import CodeEditLanguages
 import Foundation
+import PDFKit
 import SwiftUI
 
 /// The main view model managing application state and export functionality.
@@ -148,11 +149,13 @@ public final class AppViewModel {
     /// Save an image to the configured save location.
     ///
     /// Handles security-scoped resource access for bookmarked locations.
-    /// - Parameter image: The NSImage to save as PNG
-    /// - Returns: The URL where the image was saved
+    /// - Parameters:
+    ///   - image: The NSImage to save
+    ///   - format: The export format (PNG or PDF)
+    /// - Returns: The URL where the file was saved
     /// - Throws: `ExportError` if conversion or saving fails
     @discardableResult
-    public func saveImage(_ image: NSImage) async throws -> URL {
+    public func saveImage(_ image: NSImage, format: ExportFormat = .png) async throws -> URL {
         let location = saveLocation
         let needsSecurityScope = hasCustomSaveLocation
         
@@ -169,9 +172,21 @@ public final class AppViewModel {
             }
         }
         
-        let filename = "bifcode-\(Date().timeIntervalSince1970).png"
+        let filename = "bifcode-\(Date().timeIntervalSince1970).\(format.fileExtension)"
         let url = location.appendingPathComponent(filename)
         
+        switch format {
+        case .png:
+            try savePNG(image: image, to: url)
+        case .pdf:
+            try savePDF(image: image, to: url)
+        }
+        
+        return url
+    }
+    
+    /// Saves an image as PNG to the specified URL.
+    private func savePNG(image: NSImage, to url: URL) throws {
         guard let tiffData = image.tiffRepresentation,
               let bitmap = NSBitmapImageRep(data: tiffData),
               let pngData = bitmap.representation(using: .png, properties: [:])
@@ -180,7 +195,35 @@ public final class AppViewModel {
         }
         
         try pngData.write(to: url)
-        return url
+    }
+    
+    /// Saves an image as PDF to the specified URL.
+    private func savePDF(image: NSImage, to url: URL) throws {
+        let imageSize = image.size
+        
+        // Create PDF data with the image rendered as a PDF page
+        let pdfData = NSMutableData()
+        var mediaBox = CGRect(origin: .zero, size: imageSize)
+        
+        guard let consumer = CGDataConsumer(data: pdfData as CFMutableData),
+              let pdfContext = CGContext(consumer: consumer, mediaBox: &mediaBox, nil)
+        else {
+            throw ExportError.conversionFailed
+        }
+        
+        pdfContext.beginPDFPage(nil)
+        
+        // Draw the image in the PDF context
+        if let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil) {
+            pdfContext.draw(cgImage, in: mediaBox)
+        } else {
+            throw ExportError.conversionFailed
+        }
+        
+        pdfContext.endPDFPage()
+        pdfContext.closePDF()
+        
+        try pdfData.write(to: url)
     }
 }
 
@@ -219,8 +262,8 @@ public enum ExportError: LocalizedError {
     
     public var errorDescription: String? {
         switch self {
-        case .conversionFailed: "Failed to convert image to PNG"
-        case .saveFailed: "Failed to save image"
+        case .conversionFailed: "Failed to convert image"
+        case .saveFailed: "Failed to save file"
         case .accessDenied: "Cannot access save location. Please choose a new folder."
         }
     }
