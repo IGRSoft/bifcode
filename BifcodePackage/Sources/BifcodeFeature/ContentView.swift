@@ -91,6 +91,9 @@ public struct ContentView: View {
     @AppStorage("fontSize") private var fontSize: Double = 14
     @AppStorage("selectedTheme") private var selectedThemeRaw: String = EditorThemeOption.atomOneDark.rawValue
     @AppStorage("themeMode") private var themeModeRaw: String = ThemeMode.dark.rawValue
+    @AppStorage("useCustomDimensions") private var useCustomDimensions: Bool = false
+    @AppStorage("customExportWidth") private var customExportWidth: Double = 1200
+    @AppStorage("customExportHeight") private var customExportHeight: Double = 675
     
     private var layout: WindowLayout {
         WindowLayout(rawValue: windowLayoutRaw) ?? .horizontal
@@ -445,7 +448,59 @@ public struct ContentView: View {
         let finalImage = NSImage(size: size)
         finalImage.addRepresentation(scaledBitmapRep)
         
+        // Apply custom dimensions scaling if enabled
+        if useCustomDimensions {
+            let targetSize = CGSize(width: customExportWidth, height: customExportHeight)
+            return scaleImageToCustomSize(finalImage, targetSize: targetSize)
+        }
+        
         return finalImage
+    }
+    
+    /// Scales an image to fit within the target custom size while maintaining aspect ratio.
+    ///
+    /// The image is scaled to fit within the custom dimensions, centered on a transparent background.
+    /// Content is scaled down if larger than target, or centered without scaling if smaller.
+    ///
+    /// - Parameters:
+    ///   - image: The source image to scale.
+    ///   - targetSize: The target dimensions from custom export settings.
+    /// - Returns: A new image at the exact custom dimensions.
+    @MainActor
+    private func scaleImageToCustomSize(_ image: NSImage, targetSize: CGSize) -> NSImage {
+        let sourceSize = image.size
+        
+        // Calculate scale to fit within target while maintaining aspect ratio
+        let widthRatio = targetSize.width / sourceSize.width
+        let heightRatio = targetSize.height / sourceSize.height
+        let scale = min(widthRatio, heightRatio, 1.0) // Don't scale up, only down
+        
+        let scaledWidth = sourceSize.width * scale
+        let scaledHeight = sourceSize.height * scale
+        
+        // Center the scaled content within the target size
+        let xOffset = (targetSize.width - scaledWidth) / 2
+        let yOffset = (targetSize.height - scaledHeight) / 2
+        
+        // Create the final image at custom dimensions
+        let customImage = NSImage(size: targetSize)
+        customImage.lockFocus()
+        
+        // Clear background (transparent)
+        NSColor.clear.setFill()
+        NSRect(origin: .zero, size: targetSize).fill()
+        
+        // Draw the scaled image centered
+        image.draw(
+            in: NSRect(x: xOffset, y: yOffset, width: scaledWidth, height: scaledHeight),
+            from: .zero,
+            operation: .copy,
+            fraction: 1.0
+        )
+        
+        customImage.unlockFocus()
+        
+        return customImage
     }
 }
 
