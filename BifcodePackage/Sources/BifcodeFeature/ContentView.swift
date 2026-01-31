@@ -91,6 +91,7 @@ public struct ContentView: View {
     @AppStorage("fontSize") private var fontSize: Double = 14
     @AppStorage("selectedTheme") private var selectedThemeRaw: String = EditorThemeOption.atomOneDark.rawValue
     @AppStorage("themeMode") private var themeModeRaw: String = ThemeMode.dark.rawValue
+    @AppStorage("exportFormat") private var exportFormatRaw: String = ExportFormat.png.rawValue
     
     private var layout: WindowLayout {
         WindowLayout(rawValue: windowLayoutRaw) ?? .horizontal
@@ -110,6 +111,10 @@ public struct ContentView: View {
     
     private var themeMode: ThemeMode {
         ThemeMode(rawValue: themeModeRaw) ?? .dark
+    }
+    
+    private var exportFormat: ExportFormat {
+        ExportFormat(rawValue: exportFormatRaw) ?? .png
     }
     
     public init() {}
@@ -251,7 +256,7 @@ public struct ContentView: View {
         }
         
         do {
-            let savedURL = try await viewModel.saveImage(nsImage)
+            let savedURL = try await viewModel.saveImage(nsImage, format: exportFormat)
             withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.25)) {
                 exportResult = .success(savedURL)
             }

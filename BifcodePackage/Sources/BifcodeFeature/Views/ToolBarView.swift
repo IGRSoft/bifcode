@@ -60,6 +60,7 @@ public struct ToolBarView: View {
     @AppStorage("fontSize") private var fontSize: Double = 14
     @AppStorage("selectedTheme") private var selectedThemeRaw: String = EditorThemeOption.atomOneDark.rawValue
     @AppStorage("themeMode") private var themeModeRaw: String = ThemeMode.dark.rawValue
+    @AppStorage("exportFormat") private var exportFormatRaw: String = ExportFormat.png.rawValue
     
     @AppStorage("selectedLanguage") private var selectedLanguageRaw: String = "swift"
     
@@ -88,6 +89,11 @@ public struct ToolBarView: View {
     /// All available themes (not filtered by mode)
     private var availableThemes: [EditorThemeOption] {
         EditorThemeOption.allCases
+    }
+    
+    /// Current export format derived from stored raw value
+    private var currentExportFormat: ExportFormat {
+        ExportFormat(rawValue: exportFormatRaw) ?? .png
     }
     
     @Binding private var doTitleSetting: String
@@ -510,6 +516,20 @@ public struct ToolBarView: View {
             .accessibilityHint("Title shown above negative code example")
     }
     
+    // MARK: - Export Format
+    
+    private var exportFormatPicker: some View {
+        Picker("", selection: $exportFormatRaw) {
+            ForEach(ExportFormat.allCases, id: \.rawValue) { format in
+                Text(format.label).tag(format.rawValue)
+            }
+        }
+        .pickerStyle(.segmented)
+        .fixedSize()
+        .accessibilityLabel("Export Format")
+        .accessibilityHint("Choose PNG or PDF format")
+    }
+    
     // MARK: - Export Button
     
     @State private var isExportButtonHovered = false
@@ -538,14 +558,16 @@ public struct ToolBarView: View {
                 isExportButtonHovered = hovering
             }
             .disabled(isExportDisabled)
-            .help("Export as PNG")
-            .accessibilityLabel("Export as PNG")
+            .help("Export as \(currentExportFormat.label)")
+            .accessibilityLabel("Export as \(currentExportFormat.label)")
             .accessibilityHint(isExportDisabled
                 ? "Disabled: Add code to enable export"
-                : "Save comparison image to selected folder")
+                : "Save comparison as \(currentExportFormat.label) to selected folder")
             
             // Secondary Actions
             VStack(spacing: 8) {
+                exportFormatPicker
+                
                 Button {
                     chooseSaveLocation()
                 } label: {
@@ -555,7 +577,7 @@ public struct ToolBarView: View {
                 .buttonStyle(.borderless)
                 .help("Choose save location")
                 .accessibilityLabel("Choose Save Location")
-                .accessibilityHint("Select folder for exported images")
+                .accessibilityHint("Select folder for exported files")
                 
                 storeButton
                     .padding(.top, 32)
