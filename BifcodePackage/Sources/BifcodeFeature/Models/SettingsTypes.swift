@@ -264,9 +264,16 @@ public enum WindowLayout: String, CaseIterable, Sendable {
 ///
 /// ### Modes
 ///
+/// - ``system``
 /// - ``dark``
 /// - ``light``
 public enum ThemeMode: String, CaseIterable, Sendable {
+    /// Follows the macOS system appearance.
+    ///
+    /// Automatically switches between dark and light themes based on
+    /// the user's macOS appearance setting.
+    case system
+    
     /// Dark mode themes with dark backgrounds.
     ///
     /// Ideal for low-light environments and reducing eye strain.
@@ -280,8 +287,24 @@ public enum ThemeMode: String, CaseIterable, Sendable {
     /// A human-readable label for display in pickers.
     public var label: String {
         switch self {
+        case .system: "System"
         case .dark: "Dark"
         case .light: "Light"
+        }
+    }
+    
+    /// Returns the effective mode based on the current system appearance.
+    ///
+    /// For `.system` mode, this resolves to either `.dark` or `.light`
+    /// based on the current macOS appearance setting.
+    ///
+    /// - Returns: The effective theme mode (always `.dark` or `.light`).
+    public var effectiveMode: ThemeMode {
+        switch self {
+        case .system:
+            NSApp.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua ? .dark : .light
+        case .dark, .light:
+            self
         }
     }
 }

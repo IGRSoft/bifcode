@@ -94,6 +94,11 @@ public struct CodeEditorView: View {
         ThemeMode(rawValue: themeModeRaw) ?? .dark
     }
     
+    /// The effective theme mode, resolving system mode to dark or light.
+    private var effectiveThemeMode: ThemeMode {
+        themeMode.effectiveMode
+    }
+    
     /// Creates a new code editor view for the specified panel.
     ///
     /// - Parameters:
@@ -129,7 +134,7 @@ public struct CodeEditorView: View {
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.windowBorder(for: themeMode), lineWidth: 1)
+                .stroke(Color.windowBorder(for: effectiveThemeMode), lineWidth: 1)
         )
     }
     
@@ -155,13 +160,13 @@ public struct CodeEditorView: View {
         HStack(spacing: 14) {
             // Traffic light placeholder
             Circle()
-                .fill(Color.editorCloseButton(for: themeMode))
+                .fill(Color.editorCloseButton(for: effectiveThemeMode))
                 .frame(width: 14, height: 14)
             
             // Title - single line with truncation
             Label(panel.title, systemImage: "text.document.fill")
                 .font(.system(size: 13, weight: .medium))
-                .foregroundStyle(Color.titleText(for: themeMode))
+                .foregroundStyle(Color.titleText(for: effectiveThemeMode))
                 .lineLimit(1)
                 .truncationMode(.tail)
             
@@ -170,7 +175,7 @@ public struct CodeEditorView: View {
         .padding(.horizontal, 12)
         .padding(.vertical, 10)
         .frame(maxWidth: .infinity)
-        .background(Color.titleBarBackground(for: themeMode))
+        .background(Color.titleBarBackground(for: effectiveThemeMode))
         .clipShape(UnevenRoundedRectangle(topLeadingRadius: 12, topTrailingRadius: 12))
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(panel.title) panel header")
