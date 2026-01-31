@@ -2,7 +2,7 @@
 //  ToastView.swift
 //
 //  Created on 23.12.2025.
-//  Copyright © 2025 IGR Soft. All rights reserved.
+//  Copyright © 2026 IGR Soft. All rights reserved.
 //
 
 import AppKit
@@ -16,19 +16,30 @@ public enum ExportResult: Sendable {
     /// Export completed successfully with the file saved at the given URL.
     case success(URL)
 
+    /// Image copied to clipboard successfully.
+    case copied
+
     /// Export failed with the given error.
     case failure(Error)
 
-    /// Whether the export was successful.
+    /// Whether the export was successful (saved or copied).
     var isSuccess: Bool {
-        if case .success = self { return true }
-        return false
+        switch self {
+        case .success, .copied: true
+        case .failure: false
+        }
     }
 
-    /// The exported file URL if successful, nil otherwise.
+    /// The exported file URL if saved to disk, nil for copied or failed.
     var fileURL: URL? {
         if case .success(let url) = self { return url }
         return nil
+    }
+
+    /// Whether the result is a clipboard copy operation.
+    var isCopied: Bool {
+        if case .copied = self { return true }
+        return false
     }
 
     /// The error if failed, nil otherwise.
@@ -93,14 +104,14 @@ public struct ToastView: View {
     public var body: some View {
         Button(action: handleTap) {
             HStack(spacing: 8) {
-                Image(systemName: result.isSuccess ? "checkmark.circle.fill" : "xmark.circle.fill")
+                Image(systemName: iconName)
                     .font(.system(size: 16, weight: .medium))
 
                 Text(message)
                     .font(.subheadline.weight(.medium))
                     .lineLimit(1)
 
-                if result.isSuccess {
+                if result.fileURL != nil {
                     Image(systemName: "arrow.right.circle")
                         .font(.system(size: 14))
                         .foregroundStyle(.secondary)
@@ -115,7 +126,7 @@ public struct ToastView: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel(accessibilityLabel)
-        .accessibilityHint(result.isSuccess ? "Double-tap to reveal in Finder" : "Double-tap to dismiss")
+        .accessibilityHint(accessibilityHint)
         .accessibilityAddTraits(result.isSuccess ? .isButton : [])
         .transition(.move(edge: .top).combined(with: .opacity))
         .task {
@@ -126,8 +137,21 @@ public struct ToastView: View {
 
     // MARK: - Computed Properties
 
+    private var iconName: String {
+        switch result {
+        case .success:
+            "checkmark.circle.fill"
+        case .copied:
+            "doc.on.clipboard.fill"
+        case .failure:
+            "xmark.circle.fill"
+        }
+    }
+
     private var message: String {
-        if result.isSuccess {
+        if result.isCopied {
+            "Copied to clipboard"
+        } else if result.isSuccess {
             "Exported successfully"
         } else if let error = result.error {
             error.localizedDescription
@@ -145,12 +169,22 @@ public struct ToastView: View {
     }
 
     private var accessibilityLabel: String {
-        if result.isSuccess {
+        if result.isCopied {
+            "Image copied to clipboard."
+        } else if result.isSuccess {
             "Export successful. Click to reveal file in Finder."
         } else if let error = result.error {
             "Export failed: \(error.localizedDescription)"
         } else {
             "Export failed"
+        }
+    }
+
+    private var accessibilityHint: String {
+        if result.fileURL != nil {
+            "Double-tap to reveal in Finder"
+        } else {
+            "Double-tap to dismiss"
         }
     }
 
@@ -178,6 +212,19 @@ public struct ToastView: View {
         Spacer()
         ToastView(
             result: .success(URL(fileURLWithPath: "/Users/test/Desktop/bifcode.png")),
+            onDismiss: {}
+        )
+        Spacer()
+    }
+    .frame(width: 400, height: 200)
+    .background(Color.gray.opacity(0.2))
+}
+
+#Preview("Copied Toast") {
+    VStack {
+        Spacer()
+        ToastView(
+            result: .copied,
             onDismiss: {}
         )
         Spacer()

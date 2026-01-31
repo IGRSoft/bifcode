@@ -2,7 +2,7 @@
 //  ToolBarView.swift
 //
 //  Created on 17.12.2025.
-//  Copyright © 2025 IGR Soft. All rights reserved.
+//  Copyright © 2026 IGR Soft. All rights reserved.
 //
 
 import CodeEditLanguages
@@ -96,6 +96,7 @@ public struct ToolBarView: View {
     // MARK: - Callbacks
 
     var onExport: () -> Void
+    var onCopyToClipboard: () -> Void
     var onLanguageChange: (CodeLanguage) -> Void
     var isExportDisabled: Bool
 
@@ -109,6 +110,7 @@ public struct ToolBarView: View {
     ///   - isExportDisabled: Whether the export button should be disabled.
     ///     Set to `true` when both code panels are empty.
     ///   - onExport: Closure called when the export button is tapped.
+    ///   - onCopyToClipboard: Closure called when the copy button is tapped.
     ///   - onLanguageChange: Closure called when the language selection changes,
     ///     providing the newly selected ``CodeLanguage``.
     ///
@@ -118,6 +120,7 @@ public struct ToolBarView: View {
     ///     dontTitleSetting: $dontTitle,
     ///     isExportDisabled: viewModel.doPanel.code.isEmpty,
     ///     onExport: { Task { await exportImage() } },
+    ///     onCopyToClipboard: { Task { await copyToClipboard() } },
     ///     onLanguageChange: { viewModel.setLanguage($0) }
     /// )
     /// ```
@@ -126,12 +129,14 @@ public struct ToolBarView: View {
         dontTitleSetting: Binding<String>,
         isExportDisabled: Bool = false,
         onExport: @escaping () -> Void,
+        onCopyToClipboard: @escaping () -> Void,
         onLanguageChange: @escaping (CodeLanguage) -> Void
     ) {
         _doTitleSetting = doTitleSetting
         _dontTitleSetting = dontTitleSetting
         self.isExportDisabled = isExportDisabled
         self.onExport = onExport
+        self.onCopyToClipboard = onCopyToClipboard
         self.onLanguageChange = onLanguageChange
     }
 
@@ -513,6 +518,7 @@ public struct ToolBarView: View {
     // MARK: - Export Button
 
     @State private var isExportButtonHovered = false
+    @State private var isCopyButtonHovered = false
     @State private var isStorePresented = false
 
     /// Tracks whether the user has made any purchase (subscription or tip).
@@ -524,25 +530,48 @@ public struct ToolBarView: View {
 
     private var exportButton: some View {
         VStack(spacing: 12) {
-            // Primary Export Action - HIG: Use .prominent for key actions
-            Button { onExport() } label: {
-                Image(systemName: "square.and.arrow.up")
-                    .font(.system(size: 22, weight: .medium))
-                    .frame(width: 48, height: 48)
+            // Primary Actions Row - Export and Copy
+            HStack(spacing: 12) {
+                // Export Button - HIG: Use .prominent for key actions
+                Button { onExport() } label: {
+                    Image(systemName: "square.and.arrow.up")
+                        .font(.system(size: 22, weight: .medium))
+                        .frame(width: 48, height: 48)
+                }
+                .buttonStyle(.borderedProminent)
+                .clipShape(Circle())
+                .scaleEffect(isExportButtonHovered && !isExportDisabled ? 1.05 : 1.0)
+                .animation(reduceMotion ? nil : .easeInOut(duration: 0.15), value: isExportButtonHovered)
+                .onHover { hovering in
+                    isExportButtonHovered = hovering
+                }
+                .disabled(isExportDisabled)
+                .help("Export as PNG")
+                .accessibilityLabel("Export as PNG")
+                .accessibilityHint(isExportDisabled
+                    ? "Disabled: Add code to enable export"
+                    : "Save comparison image to selected folder")
+
+                // Copy to Clipboard Button
+                Button { onCopyToClipboard() } label: {
+                    Image(systemName: "doc.on.clipboard")
+                        .font(.system(size: 20, weight: .medium))
+                        .frame(width: 48, height: 48)
+                }
+                .buttonStyle(.bordered)
+                .clipShape(Circle())
+                .scaleEffect(isCopyButtonHovered && !isExportDisabled ? 1.05 : 1.0)
+                .animation(reduceMotion ? nil : .easeInOut(duration: 0.15), value: isCopyButtonHovered)
+                .onHover { hovering in
+                    isCopyButtonHovered = hovering
+                }
+                .disabled(isExportDisabled)
+                .help("Copy to clipboard")
+                .accessibilityLabel("Copy to clipboard")
+                .accessibilityHint(isExportDisabled
+                    ? "Disabled: Add code to enable copy"
+                    : "Copy comparison image to clipboard for pasting")
             }
-            .buttonStyle(.borderedProminent)
-            .clipShape(Circle())
-            .scaleEffect(isExportButtonHovered && !isExportDisabled ? 1.05 : 1.0)
-            .animation(reduceMotion ? nil : .easeInOut(duration: 0.15), value: isExportButtonHovered)
-            .onHover { hovering in
-                isExportButtonHovered = hovering
-            }
-            .disabled(isExportDisabled)
-            .help("Export as PNG")
-            .accessibilityLabel("Export as PNG")
-            .accessibilityHint(isExportDisabled
-                ? "Disabled: Add code to enable export"
-                : "Save comparison image to selected folder")
 
             // Secondary Actions
             VStack(spacing: 8) {
@@ -561,7 +590,7 @@ public struct ToolBarView: View {
                     .padding(.top, 32)
             }
         }
-        .frame(minWidth: 80)
+        .frame(minWidth: 120)
     }
 
     private var storeButton: some View {
@@ -636,6 +665,7 @@ public struct ToolBarView: View {
         dontTitleSetting: .constant("2"),
         isExportDisabled: false,
         onExport: {},
+        onCopyToClipboard: {},
         onLanguageChange: { _ in }
     )
 }
@@ -646,6 +676,7 @@ public struct ToolBarView: View {
         dontTitleSetting: .constant("2"),
         isExportDisabled: true,
         onExport: {},
+        onCopyToClipboard: {},
         onLanguageChange: { _ in }
     )
 }
