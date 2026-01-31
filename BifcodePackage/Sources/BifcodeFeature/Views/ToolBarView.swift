@@ -60,6 +60,10 @@ public struct ToolBarView: View {
     @AppStorage("fontSize") private var fontSize: Double = 14
     @AppStorage("selectedTheme") private var selectedThemeRaw: String = EditorThemeOption.atomOneDark.rawValue
     @AppStorage("themeMode") private var themeModeRaw: String = ThemeMode.dark.rawValue
+    @AppStorage("useCustomDimensions") private var useCustomDimensions: Bool = false
+    @AppStorage("customExportWidth") private var customExportWidth: Double = 1200
+    @AppStorage("customExportHeight") private var customExportHeight: Double = 675
+    @AppStorage("lockAspectRatio") private var lockAspectRatio: Bool = true
     
     @AppStorage("selectedLanguage") private var selectedLanguageRaw: String = "swift"
     
@@ -544,6 +548,19 @@ public struct ToolBarView: View {
                 ? "Disabled: Add code to enable export"
                 : "Save comparison image to selected folder")
             
+            // Custom Dimensions Toggle
+            Toggle("Size", isOn: $useCustomDimensions)
+                .toggleStyle(.checkbox)
+                .font(.caption)
+                .help("Use custom export dimensions")
+                .accessibilityLabel("Custom Size")
+                .accessibilityHint(useCustomDimensions ? "Custom dimensions enabled" : "Auto-size based on content")
+            
+            // Custom Dimensions Fields
+            if useCustomDimensions {
+                customDimensionsFields
+            }
+            
             // Secondary Actions
             VStack(spacing: 8) {
                 Button {
@@ -558,10 +575,71 @@ public struct ToolBarView: View {
                 .accessibilityHint("Select folder for exported images")
                 
                 storeButton
-                    .padding(.top, 32)
+                    .padding(.top, useCustomDimensions ? 8 : 32)
             }
         }
-        .frame(minWidth: 80)
+        .frame(minWidth: 120)
+    }
+    
+    /// Stores the aspect ratio when locking is enabled
+    @State private var lockedAspectRatio: Double = 1200.0 / 675.0
+    
+    private var customDimensionsFields: some View {
+        VStack(spacing: 6) {
+            // Width field
+            HStack(spacing: 4) {
+                Text("W")
+                    .font(.caption2)
+                    .foregroundStyle(Color.tertiaryText)
+                    .frame(width: 12)
+                TextField("Width", value: $customExportWidth, format: .number)
+                    .textFieldStyle(.roundedBorder)
+                    .frame(width: 60)
+                    .onChange(of: customExportWidth) { oldValue, newValue in
+                        if lockAspectRatio, oldValue != newValue {
+                            let clampedWidth = min(max(newValue, 100), 4096)
+                            customExportHeight = clampedWidth / lockedAspectRatio
+                        }
+                    }
+            }
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("Width")
+            .accessibilityValue("\(Int(customExportWidth)) pixels")
+            
+            // Height field
+            HStack(spacing: 4) {
+                Text("H")
+                    .font(.caption2)
+                    .foregroundStyle(Color.tertiaryText)
+                    .frame(width: 12)
+                TextField("Height", value: $customExportHeight, format: .number)
+                    .textFieldStyle(.roundedBorder)
+                    .frame(width: 60)
+                    .onChange(of: customExportHeight) { oldValue, newValue in
+                        if lockAspectRatio, oldValue != newValue {
+                            let clampedHeight = min(max(newValue, 100), 4096)
+                            customExportWidth = clampedHeight * lockedAspectRatio
+                        }
+                    }
+            }
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("Height")
+            .accessibilityValue("\(Int(customExportHeight)) pixels")
+            
+            // Aspect ratio lock
+            Button {
+                lockAspectRatio.toggle()
+                if lockAspectRatio {
+                    lockedAspectRatio = customExportWidth / max(customExportHeight, 1)
+                }
+            } label: {
+                Image(systemName: lockAspectRatio ? "lock.fill" : "lock.open")
+                    .font(.caption)
+            }
+            .buttonStyle(.borderless)
+            .help(lockAspectRatio ? "Unlock aspect ratio" : "Lock aspect ratio")
+            .accessibilityLabel(lockAspectRatio ? "Aspect ratio locked" : "Aspect ratio unlocked")
+        }
     }
     
     private var storeButton: some View {
