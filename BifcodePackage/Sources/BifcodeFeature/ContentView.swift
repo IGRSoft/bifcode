@@ -91,6 +91,7 @@ public struct ContentView: View {
     @AppStorage("fontSize") private var fontSize: Double = 14
     @AppStorage("selectedTheme") private var selectedThemeRaw: String = EditorThemeOption.atomOneDark.rawValue
     @AppStorage("themeMode") private var themeModeRaw: String = ThemeMode.dark.rawValue
+    @AppStorage("exportPreset") private var exportPresetRaw: String = ExportPreset.auto.rawValue
     
     private var layout: WindowLayout {
         WindowLayout(rawValue: windowLayoutRaw) ?? .horizontal
@@ -110,6 +111,10 @@ public struct ContentView: View {
     
     private var themeMode: ThemeMode {
         ThemeMode(rawValue: themeModeRaw) ?? .dark
+    }
+    
+    private var exportPreset: ExportPreset {
+        ExportPreset(rawValue: exportPresetRaw) ?? .auto
     }
     
     public init() {}
@@ -445,7 +450,58 @@ public struct ContentView: View {
         let finalImage = NSImage(size: size)
         finalImage.addRepresentation(scaledBitmapRep)
         
+        // Apply export preset scaling if not auto
+        if let presetSize = exportPreset.size {
+            return scaleImageToPreset(finalImage, targetSize: presetSize)
+        }
+        
         return finalImage
+    }
+    
+    /// Scales an image to fit within the target preset size while maintaining aspect ratio.
+    ///
+    /// The image is scaled down to fit within the preset dimensions, centered on a transparent background.
+    /// If the content is smaller than the preset, it's centered without scaling up.
+    ///
+    /// - Parameters:
+    ///   - image: The source image to scale.
+    ///   - targetSize: The target dimensions from the export preset.
+    /// - Returns: A new image at the exact preset dimensions.
+    @MainActor
+    private func scaleImageToPreset(_ image: NSImage, targetSize: CGSize) -> NSImage {
+        let sourceSize = image.size
+        
+        // Calculate scale to fit within target while maintaining aspect ratio
+        let widthRatio = targetSize.width / sourceSize.width
+        let heightRatio = targetSize.height / sourceSize.height
+        let scale = min(widthRatio, heightRatio, 1.0) // Don't scale up, only down
+        
+        let scaledWidth = sourceSize.width * scale
+        let scaledHeight = sourceSize.height * scale
+        
+        // Center the scaled content within the target size
+        let xOffset = (targetSize.width - scaledWidth) / 2
+        let yOffset = (targetSize.height - scaledHeight) / 2
+        
+        // Create the final image at preset dimensions
+        let presetImage = NSImage(size: targetSize)
+        presetImage.lockFocus()
+        
+        // Clear background (transparent)
+        NSColor.clear.setFill()
+        NSRect(origin: .zero, size: targetSize).fill()
+        
+        // Draw the scaled image centered
+        image.draw(
+            in: NSRect(x: xOffset, y: yOffset, width: scaledWidth, height: scaledHeight),
+            from: .zero,
+            operation: .copy,
+            fraction: 1.0
+        )
+        
+        presetImage.unlockFocus()
+        
+        return presetImage
     }
 }
 
