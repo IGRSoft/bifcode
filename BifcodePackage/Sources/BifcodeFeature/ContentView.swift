@@ -2,7 +2,7 @@
 //  ContentView.swift
 //
 //  Created on 17.12.2025.
-//  Copyright © 2025 IGR Soft. All rights reserved.
+//  Copyright © 2026 IGR Soft. All rights reserved.
 //
 
 import AppKit
@@ -128,6 +128,7 @@ public struct ContentView: View {
                     dontTitleSetting: $dontTitleSetting,
                     isExportDisabled: isCodeEmpty,
                     onExport: { Task(operation: exportImage) },
+                    onCopyToClipboard: { Task(operation: copyToClipboard) },
                     onLanguageChange: { viewModel.setLanguage($0) }
                 )
 
@@ -258,6 +259,34 @@ public struct ContentView: View {
         } catch {
             withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.25)) {
                 exportResult = .failure(error)
+            }
+        }
+    }
+
+    /// Copies the current code panels as an image to the clipboard.
+    ///
+    /// This method uses the same rendering pipeline as ``exportImage()``
+    /// but copies the result to the system clipboard instead of saving to disk.
+    ///
+    /// > Note: Copy is disabled when both code panels are empty.
+    @MainActor
+    private func copyToClipboard() async {
+        guard let nsImage = await renderExportViewToImage() else {
+            withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.25)) {
+                exportResult = .failure(ExportError.conversionFailed)
+            }
+            return
+        }
+
+        let pasteboard = NSPasteboard.general
+        pasteboard.clearContents()
+        let success = pasteboard.writeObjects([nsImage])
+
+        withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.25)) {
+            if success {
+                exportResult = .copied
+            } else {
+                exportResult = .failure(ExportError.conversionFailed)
             }
         }
     }
