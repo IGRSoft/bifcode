@@ -12,8 +12,8 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/CodeEditApp/CodeEditSourceEditor", from: "0.12.0"),
-        .package(url: "https://github.com/IGRSoft/DeveloperSupportStore", from: "1.0.0")
+        .package(url: "https://github.com/CodeEditApp/CodeEditSourceEditor", from: "0.15.0"),
+        .package(url: "https://github.com/IGRSoft/DeveloperSupportStore", from: "1.0.3")
     ],
     targets: [
         .target(
