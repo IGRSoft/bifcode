@@ -113,6 +113,11 @@ public struct ContentView: View {
         ThemeMode(rawValue: themeModeRaw) ?? .dark
     }
     
+    /// The effective theme mode, resolving system mode to dark or light.
+    private var effectiveThemeMode: ThemeMode {
+        themeMode.effectiveMode
+    }
+    
     public init() {}
     
     /// Check if both code panels are empty (export should be disabled)
@@ -224,7 +229,7 @@ public struct ContentView: View {
             showLineNumbers: showLineNumbers,
             fontSize: fontSize,
             theme: selectedTheme.editorTheme,
-            themeMode: themeMode,
+            themeMode: effectiveThemeMode,
             panelWidth: panelWidth,
             doPanelHeight: doPanelHeight,
             dontPanelHeight: dontPanelHeight

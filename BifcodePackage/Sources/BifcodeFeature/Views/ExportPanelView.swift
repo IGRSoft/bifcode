@@ -69,6 +69,11 @@ struct ExportPanelView: View {
     /// The current theme mode for window styling.
     let themeMode: ThemeMode
     
+    /// The effective theme mode, resolving system mode to dark or light.
+    private var effectiveThemeMode: ThemeMode {
+        themeMode.effectiveMode
+    }
+    
     /// Local editor state (not shared with interactive editor).
     @State private var editorState = SourceEditorState()
     
@@ -86,7 +91,7 @@ struct ExportPanelView: View {
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.windowBorder(for: themeMode), lineWidth: 1)
+                .stroke(Color.windowBorder(for: effectiveThemeMode), lineWidth: 1)
         )
     }
     
@@ -96,13 +101,13 @@ struct ExportPanelView: View {
         HStack(spacing: 14) {
             // Traffic light placeholder
             Circle()
-                .fill(Color.editorCloseButton(for: themeMode))
+                .fill(Color.editorCloseButton(for: effectiveThemeMode))
                 .frame(width: 14, height: 14)
             
             // Title - single line with truncation
             Label(panel.title, systemImage: "text.document.fill")
                 .font(.system(size: 13, weight: .medium))
-                .foregroundStyle(Color.titleText(for: themeMode))
+                .foregroundStyle(Color.titleText(for: effectiveThemeMode))
                 .lineLimit(1)
                 .truncationMode(.tail)
             
@@ -111,7 +116,7 @@ struct ExportPanelView: View {
         .padding(.horizontal, 12)
         .padding(.vertical, 10)
         .frame(maxWidth: .infinity)
-        .background(Color.titleBarBackground(for: themeMode))
+        .background(Color.titleBarBackground(for: effectiveThemeMode))
         .clipShape(UnevenRoundedRectangle(topLeadingRadius: 12, topTrailingRadius: 12))
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(panel.title) panel header")

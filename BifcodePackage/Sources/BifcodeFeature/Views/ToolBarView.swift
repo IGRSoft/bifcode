@@ -317,13 +317,14 @@ public struct ToolBarView: View {
     
     private var themeModeToggle: some View {
         Picker("", selection: $themeModeRaw) {
+            Image(systemName: "circle.lefthalf.filled").tag(ThemeMode.system.rawValue)
             Image(systemName: "moon.fill").tag(ThemeMode.dark.rawValue)
             Image(systemName: "sun.max.fill").tag(ThemeMode.light.rawValue)
         }
         .pickerStyle(.segmented)
         .fixedSize()
         .accessibilityLabel("Theme Mode")
-        .accessibilityHint("Toggle dark or light mode")
+        .accessibilityHint("System follows macOS appearance, or choose dark or light mode")
     }
     
     // MARK: - Theme Picker
